@@ -1,6 +1,6 @@
 {
 
-    "name": "oat/taoEventLog",
+    "name": "oat/extension-tao-eventlog",
     "description" : "The event logging system",
     "type" : "tao-extension",
     "authors" : [
