@@ -30,7 +30,7 @@ namespace oat\taoEventLog\controller;
  *
  */
 class TaoEventLog extends \tao_actions_CommonModule {
-
+    
     /**
      * initialize the services
      */
@@ -42,11 +42,7 @@ class TaoEventLog extends \tao_actions_CommonModule {
      * A possible entry point to tao
      */
     public function index() {
-        echo __("Hello World");
-    }
-
-    public function templateExample() {
         $this->setData('author', 'Open Assessment Technologies SA');
-        $this->setView('TaoEventLog/templateExample.tpl');
+        $this->setView('TaoEventLog/log.tpl');
     }
 }
