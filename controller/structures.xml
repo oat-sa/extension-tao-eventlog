@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE structures SYSTEM "../doc/structures.dtd">
 <structures>
-	<structure id="taoEventLog_main" name="TAO project event log" level="15" group="main">
+	<structure id="taoEventLog_main" name="Event log" level="15" group="main">
 		<description />
 		<sections>
 			<section id="taoEventLog_main" name="TAO project event log" url="/taoEventLog/TaoEventLog/index" />
-			<section id="taoEventLog_other" name="Template" url="/taoEventLog/TaoEventLog/templateExample" />
 		</sections>
 	</structure>
 </structures>

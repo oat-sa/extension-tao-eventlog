@@ -18,14 +18,19 @@
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
-define(function () {
+define([
+    'jquery',
+    'i18n'
+], function ($, __) {
     'use strict';
 
     return {
-        'TaoEventLog': {
-            'actions': {
-                'index': 'controller/TaoEventLog/show'
-            }
+
+        /**
+         * Controller entry point
+         */
+        start: function start() {
+            console.log('here');
         }
     };
 });
