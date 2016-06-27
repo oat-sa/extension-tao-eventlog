@@ -22,33 +22,44 @@
 namespace oat\taoEventLog\model;
 
 
-use oat\oatbox\service\ConfigurableService;
-use oat\taoEventLog\model\storage\RdsStorage;
-
-class EventLogService extends ConfigurableService
+interface StorageInterface
 {
+    /** Fields */
+    const ID = 'id';
+    const USER_ID = 'user_id';
+    const EVENT = 'event';
+    const TIME = 'action_time';
+    const IP = 'ip';
+    const IPv6 = 'ipv6';
+    const DESCRIPTION = 'desc';
+
     /**
-     * @var StorageInterface
+     * StorageInterface constructor.
+     * @param string
      */
-    private $storage;
+    public function __construct($param = '');
 
-    public function setStorage(StorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
+    /**
+     * Create new log record
+     *
+     * @param string $testTaker
+     * @param string $delivery
+     * @param string $deliveryExecution
+     * @param string $event
+     * @return bool
+     */
+    public function event($testTaker = '', $delivery = '', $deliveryExecution = '', $event = '');
 
-    public function event($testTaker='', $delivery='', $deliveryExecution='', $event='')
-    {
-        $this->storage()->event($testTaker, $delivery, $deliveryExecution, $event);
-    }
+    /**
+     * Create storage
+     * @return string (table name or file path)
+     */
+    public function createStorage();
 
-    private function storage()
-    {
-        if (!isset($this->storage)) {
-            $this->storage = new RdsStorage($this->getOption(RdsStorage::OPTION_PERSISTENCE));
-        }
-
-        return $this->storage;
-    }
+    /**
+     * Destroy storage
+     * @return bool
+     */
+    public function dropStorage();
 
 }
