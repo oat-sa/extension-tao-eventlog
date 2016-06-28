@@ -21,17 +21,23 @@
 
 namespace oat\taoEventLog\model;
 
-
 interface StorageInterface
 {
     /** Fields */
     const ID = 'id';
     const USER_ID = 'user_id';
+    const USER_ROLE = 'user_role';
     const EVENT = 'event';
+    // event_name
+    // event_action
+    // event_status
+    // event_occurs
+
     const TIME = 'action_time';
-    const IP = 'ip';
+    const IPv4 = 'ipv4';
     const IPv6 = 'ipv6';
-    const DESCRIPTION = 'desc';
+    const DESCRIPTION = 'description';
+    const PROPERTIES = 'properties'; // json
 
     /**
      * StorageInterface constructor.
@@ -48,7 +54,7 @@ interface StorageInterface
      * @param string $event
      * @return bool
      */
-    public function event($testTaker = '', $delivery = '', $deliveryExecution = '', $event = '');
+    public function logEvent($testTaker = '', $delivery = '', $deliveryExecution = '', $event = '');
 
     /**
      * Create storage

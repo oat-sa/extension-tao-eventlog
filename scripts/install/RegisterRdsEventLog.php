@@ -19,54 +19,46 @@
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
-namespace oat\taoMonitoring\scripts\install;
+namespace oat\taoEventLog\scripts\install;
 
-
-use oat\oatbox\event\EventManager;
-use oat\taoEventLog\model\EventLogService;
+use common_ext_action_InstallAction;
+use common_report_Report;
+use oat\oatbox\action\Action;
+use oat\tao\model\event\LoginEvent;
+use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionCreated;
+use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionState;
+use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoMonitoring\model\TestTakerDeliveryLog\event\Events;
+use oat\taoQtiTest\models\event\QtiMoveEvent;
 
-class RegisterRdsEventLog extends \common_ext_action_InstallAction
+/**
+ * Class RegisterRdsEventLog
+ * @package oat\taoMonitoring\scripts\install
+ */
+class RegisterRdsEventLog extends common_ext_action_InstallAction implements Action
 {
-    
+    /**
+     * @param $params
+     * @return common_report_Report
+     */
     public function __invoke($params)
     {
         $persistenceId = count($params) > 0 ? reset($params) : 'default';
 
         /** Register new service */
-        $this->getServiceManager()->register(EventLogService::SERVICE_ID, new EventLogService([RdsStorage::OPTION_PERSISTENCE => $persistenceId]));
+        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([RdsStorage::OPTION_PERSISTENCE => $persistenceId]));
 
         /** @var RdsStorage $storage */
-        $storage = new RdsStorage( $persistenceId );
+        $storage = new RdsStorage($persistenceId);
         $storage->createStorage();
-        
-        $this->appendEvents();
-        
-        return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('Registered event log'));
-    }
-    
-    private function appendEvents()
-    {
-        $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
-        // count executions
-        $eventManager->attach(
-            'oat\\taoDelivery\\models\\classes\\execution\\event\\DeliveryExecutionCreated',
-            array('\\oat\\taoMonitoring\\model\\TestTakerDeliveryLog\\event\\Events', 'deliveryExecutionCreated')
-        );
+        $this->registerEvent(LoginEvent::class, [$this->getServiceManager()->get(EventLogService::SERVICE_ID), 'logEvent']);
 
-        // finished executions
-        $eventManager->attach(
-            'oat\\taoDelivery\\models\\classes\\execution\\event\\DeliveryExecutionState',
-            array('\\oat\\taoMonitoring\\model\\TestTakerDeliveryLog\\event\\Events', 'deliveryExecutionState')
-        );
+        $this->registerEvent(DeliveryExecutionCreated::class, [Events::class, 'deliveryExecutionCreated']);
+        $this->registerEvent(DeliveryExecutionState::class, [Events::class, 'deliveryExecutionState']);
+        $this->registerEvent(QtiMoveEvent::class, [Events::class, 'qtiMoveEvent']);
 
-        // catch switch items - on switching recount all statistic for testtaker
-        $eventManager->attach(
-            'oat\\taoQtiTest\\models\\event\\QtiMoveEvent',
-            array('\\oat\\taoMonitoring\\model\\TestTakerDeliveryLog\\event\\Events', 'qtiMoveEvent')
-        );
-
-        $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Service'));
     }
 }
