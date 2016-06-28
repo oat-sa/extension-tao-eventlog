@@ -21,12 +21,13 @@
 
 namespace oat\taoEventLog\model;
 
-
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\storage\RdsStorage;
 
-class EventLogService extends ConfigurableService
+class LoggerService extends ConfigurableService
 {
+    const SERVICE_ID = 'taoEventLog/logger';
+
     /**
      * @var StorageInterface
      */
@@ -37,12 +38,12 @@ class EventLogService extends ConfigurableService
         $this->storage = $storage;
     }
 
-    public function event($testTaker='', $delivery='', $deliveryExecution='', $event='')
+    public function logEvent($testTaker='', $delivery='', $deliveryExecution='', $event='')
     {
-        $this->storage()->event($testTaker, $delivery, $deliveryExecution, $event);
+        $this->getStorage()->logEvent($testTaker, $delivery, $deliveryExecution, $event);
     }
 
-    private function storage()
+    private function getStorage()
     {
         if (!isset($this->storage)) {
             $this->storage = new RdsStorage($this->getOption(RdsStorage::OPTION_PERSISTENCE));

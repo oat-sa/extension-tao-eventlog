@@ -33,7 +33,7 @@ return array(
     ),
     'install' => [
         'php' => [
-            \oat\taoMonitoring\scripts\install\RegisterRdsEventLog::class
+            oat\taoEventLog\scripts\install\RegisterRdsEventLog::class
         ]
     ],
     'uninstall' => array(),
