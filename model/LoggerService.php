@@ -21,28 +21,49 @@
 
 namespace oat\taoEventLog\model;
 
-
+use common_Logger;
+use JsonSerializable;
+use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\storage\RdsStorage;
 
-class EventLogService extends ConfigurableService
+/**
+ * Class LoggerService
+ * @package oat\taoEventLog\model
+ */
+class LoggerService extends ConfigurableService
 {
-    /**
-     * @var StorageInterface
-     */
+    const SERVICE_ID = 'taoEventLog/logger';
+
+    /** @var StorageInterface */
     private $storage;
 
+    /**
+     * @param StorageInterface $storage
+     */
     public function setStorage(StorageInterface $storage)
     {
         $this->storage = $storage;
     }
 
-    public function event($testTaker='', $delivery='', $deliveryExecution='', $event='')
+    /**
+     * @param Event $event
+     */
+    public function logEvent(Event $event)
     {
-        $this->storage()->event($testTaker, $delivery, $deliveryExecution, $event);
+        if (!is_subclass_of($event, JsonSerializable::class)) {
+            common_Logger::d('Event %s should implements JsonSerializable interface for to be logged by EventLog extension');
+            return;
+        }
+
+        // to be done
+        $this->getStorage()->log();
     }
 
-    private function storage()
+    /**
+     * @return RdsStorage|StorageInterface
+     */
+    private function getStorage()
     {
         if (!isset($this->storage)) {
             $this->storage = new RdsStorage($this->getOption(RdsStorage::OPTION_PERSISTENCE));
@@ -50,5 +71,4 @@ class EventLogService extends ConfigurableService
 
         return $this->storage;
     }
-
 }

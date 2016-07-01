@@ -1,31 +1,30 @@
 {
-
-    "name": "oat/extension-tao-eventlog",
-    "description" : "The event logging system",
-    "type" : "tao-extension",
-    "authors" : [
-        {
-        "name": "Open Assessment Technologies SA"
-        }
-    ],
-    "keywords" : [
-        "tao",
-        "computer-based-assessment"
-    ],
-    "homepage" : "http://www.taotesting.com",
-    "license" : [
-        "GPL-2.0"
-    ],
-    "extra" : {
-        "tao-extension-name" : "taoEventLog"
-    },
-    "minimum-stability" : "dev",
-    "require": {
-        "oat-sa/oatbox-extension-installer": "dev-master"
-    },
-    "autoload" : {
-        "psr-4" : {
-            "oat\\taoEventLog\\" : ""
-        }
-    } 
+  "name": "oat/extension-tao-eventlog",
+  "description": "The event logging system",
+  "type": "tao-extension",
+  "authors": [
+    {
+      "name": "Open Assessment Technologies SA"
+    }
+  ],
+  "keywords": [
+    "tao",
+    "computer-based-assessment"
+  ],
+  "homepage": "http://www.taotesting.com",
+  "license": [
+    "GPL-2.0"
+  ],
+  "extra": {
+    "tao-extension-name": "taoEventLog"
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "oat-sa/oatbox-extension-installer": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "oat\\taoEventLog\\": ""
+    }
+  }
 }
