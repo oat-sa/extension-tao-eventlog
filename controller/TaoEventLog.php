@@ -20,6 +20,7 @@
  */
 
 namespace oat\taoEventLog\controller;
+use oat\taoEventLog\model\LoggerService;
 
 /**
  * Sample controller
@@ -50,43 +51,13 @@ class TaoEventLog extends \tao_actions_CommonModule {
      * Load json data with results
      */
     public function search()
-    {
-        $results = ['data' => [
-            [
-                'user_id' => 1,
-                'id' => 0, //event_id
-                'name' => 'First User Name',
-                'time' => date('Y-m-d H:i:s'),
-                'event' => 'Move Item',
-                'ip' => '',
-                'ipv6' => '2001:0db8:11a3:09d7:1f34:8a2e:07a0:765d',
-                'desc' => json_encode([
-                    [
-                        'delivery_execution' => '#delivery_execution_uri',
-                        'delivery' => '#delivery_uri'
-                    ]
-                ], JSON_PRETTY_PRINT)
-            ], [
-                'user_id' => 2,
-                'id' => 1,
-                'ip' => '127.0.0.1',
-                'ipv6' => '2001:0db8:11a3:09d7:1f34:8a2e:07a0:765d',
-                'name' => 'Second User Name',
-                'time' => date('Y-m-d H:i:s'),
-                'event' => 'Log Out'
-
-            ], [
-                'id' => 2, 
-                'user_id' => 'guest',
-                'ip' => '127.0.0.1',
-                'ipv6' => '',
-                'name' => 'Guest',
-                'time' => date('Y-m-d H:i:s'),
-                'event' => 'Log Error',
-                'desc' => ['Failure password']
-            ]
-        ], 'page' => 1, 'total' => '3', 'records' => 23];
-
+    {        
+        $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+        $results = $loggerService->searchInstances($this->getRequestParameters());
+        
+        $results['page'] = $this->getRequestParameter('page');
+        $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
+        
         $this->returnJson($results, 200);
     }
 }

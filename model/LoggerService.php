@@ -71,4 +71,9 @@ class LoggerService extends ConfigurableService
 
         return $this->storage;
     }
+    
+    public function searchInstances(array $params=[])
+    {
+        return $this->getStorage()->searchInstances($params);
+    }
 }

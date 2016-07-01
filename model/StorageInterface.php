@@ -66,4 +66,18 @@ interface StorageInterface
      */
     public function dropStorage();
 
+    /**
+     * Select
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function searchInstances(array $params = []);
+
+    /**
+     * list of the table columns
+     * @return array
+     */
+    public function tableColumns();
+
 }
