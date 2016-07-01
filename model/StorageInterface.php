@@ -21,22 +21,19 @@
 
 namespace oat\taoEventLog\model;
 
+/**
+ * Interface StorageInterface
+ * @package oat\taoEventLog\model
+ */
 interface StorageInterface
 {
     /** Fields */
     const ID = 'id';
+    const EVENT_NAME = 'event_name';
+    const ACTION = 'action';
     const USER_ID = 'user_id';
     const USER_ROLE = 'user_role';
-    const EVENT = 'event';
-    // event_name
-    // event_action
-    // event_status
-    // event_occurs
-
-    const TIME = 'action_time';
-    const IPv4 = 'ipv4';
-    const IPv6 = 'ipv6';
-    const DESCRIPTION = 'description';
+    const OCCURRED = 'occurred';
     const PROPERTIES = 'properties'; // json
 
     /**
@@ -46,15 +43,16 @@ interface StorageInterface
     public function __construct($param = '');
 
     /**
-     * Create new log record
-     *
-     * @param string $testTaker
-     * @param string $delivery
-     * @param string $deliveryExecution
-     * @param string $event
-     * @return bool
+     * Creates new log record
+     * @param string $eventName
+     * @param string $currentAction
+     * @param string $userIdentifier
+     * @param string $userRole
+     * @param string $occurred
+     * @param array $data
+     * @return mixed
      */
-    public function logEvent($testTaker = '', $delivery = '', $deliveryExecution = '', $event = '');
+    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
 
     /**
      * Create storage
