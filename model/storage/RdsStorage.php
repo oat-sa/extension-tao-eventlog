@@ -94,6 +94,16 @@ class RdsStorage implements StorageInterface
         return common_persistence_Manager::getPersistence($this->persistence);
     }
 
+    private function cleanStorage($dateRange = '-90 days')
+    {
+        $sql = "DELETE FROM " . self::TABLE_NAME . " WHERE " . self::OCCURRED . " <= ?";
+
+        $parameters = [date('Y-m-d H:i:s', strtotime($dateRange))];
+        $this->getPersistence()->query($sql, $parameters);
+
+        return true;
+    }
+
     /**
      * @inheritdoc
      */
@@ -112,13 +122,13 @@ class RdsStorage implements StorageInterface
             $tableLog = $schema->createTable(self::TABLE_NAME);
             $tableLog->addOption('engine', 'MyISAM');
 
-            $tableLog->addColumn(self::ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
-            $tableLog->addColumn(self::EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
-            $tableLog->addColumn(self::ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
-            $tableLog->addColumn(self::USER_ID,     "string",   ["notnull" => true, "length" => 255, 'comment' => 'User identifier']);
-            $tableLog->addColumn(self::USER_ROLE,   "string",   ["notnull" => true, "length" => 255, 'comment' => 'User role']);
-            $tableLog->addColumn(self::OCCURRED,    "datetime", ["notnull" => true]);
-            $tableLog->addColumn(self::PROPERTIES,  "text",     ["notnull" => true, 'comment' => 'Event properties in json']);
+            $tableLog->addColumn(self::ID, "integer", ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
+            $tableLog->addColumn(self::EVENT_NAME, "string", ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
+            $tableLog->addColumn(self::ACTION, "string", ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
+            $tableLog->addColumn(self::USER_ID, "string", ["notnull" => true, "length" => 255, 'comment' => 'User identifier']);
+            $tableLog->addColumn(self::USER_ROLE, "string", ["notnull" => true, "length" => 255, 'comment' => 'User role']);
+            $tableLog->addColumn(self::OCCURRED, "datetime", ["notnull" => true]);
+            $tableLog->addColumn(self::PROPERTIES, "text", ["notnull" => true, 'comment' => 'Event properties in json']);
 
             $tableLog->setPrimaryKey(array(self::ID));
             $tableLog->addIndex([self::EVENT_NAME], 'idx_event_name');
@@ -137,6 +147,8 @@ class RdsStorage implements StorageInterface
 
         return self::TABLE_NAME;
     }
+
+    // todo: move to config period for keeping log data
 
     /**
      * @inheritdoc
@@ -162,15 +174,83 @@ class RdsStorage implements StorageInterface
         }
     }
 
-    // todo: move to config period for keeping log data
-    private function cleanStorage($dateRange = '-90 days')
+    public function searchInstances(array $params = [])
     {
-        $sql = "DELETE FROM " . self::TABLE_NAME . " WHERE " . self::OCCURRED . " <= ?";
+        $sql = 'SELECT * FROM ' . self::TABLE_NAME;
 
-        $parameters = [date('Y-m-d H:i:s', strtotime($dateRange))];
-        $this->getPersistence()->query($sql, $parameters);
+        $parameters = [];
 
-        return true;
+        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns']) 
+                && in_array(current($params['filtercolumns']), $this->tableColumns())) {
+            
+            $sql .= ' WHERE ' . current($params['filtercolumns']) . " LIKE ?";
+            $parameters[] = '%' . $params['filterquery'] . '%';
+        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
+            $sql .= " WHERE "
+                . self::EVENT_NAME . " LIKE ? OR "
+                . self::ACTION . " LIKE ? OR "
+                . self::USER_ID . " LIKE ? OR "
+                . self::USER_ROLE . " LIKE ?"
+            ;
+            
+            for ($i = 0; $i < 4; $i++) {
+                $parameters[] = '%' . $params['filterquery'] . '%';
+            }
+        }
+
+        $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
+        $orderDir = isset($params['sortorder']) ? strtoupper($params['sortorder']) : ' ASC';
+
+        $sql .= ' ORDER BY ';
+        $orderSep = '';
+
+        if (in_array($orderBy, $this->tableColumns()) && in_array($orderDir, ['ASC', 'DESC'])) {
+            $sql .= $orderBy . ' ' . $orderDir;
+            $orderSep = ', ';
+        }
+
+        if ($orderBy != 'id') {
+            $sql .= $orderSep . 'id DESC';
+        }
+        
+        $page = isset($params['page']) ? (intval($params['page']) - 1) : 0;
+        $rows = isset($params['rows']) ? intval($params['rows']) : 25;
+
+        if ($page < 0) {
+            $page = 0;
+        }
+
+        $sql .= ' LIMIT ? OFFSET ?';
+        $parameters[] = $rows;
+        $parameters[] = $page * $rows;
+        
+        $stmt = $this->getPersistence()->query($sql, $parameters);
+        
+        $ret = [];
+        $ret['data'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        $countSql = str_replace('SELECT *', 'SELECT COUNT(id)', $sql);
+        $countSql = mb_strcut($countSql, 0, mb_strpos($countSql, 'ORDER BY'));
+        $parameters = array_slice($parameters, 0, count($parameters)-2);
+        
+        $stmt = $this->getPersistence()->query($countSql, $parameters);
+        $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
+        $ret['records'] = array_shift($total);
+        
+        return $ret;
+    }
+
+    public function tableColumns()
+    {
+        return [
+            self::ID,
+            self::USER_ID,
+            self::USER_ROLE,
+            self::EVENT_NAME,
+            self::ACTION,
+            self::OCCURRED,
+            self::PROPERTIES
+        ];
     }
 
 }

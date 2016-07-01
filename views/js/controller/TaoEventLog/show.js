@@ -23,9 +23,7 @@ define([
     'i18n',
     'helpers',
     'ui/datatable',
-    'tpl!taoEventLog/controller/TaoEventLog/show/layout',
-    'jqueryui',
-    'jquery.timePicker'
+    'tpl!taoEventLog/controller/TaoEventLog/show/layout'
 ], function ($, __, helpers, datatable, layoutTpl) {
     'use strict';
 
@@ -43,28 +41,24 @@ define([
             var $eventList = $('.log-browser .log-table', $layout);
             var $eventViewer = $('.event-viewer', $layout);
             
-            // timePickers
-            var $fromDate = $('.log-browser .from-time', $layout);
-            $fromDate.datetimepicker({
-                onClose: function( selectedDate ) {
-                    $( ".log-browser .to-time" ).datepicker( "option", "minDate", selectedDate );
-                }
-            });
-
-            var $toDate = $('.log-browser .to-time', $layout);
-            $toDate.datetimepicker({
-                onClose: function( selectedDate ) {
-                    $( ".log-browser .from-time" ).datepicker( "option", "maxDate", selectedDate );
-                }
-            });
-            
             var updateEventDetails = function updateEventDetails(event) {
-                $('.user_id', $eventViewer).text(event.user_id);
-                $('.name', $eventViewer).text(event.name);
-                $('.ip', $eventViewer).text(event.ip.length ? event.ip : event.ipv6);
-                $('.time', $eventViewer).text(event.time);
-                $('.event', $eventViewer).text(event.event);
-                $('.desc', $eventViewer).html(event.desc ? event.desc : '');
+
+                
+                for (var k in event){
+                    if (event.hasOwnProperty(k)) {
+                        if (k == 'properties') {
+                            var json = JSON.parse(JSON.parse(event[k]));
+                            console.log(json);
+                            var str = JSON.stringify(json, undefined, 2);
+                            console.log(str);
+                            $('.' + k, $eventViewer).html(
+                                '<pre>' + str + '</pre>'
+                            );
+                        } else {
+                            $('.' + k, $eventViewer).text(event[k]);
+                        }
+                    }
+                }
             };
 
             //append the layout to the current view container
@@ -76,23 +70,28 @@ define([
                 filter: true,
                 rowSelection: true,
                 model: [{
+                    id: 'event_name',
+                    label: __('Event Name'),
+                    sortable: true,
+                    filterable: true
+                },{
+                    id: 'action',
+                    label: __('Action'),
+                    sortable: true,
+                    filterable: true
+                },{
                     id: 'user_id',
                     label: __('User ID'),
                     sortable: true,
                     filterable: true
                 }, {
-                    id: 'name',
-                    label: __('User Name'),
+                    id: 'user_role',
+                    label: __('User Role'),
                     sortable: true,
                     filterable: true
                 }, {
-                    id: 'event',
-                    label: __('Event'),
-                    sortable: true,
-                    filterable: true
-                }, {
-                    id: 'time',
-                    label: __('Time'),
+                    id: 'occurred',
+                    label: __('Occurred'),
                     sortable: true,
                     filterable: true
                 }],
