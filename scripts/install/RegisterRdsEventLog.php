@@ -53,11 +53,11 @@ class RegisterRdsEventLog extends common_ext_action_InstallAction implements Act
         $storage = new RdsStorage($persistenceId);
         $storage->createStorage();
 
-        $this->registerEvent(LoginEvent::class, [$this->getServiceManager()->get(EventLogService::SERVICE_ID), 'logEvent']);
+        $this->registerEvent(LoggerService::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
 
-        $this->registerEvent(DeliveryExecutionCreated::class, [Events::class, 'deliveryExecutionCreated']);
-        $this->registerEvent(DeliveryExecutionState::class, [Events::class, 'deliveryExecutionState']);
-        $this->registerEvent(QtiMoveEvent::class, [Events::class, 'qtiMoveEvent']);
+//        $this->registerEvent(DeliveryExecutionCreated::class, [Events::class, 'deliveryExecutionCreated']);
+//        $this->registerEvent(DeliveryExecutionState::class, [Events::class, 'deliveryExecutionState']);
+//        $this->registerEvent(QtiMoveEvent::class, [Events::class, 'qtiMoveEvent']);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Service'));
     }

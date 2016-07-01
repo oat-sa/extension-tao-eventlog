@@ -54,23 +54,26 @@ class RdsStorage implements StorageInterface
     }
 
     /**
-     * Writes event to db
-     * @param string $user_id
-     * @param string $delivery
-     * @param string $deliveryExecution
-     * @param string $event
-     * @return bool todo
-     *
-     * todo
-     * @internal param string $testTaker
+     * @param string $eventName
+     * @param string $currentAction
+     * @param string $userIdentifier
+     * @param string $userRole
+     * @param string $occurred
+     * @param array $data
+     * @return bool
      */
-    public function logEvent($user_id = '', $delivery = '', $deliveryExecution = '', $event = '')
+    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = [])
     {
-        $result = $this->getPersistence()->insert(self::TABLE_NAME, [
-            self::USER_ID => $user_id,
-            self::EVENT => $event,
-            self::TIME => date('Y-m-d H:i:s')
-        ]);
+        $result = $this->getPersistence()->insert(
+            self::TABLE_NAME, [
+                self::EVENT_NAME => $eventName,
+                self::ACTION => $currentAction,
+                self::USER_ID => $userIdentifier,
+                self::USER_ROLE => $userRole,
+                self::OCCURRED => $occurred,
+                self::PROPERTIES => json_encode($data)
+            ]
+        );
 
         $id = $this->getPersistence()->lastInsertId(self::TABLE_NAME);
 
@@ -110,20 +113,18 @@ class RdsStorage implements StorageInterface
             $tableLog->addOption('engine', 'MyISAM');
 
             $tableLog->addColumn(self::ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
+            $tableLog->addColumn(self::EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
+            $tableLog->addColumn(self::ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
             $tableLog->addColumn(self::USER_ID,     "string",   ["notnull" => true, "length" => 255, 'comment' => 'User identifier']);
-            $tableLog->addColumn(self::EVENT,       "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current event']);
-            $tableLog->addColumn(self::IPv4,        "integer",  ["notnull" => true, 'unsigned' => true, 'comment' => 'User ipv4']);
-            $tableLog->addColumn(self::IPv6,        "binary",   ["notnull" => true, "length" => 16, 'comment' => 'User ipv6']);
-            $tableLog->addColumn(self::TIME,        "datetime", ["notnull" => true]);
-            $tableLog->addColumn(self::DESCRIPTION, "text",     ["notnull" => true, 'comment' => 'Additional json data']);
+            $tableLog->addColumn(self::USER_ROLE,   "string",   ["notnull" => true, "length" => 255, 'comment' => 'User role']);
+            $tableLog->addColumn(self::OCCURRED,    "datetime", ["notnull" => true]);
+            $tableLog->addColumn(self::PROPERTIES,  "text",     ["notnull" => true, 'comment' => 'Event properties in json']);
 
             $tableLog->setPrimaryKey(array(self::ID));
+            $tableLog->addIndex([self::EVENT_NAME], 'idx_event_name');
             $tableLog->addIndex([self::USER_ID], 'idx_user_id');
-            $tableLog->addIndex([self::TIME], 'idx_time');
-            $tableLog->addIndex([self::EVENT], 'idx_event');
-            $tableLog->addIndex([self::IP], 'idx_ip');
-            $tableLog->addIndex([self::IPv6], 'idx_ipv6');
-
+            $tableLog->addIndex([self::USER_ID], 'idx_user_role');
+            $tableLog->addIndex([self::OCCURRED], 'idx_occurred');
         } catch (SchemaException $e) {
             \common_Logger::i('Database Schema for EventLog already up to date.');
             return false;
@@ -164,7 +165,7 @@ class RdsStorage implements StorageInterface
     // todo: move to config period for keeping log data
     private function cleanStorage($dateRange = '-90 days')
     {
-        $sql = "DELETE FROM " . self::TABLE_NAME . " WHERE " . self::TIME . " <= ?";
+        $sql = "DELETE FROM " . self::TABLE_NAME . " WHERE " . self::OCCURRED . " <= ?";
 
         $parameters = [date('Y-m-d H:i:s', strtotime($dateRange))];
         $this->getPersistence()->query($sql, $parameters);
