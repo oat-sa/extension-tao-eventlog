@@ -25,6 +25,8 @@ use common_ext_action_InstallAction;
 use common_report_Report;
 use oat\oatbox\action\Action;
 use oat\tao\model\event\LoginEvent;
+use oat\tao\model\event\LoginFailedEvent;
+use oat\tao\model\event\LoginSucceedEvent;
 use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionCreated;
 use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionState;
 use oat\taoEventLog\model\LoggerService;
@@ -53,7 +55,8 @@ class RegisterRdsEventLog extends common_ext_action_InstallAction implements Act
         $storage = new RdsStorage($persistenceId);
         $storage->createStorage();
 
-        $this->registerEvent(LoggerService::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
+        $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
 
 //        $this->registerEvent(DeliveryExecutionCreated::class, [Events::class, 'deliveryExecutionCreated']);
 //        $this->registerEvent(DeliveryExecutionState::class, [Events::class, 'deliveryExecutionState']);

@@ -22,9 +22,14 @@
 namespace oat\taoEventLog\model;
 
 use common_Logger;
+use common_session_Session;
+use common_session_SessionManager;
+use Context;
+use DateTime;
 use JsonSerializable;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
+use oat\oatbox\user\User;
 use oat\taoEventLog\model\storage\RdsStorage;
 
 /**
@@ -51,13 +56,36 @@ class LoggerService extends ConfigurableService
      */
     public function logEvent(Event $event)
     {
+        common_Logger::e(print_r($event, true));
+
         if (!is_subclass_of($event, JsonSerializable::class)) {
-            common_Logger::d('Event %s should implements JsonSerializable interface for to be logged by EventLog extension');
+            common_Logger::d(sprintf('Event "%s" should implements JsonSerializable interface for to be logged by EventLog extension', $event->getName()));
             return;
         }
 
-        // to be done
-        $this->getStorage()->log();
+        // get current action
+        $context = Context::getInstance();
+
+
+        common_Logger::d($context->getActionName());
+
+
+        /** @var common_session_Session $session */
+        $session = common_session_SessionManager::getSession();
+        /** @var User $currentUser */
+        $currentUser = $session->getUser();
+
+        common_Logger::e(print_r($currentUser, true));
+        common_Logger::e(print_r($currentUser->getIdentifier(), true));
+
+        $this->getStorage()->log(
+            $event->getName(),
+            '',
+            $currentUser->getIdentifier(),
+            join(',', $currentUser->getRoles()),
+            (new DateTime())->format(DateTime::ISO8601),
+            json_encode($event)
+        );
     }
 
     /**

@@ -122,18 +122,19 @@ class RdsStorage implements StorageInterface
             $tableLog = $schema->createTable(self::TABLE_NAME);
             $tableLog->addOption('engine', 'MyISAM');
 
-            $tableLog->addColumn(self::ID, "integer", ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
-            $tableLog->addColumn(self::EVENT_NAME, "string", ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
-            $tableLog->addColumn(self::ACTION, "string", ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
-            $tableLog->addColumn(self::USER_ID, "string", ["notnull" => true, "length" => 255, 'comment' => 'User identifier']);
-            $tableLog->addColumn(self::USER_ROLE, "string", ["notnull" => true, "length" => 255, 'comment' => 'User role']);
-            $tableLog->addColumn(self::OCCURRED, "datetime", ["notnull" => true]);
-            $tableLog->addColumn(self::PROPERTIES, "text", ["notnull" => true, 'comment' => 'Event properties in json']);
+            $tableLog->addColumn(self::ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
+            $tableLog->addColumn(self::EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
+            $tableLog->addColumn(self::ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
+            $tableLog->addColumn(self::USER_ID,     "string",   ["notnull" => false, "length" => 255, 'Default' => 'Anonymous', 'comment' => 'User identifier']);
+            $tableLog->addColumn(self::USER_ROLE,   "string",   ["notnull" => true, "length" => 255, 'comment' => 'User role']);
+            $tableLog->addColumn(self::OCCURRED,    "datetime", ["notnull" => true]);
+            $tableLog->addColumn(self::PROPERTIES,  "text",     ["notnull" => true, 'comment' => 'Event properties in json']);
 
             $tableLog->setPrimaryKey(array(self::ID));
             $tableLog->addIndex([self::EVENT_NAME], 'idx_event_name');
+            $tableLog->addIndex([self::ACTION], 'idx_action');
             $tableLog->addIndex([self::USER_ID], 'idx_user_id');
-            $tableLog->addIndex([self::USER_ID], 'idx_user_role');
+            $tableLog->addIndex([self::USER_ROLE], 'idx_user_role');
             $tableLog->addIndex([self::OCCURRED], 'idx_occurred');
         } catch (SchemaException $e) {
             \common_Logger::i('Database Schema for EventLog already up to date.');
