@@ -125,7 +125,7 @@ class RdsStorage implements StorageInterface
             $tableLog->addColumn(self::ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
             $tableLog->addColumn(self::EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
             $tableLog->addColumn(self::ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
-            $tableLog->addColumn(self::USER_ID,     "string",   ["notnull" => false, "length" => 255, 'Default' => 'Anonymous', 'comment' => 'User identifier']);
+            $tableLog->addColumn(self::USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
             $tableLog->addColumn(self::USER_ROLE,   "string",   ["notnull" => true, "length" => 255, 'comment' => 'User role']);
             $tableLog->addColumn(self::OCCURRED,    "datetime", ["notnull" => true]);
             $tableLog->addColumn(self::PROPERTIES,  "text",     ["notnull" => true, 'comment' => 'Event properties in json']);

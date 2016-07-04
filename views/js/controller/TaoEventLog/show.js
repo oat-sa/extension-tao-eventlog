@@ -82,9 +82,12 @@ define([
                     filterable: true
                 }, {
                     id: 'user_role',
-                    label: __('User Role'),
+                    label: __('User Roles'),
                     sortable: true,
-                    filterable: true
+                    filterable: true,
+                    transform: function(roles) {
+                        return roles.split(',').join('<br>');
+                    }
                 }, {
                     id: 'occurred',
                     label: __('Occurred'),
@@ -97,7 +100,8 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
-                        console.log(event);
+
+                        console.log(e, event);
 
                         updateEventDetails(event);
 

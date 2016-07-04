@@ -56,35 +56,27 @@ class LoggerService extends ConfigurableService
      */
     public function logEvent(Event $event)
     {
-        common_Logger::e(print_r($event, true));
-
         if (!is_subclass_of($event, JsonSerializable::class)) {
             common_Logger::d(sprintf('Event "%s" should implements JsonSerializable interface for to be logged by EventLog extension', $event->getName()));
             return;
         }
 
-        // get current action
+        /** @var Context $context */
         $context = Context::getInstance();
-
-
-        common_Logger::d($context->getActionName());
-
 
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
+
         /** @var User $currentUser */
         $currentUser = $session->getUser();
 
-        common_Logger::e(print_r($currentUser, true));
-        common_Logger::e(print_r($currentUser->getIdentifier(), true));
-
         $this->getStorage()->log(
             $event->getName(),
-            '',
+            $context->getRequest()->getRequestURI(),
             $currentUser->getIdentifier(),
             join(',', $currentUser->getRoles()),
             (new DateTime())->format(DateTime::ISO8601),
-            json_encode($event)
+            json_encode($event, JSON_PRETTY_PRINT)
         );
     }
 
