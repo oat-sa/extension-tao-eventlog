@@ -54,6 +54,10 @@ class TaoEventLog extends \tao_actions_CommonModule {
     {        
         $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
         $results = $loggerService->searchInstances($this->getRequestParameters());
+
+        array_walk($results['data'], function (&$row) {
+            $row['id'] = 'identifier-' . $row['id'];
+        });
         
         $results['page'] = $this->getRequestParameter('page');
         $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
