@@ -42,15 +42,11 @@ define([
             var $eventViewer = $('.event-viewer', $layout);
             
             var updateEventDetails = function updateEventDetails(event) {
-
-                
-                for (var k in event){
+                for (var k in event) {
                     if (event.hasOwnProperty(k)) {
                         if (k == 'properties') {
                             var json = JSON.parse(JSON.parse(event[k]));
-                            console.log(json);
                             var str = JSON.stringify(json, undefined, 2);
-                            console.log(str);
                             $('.' + k, $eventViewer).html(
                                 '<pre>' + str + '</pre>'
                             );
@@ -101,6 +97,8 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
+                        console.log(event);
+
                         updateEventDetails(event);
 
                         //the 1st time it comes hidden

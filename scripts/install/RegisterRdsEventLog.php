@@ -24,15 +24,10 @@ namespace oat\taoEventLog\scripts\install;
 use common_ext_action_InstallAction;
 use common_report_Report;
 use oat\oatbox\action\Action;
-use oat\tao\model\event\LoginEvent;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
-use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionCreated;
-use oat\taoDelivery\models\classes\execution\event\DeliveryExecutionState;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\storage\RdsStorage;
-use oat\taoMonitoring\model\TestTakerDeliveryLog\event\Events;
-use oat\taoQtiTest\models\event\QtiMoveEvent;
 
 /**
  * Class RegisterRdsEventLog
@@ -57,10 +52,6 @@ class RegisterRdsEventLog extends common_ext_action_InstallAction implements Act
 
         $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
         $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
-
-//        $this->registerEvent(DeliveryExecutionCreated::class, [Events::class, 'deliveryExecutionCreated']);
-//        $this->registerEvent(DeliveryExecutionState::class, [Events::class, 'deliveryExecutionState']);
-//        $this->registerEvent(QtiMoveEvent::class, [Events::class, 'qtiMoveEvent']);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Service'));
     }
