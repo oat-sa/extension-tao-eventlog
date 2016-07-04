@@ -100,9 +100,6 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
-
-                        console.log(e, event);
-
                         updateEventDetails(event);
 
                         //the 1st time it comes hidden
