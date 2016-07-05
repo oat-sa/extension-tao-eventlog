@@ -28,6 +28,7 @@ use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\StorageInterface;
 
 /**
  * Class RegisterRdsEventLog
@@ -43,12 +44,10 @@ class RegisterRdsEventLog extends common_ext_action_InstallAction implements Act
     {
         $persistenceId = count($params) > 0 ? reset($params) : 'default';
 
-        /** Register new service */
-        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([RdsStorage::OPTION_PERSISTENCE => $persistenceId]));
+        $this->registerService(StorageInterface::SERVICE_ID, new RdsStorage([StorageInterface::OPTION_PERSISTENCE => $persistenceId]));
+        $this->getServiceManager()->get(StorageInterface::SERVICE_ID)->createStorage();
 
-        /** @var RdsStorage $storage */
-        $storage = new RdsStorage($persistenceId);
-        $storage->createStorage();
+        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([LoggerService::OPTION_ROTATION_PERIOD => 'P90D']));
 
         $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
         $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);

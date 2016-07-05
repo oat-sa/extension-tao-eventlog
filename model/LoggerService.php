@@ -26,7 +26,9 @@ use common_session_Session;
 use common_session_SessionManager;
 use Context;
 use DateTime;
+use DateTimeImmutable;
 use JsonSerializable;
+use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\user\User;
@@ -39,6 +41,8 @@ use oat\taoEventLog\model\storage\RdsStorage;
 class LoggerService extends ConfigurableService
 {
     const SERVICE_ID = 'taoEventLog/logger';
+    
+    const OPTION_ROTATION_PERIOD = 'rotation_period';
 
     /** @var StorageInterface */
     private $storage;
@@ -81,19 +85,34 @@ class LoggerService extends ConfigurableService
     }
 
     /**
+     * @return mixed
+     */
+    public function rotate()
+    {
+        $period = new DateInterval($this->getOption(self::OPTION_ROTATION_PERIOD));
+        $beforeDate = (new DateTimeImmutable())->sub($period);
+        
+        return $this->getStorage()->removeOldLogEntries($beforeDate);
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function searchInstances(array $params = [])
+    {
+        return $this->getStorage()->searchInstances($params);
+    }
+
+    /**
      * @return RdsStorage|StorageInterface
      */
     private function getStorage()
     {
         if (!isset($this->storage)) {
-            $this->storage = new RdsStorage($this->getOption(RdsStorage::OPTION_PERSISTENCE));
+            $this->storage = new RdsStorage();
         }
 
         return $this->storage;
-    }
-    
-    public function searchInstances(array $params=[])
-    {
-        return $this->getStorage()->searchInstances($params);
     }
 }

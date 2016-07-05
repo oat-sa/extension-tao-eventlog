@@ -27,20 +27,18 @@ namespace oat\taoEventLog\model;
  */
 interface StorageInterface
 {
-    /** Fields */
-    const ID = 'id';
-    const EVENT_NAME = 'event_name';
-    const ACTION = 'action';
-    const USER_ID = 'user_id';
-    const USER_ROLE = 'user_role';
-    const OCCURRED = 'occurred';
-    const PROPERTIES = 'properties'; // json
+    const SERVICE_ID = 'taoEventLog/storage';
 
-    /**
-     * StorageInterface constructor.
-     * @param string
-     */
-    public function __construct($param = '');
+    const OPTION_PERSISTENCE = 'persistence';
+
+    const EVENT_LOG_TABLE_NAME = 'event_log';
+    const EVENT_LOG_ID = 'id';
+    const EVENT_LOG_EVENT_NAME = 'event_name';
+    const EVENT_LOG_ACTION = 'action';
+    const EVENT_LOG_USER_ID = 'user_id';
+    const EVENT_LOG_USER_ROLES = 'user_roles';
+    const EVENT_LOG_OCCURRED = 'occurred';
+    const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
      * Creates new log record
@@ -78,6 +76,6 @@ interface StorageInterface
      * list of the table columns
      * @return array
      */
-    public function tableColumns();
+    public static function tableColumns();
 
 }
