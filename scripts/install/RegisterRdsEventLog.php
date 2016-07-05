@@ -47,7 +47,10 @@ class RegisterRdsEventLog extends common_ext_action_InstallAction implements Act
         $this->registerService(StorageInterface::SERVICE_ID, new RdsStorage([StorageInterface::OPTION_PERSISTENCE => $persistenceId]));
         $this->getServiceManager()->get(StorageInterface::SERVICE_ID)->createStorage();
 
-        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([LoggerService::OPTION_ROTATION_PERIOD => 'P90D']));
+        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
+            LoggerService::OPTION_STORAGE => StorageInterface::SERVICE_ID,
+            LoggerService::OPTION_ROTATION_PERIOD => 'P90D'
+        ]));
 
         $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
         $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);

@@ -21,7 +21,6 @@
 
 namespace oat\taoEventLog\model;
 
-use common_Logger;
 use common_session_Session;
 use common_session_SessionManager;
 use Context;
@@ -31,6 +30,7 @@ use JsonSerializable;
 use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
+use oat\oatbox\service\ServiceManager;
 use oat\oatbox\user\User;
 use oat\taoEventLog\model\storage\RdsStorage;
 
@@ -41,7 +41,8 @@ use oat\taoEventLog\model\storage\RdsStorage;
 class LoggerService extends ConfigurableService
 {
     const SERVICE_ID = 'taoEventLog/logger';
-    
+
+    const OPTION_STORAGE = 'storage';
     const OPTION_ROTATION_PERIOD = 'rotation_period';
 
     /** @var StorageInterface */
@@ -106,8 +107,8 @@ class LoggerService extends ConfigurableService
      */
     private function getStorage()
     {
-        if (!isset($this->storage)) {
-            $this->storage = new RdsStorage();
+        if(is_null($this->storage)) {
+            $this->storage = ServiceManager::getServiceManager()->get($this->getOption(self::OPTION_STORAGE));
         }
 
         return $this->storage;
