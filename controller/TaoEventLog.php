@@ -20,7 +20,9 @@
  */
 
 namespace oat\taoEventLog\controller;
+
 use oat\taoEventLog\model\LoggerService;
+use tao_actions_CommonModule;
 
 /**
  * Sample controller
@@ -30,7 +32,7 @@ use oat\taoEventLog\model\LoggerService;
  * @license GPL-2.0
  *
  */
-class TaoEventLog extends \tao_actions_CommonModule {
+class TaoEventLog extends tao_actions_CommonModule {
 
     /**
      * A possible entry point to tao
@@ -44,6 +46,7 @@ class TaoEventLog extends \tao_actions_CommonModule {
      */
     public function search()
     {        
+        /** @var LoggerService $loggerService */
         $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
         $results = $loggerService->searchInstances($this->getRequestParameters());
 
