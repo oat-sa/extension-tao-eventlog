@@ -31,19 +31,11 @@ use oat\taoEventLog\model\LoggerService;
  *
  */
 class TaoEventLog extends \tao_actions_CommonModule {
-    
-    /**
-     * initialize the services
-     */
-    public function __construct(){
-        parent::__construct();
-    }
 
     /**
      * A possible entry point to tao
      */
     public function index() {
-        $this->setData('author', 'Open Assessment Technologies SA');
         $this->setView('TaoEventLog/log.tpl');
     }
 
