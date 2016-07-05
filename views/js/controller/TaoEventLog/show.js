@@ -81,12 +81,12 @@ define([
                     sortable: true,
                     filterable: true
                 }, {
-                    id: 'user_role',
+                    id: 'user_roles',
                     label: __('User Roles'),
                     sortable: true,
                     filterable: true,
                     transform: function(roles) {
-                        return roles.split(',').join('<br>');
+                        return roles ? roles.split(',').join('<br>') : '';
                     }
                 }, {
                     id: 'occurred',
