@@ -70,7 +70,7 @@ class RegisterRdsStorage extends common_ext_action_InstallAction implements Acti
             $table->addColumn(StorageInterface::EVENT_LOG_EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
             $table->addColumn(StorageInterface::EVENT_LOG_ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
             $table->addColumn(StorageInterface::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
-            $table->addColumn(StorageInterface::EVENT_LOG_USER_ROLES,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'User roles']);
+            $table->addColumn(StorageInterface::EVENT_LOG_USER_ROLES,  "string",   ["notnull" => true, "length" => 555, 'comment' => 'User roles']);
             $table->addColumn(StorageInterface::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
             $table->addColumn(StorageInterface::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
 

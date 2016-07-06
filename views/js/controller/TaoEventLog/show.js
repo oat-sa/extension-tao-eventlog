@@ -51,7 +51,7 @@ define([
                                 '<pre>' + str + '</pre>'
                             );
                         } else {
-                            $('.' + k, $eventViewer).text(event[k]);
+                            $('.' + k, $eventViewer).html(event[k]);
                         }
                     }
                 }
