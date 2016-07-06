@@ -39,8 +39,7 @@ return array(
     ],
     'uninstall' => [
         'php' => [
-            \oat\taoEventLog\scripts\uninstall\UnregisterLoggerService::class,
-            \oat\taoEventLog\scripts\uninstall\UnregisterRdsStorage::class
+            join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'UnregisterRdsStorage.php'])
         ]
     ],
     'routes' => array(

@@ -24,10 +24,12 @@ namespace oat\taoEventLog\scripts\uninstall;
 use common_ext_action_InstallAction;
 use common_Logger;
 use common_persistence_SqlPersistence;
+use common_report_Report;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\oatbox\action\Action;
+use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\StorageInterface;
 
 /**
@@ -41,13 +43,13 @@ class UnregisterRdsStorage extends common_ext_action_InstallAction implements Ac
      * @return \common_report_Report
      * @throws \common_exception_Error
      */
-    public function __invoke($params)
+    public function __invoke($params = '')
     {
-        if (!$this->getServiceManager()->has(StorageInterface::SERVICE_ID)) {
+        if (!ServiceManager::getServiceManager()->has(StorageInterface::SERVICE_ID)) {
             common_Logger::i(sprintf("Service '%s' not found and can not be dropped", StorageInterface::SERVICE_ID));
         }
 
-        $storageService = $this->getServiceManager()->get(StorageInterface::SERVICE_ID);
+        $storageService = ServiceManager::getServiceManager()->get(StorageInterface::SERVICE_ID);
 
         /** @var common_persistence_SqlPersistence $persistence */
         $persistence = $storageService->getPersistence();
@@ -62,7 +64,7 @@ class UnregisterRdsStorage extends common_ext_action_InstallAction implements Ac
         try {
             $schema->dropTable(StorageInterface::EVENT_LOG_TABLE_NAME);
         } catch (SchemaException $e) {
-            \common_Logger::i('Database Schema for EventLog can\'t be dropped.');
+            common_Logger::i('Database Schema for EventLog can\'t be dropped.');
         }
 
         $queries = $persistence->getPlatForm()->getMigrateSchemaSql($fromSchema, $schema);
@@ -70,8 +72,8 @@ class UnregisterRdsStorage extends common_ext_action_InstallAction implements Ac
             $persistence->exec($query);
         }
 
-        $this->registerService(StorageInterface::SERVICE_ID, null);
-
-        return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('Unregistered and dropped EventLog Rds Storage'));
+        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Unregistered and dropped EventLog Rds Storage'));
     }
 }
+
+call_user_func(new UnregisterRdsStorage());
