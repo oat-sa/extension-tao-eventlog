@@ -41,6 +41,12 @@ interface StorageInterface
     const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
+     * list of the table columns
+     * @return array
+     */
+    public static function tableColumns();
+
+    /**
      * Creates new log record
      * @param string $eventName
      * @param string $currentAction
@@ -53,29 +59,11 @@ interface StorageInterface
     public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
 
     /**
-     * Create storage
-     * @return string (table name or file path)
-     */
-    public function createStorage();
-
-    /**
-     * Destroy storage
-     * @return bool
-     */
-    public function dropStorage();
-
-    /**
      * Select
      * 
      * @param array $params
      * @return array
      */
     public function searchInstances(array $params = []);
-
-    /**
-     * list of the table columns
-     * @return array
-     */
-    public static function tableColumns();
-
+    
 }

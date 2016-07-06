@@ -33,10 +33,16 @@ return array(
     ),
     'install' => [
         'php' => [
-            oat\taoEventLog\scripts\install\RegisterRdsEventLog::class
+            \oat\taoEventLog\scripts\install\RegisterRdsStorage::class,
+            \oat\taoEventLog\scripts\install\RegisterLoggerService::class
         ]
     ],
-    'uninstall' => array(),
+    'uninstall' => [
+        'php' => [
+            \oat\taoEventLog\scripts\uninstall\UnregisterLoggerService::class,
+            \oat\taoEventLog\scripts\uninstall\UnregisterRdsStorage::class
+        ]
+    ],
     'routes' => array(
         '/taoEventLog' => 'oat\\taoEventLog\\controller'
     ),

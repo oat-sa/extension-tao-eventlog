@@ -21,14 +21,10 @@
 
 namespace oat\taoEventLog\model\storage;
 
-use common_Logger;
 use common_persistence_Manager;
 use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
 use DateTimeImmutable;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\SchemaException;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
 
@@ -78,78 +74,6 @@ class RdsStorage extends ConfigurableService implements StorageInterface
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
         return $this->getPersistence()->query($sql, [$beforeDate->format('Y-m-d H:i:s')]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function createStorage()
-    {
-        /** @var common_persistence_SqlPersistence $persistence */
-        $persistence = $this->getPersistence();
-        /** @var AbstractSchemaManager $schemaManager */
-        $schemaManager = $persistence->getDriver()->getSchemaManager();
-
-        /** @var Schema $schema */
-        $schema = $schemaManager->createSchema();
-        $fromSchema = clone $schema;
-
-        try {
-            $tableLog = $schema->createTable(self::EVENT_LOG_TABLE_NAME);
-            $tableLog->addOption('engine', 'MyISAM');
-
-            $tableLog->addColumn(self::EVENT_LOG_ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
-            $tableLog->addColumn(self::EVENT_LOG_EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
-            $tableLog->addColumn(self::EVENT_LOG_ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
-            $tableLog->addColumn(self::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
-            $tableLog->addColumn(self::EVENT_LOG_USER_ROLES,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'User roles']);
-            $tableLog->addColumn(self::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
-            $tableLog->addColumn(self::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
-
-            $tableLog->setPrimaryKey(array(self::EVENT_LOG_ID));
-            $tableLog->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');
-            $tableLog->addIndex([self::EVENT_LOG_ACTION], 'idx_action');
-            $tableLog->addIndex([self::EVENT_LOG_USER_ID], 'idx_user_id');
-            $tableLog->addIndex([self::EVENT_LOG_USER_ROLES], 'idx_user_roles');
-            $tableLog->addIndex([self::EVENT_LOG_OCCURRED], 'idx_occurred');
-        } catch (SchemaException $e) {
-            common_Logger::i('Database Schema for EventLog already up to date.');
-
-            return false;
-        }
-
-        $queries = $persistence->getPlatForm()->getMigrateSchemaSql($fromSchema, $schema);
-        foreach ($queries as $query) {
-            $persistence->exec($query);
-        }
-
-        return self::EVENT_LOG_TABLE_NAME;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function dropStorage()
-    {
-        /** @var common_persistence_SqlPersistence $persistence */
-        $persistence = $this->getPersistence();
-        
-        /** @var AbstractSchemaManager $schemaManager */
-        $schemaManager = $persistence->getDriver()->getSchemaManager();
-        
-        $schema = $schemaManager->createSchema();
-        $fromSchema = clone $schema;
-
-        try {
-            $schema->dropTable(self::EVENT_LOG_TABLE_NAME);
-        } catch (SchemaException $e) {
-            \common_Logger::i('Database Schema for EventLog can\'t be dropped.');
-        }
-
-        $queries = $persistence->getPlatForm()->getMigrateSchemaSql($fromSchema, $schema);
-        foreach ($queries as $query) {
-            $persistence->exec($query);
-        }
     }
 
     /**
