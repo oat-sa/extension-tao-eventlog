@@ -70,7 +70,7 @@ class RegisterRdsStorage extends common_ext_action_InstallAction implements Acti
             $table->addColumn(StorageInterface::EVENT_LOG_EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
             $table->addColumn(StorageInterface::EVENT_LOG_ACTION,      "string",   ["notnull" => true, "length" => 255, 'comment' => 'Current action']);
             $table->addColumn(StorageInterface::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
-            $table->addColumn(StorageInterface::EVENT_LOG_USER_ROLES,  "string",   ["notnull" => true, "length" => 555, 'comment' => 'User roles']);
+            $table->addColumn(StorageInterface::EVENT_LOG_USER_ROLES,  "text",     ["notnull" => true, 'default' => '', 'comment' => 'User roles']);
             $table->addColumn(StorageInterface::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
             $table->addColumn(StorageInterface::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
 
@@ -78,7 +78,6 @@ class RegisterRdsStorage extends common_ext_action_InstallAction implements Acti
             $table->addIndex([StorageInterface::EVENT_LOG_EVENT_NAME], 'idx_event_name');
             $table->addIndex([StorageInterface::EVENT_LOG_ACTION], 'idx_action');
             $table->addIndex([StorageInterface::EVENT_LOG_USER_ID], 'idx_user_id');
-            $table->addIndex([StorageInterface::EVENT_LOG_USER_ROLES], 'idx_user_roles');
             $table->addIndex([StorageInterface::EVENT_LOG_OCCURRED], 'idx_occurred');
         } catch (SchemaException $e) {
             common_Logger::i('Database Schema for EventLog already up to date.');

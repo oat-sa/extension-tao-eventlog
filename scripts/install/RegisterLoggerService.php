@@ -48,8 +48,8 @@ class RegisterLoggerService extends common_ext_action_InstallAction implements A
             LoggerService::OPTION_ROTATION_PERIOD => 'P90D'
         ]));
 
-        $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
-        $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
+        $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }

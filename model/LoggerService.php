@@ -45,21 +45,10 @@ class LoggerService extends ConfigurableService
     const OPTION_STORAGE = 'storage';
     const OPTION_ROTATION_PERIOD = 'rotation_period';
 
-    /** @var StorageInterface */
-    private $storage;
-
-    /**
-     * @param StorageInterface $storage
-     */
-    public function setStorage(StorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
-
     /**
      * @param Event $event
      */
-    public function logEvent(Event $event)
+    public static function logEvent(Event $event)
     {
         /** @var Context $context */
         $context = Context::getInstance();
@@ -72,7 +61,7 @@ class LoggerService extends ConfigurableService
 
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
 
-        $this->getStorage()->log(
+        static::getStorage()->log(
             $event->getName(),
             $context->getRequest()->getRequestURI(),
             $currentUser->getIdentifier(),
@@ -105,12 +94,10 @@ class LoggerService extends ConfigurableService
     /**
      * @return RdsStorage|StorageInterface
      */
-    private function getStorage()
+    private static function getStorage()
     {
-        if(is_null($this->storage)) {
-            $this->storage = ServiceManager::getServiceManager()->get($this->getOption(self::OPTION_STORAGE));
-        }
+        $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
 
-        return $this->storage;
+        return ServiceManager::getServiceManager()->get($storage);
     }
 }

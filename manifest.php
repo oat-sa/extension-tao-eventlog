@@ -39,6 +39,7 @@ return array(
     ],
     'uninstall' => [
         'php' => [
+            join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'DetachLoggerEvents.php']),
             join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'UnregisterRdsStorage.php'])
         ]
     ],
