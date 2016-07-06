@@ -245,7 +245,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     private function getPersistence()
     {
         if (is_null($this->persistence)) {
-            $this->persistence = common_persistence_Manager::getPersistence($this->getOption('persistence'));
+            $this->persistence = common_persistence_Manager::getPersistence($this->getOption(self::OPTION_PERSISTENCE));
         }
 
         return $this->persistence;
