@@ -14,24 +14,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2014 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
  *
  * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
 
-namespace oat\taoDelivery\scripts\update;
+namespace oat\taoEventLog\scripts\uninstall;
 
-use common_ext_ExtensionUpdater;
+use oat\oatbox\event\EventManager;
+use oat\oatbox\service\ServiceManager;
+use oat\tao\model\event\LoginFailedEvent;
+use oat\tao\model\event\LoginSucceedEvent;
+use oat\taoEventLog\model\LoggerService;
 
-class Updater extends common_ext_ExtensionUpdater
-{
-    /**
-     * @param $initialVersion
-     * @return string $versionUpdatedTo
-     * @internal param string $currentVersion
-     */
-    public function update($initialVersion)
-    {
-        // Implement update() method.
-    }
-}
+/** @var EventManager $eventManager */
+$eventManager = ServiceManager::getServiceManager()->get(EventManager::CONFIG_ID);
+
+$eventManager->detach(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
+
+ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);

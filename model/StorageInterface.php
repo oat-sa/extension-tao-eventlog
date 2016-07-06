@@ -27,20 +27,24 @@ namespace oat\taoEventLog\model;
  */
 interface StorageInterface
 {
-    /** Fields */
-    const ID = 'id';
-    const EVENT_NAME = 'event_name';
-    const ACTION = 'action';
-    const USER_ID = 'user_id';
-    const USER_ROLE = 'user_role';
-    const OCCURRED = 'occurred';
-    const PROPERTIES = 'properties'; // json
+    const SERVICE_ID = 'taoEventLog/storage';
+
+    const OPTION_PERSISTENCE = 'persistence';
+
+    const EVENT_LOG_TABLE_NAME = 'event_log';
+    const EVENT_LOG_ID = 'id';
+    const EVENT_LOG_EVENT_NAME = 'event_name';
+    const EVENT_LOG_ACTION = 'action';
+    const EVENT_LOG_USER_ID = 'user_id';
+    const EVENT_LOG_USER_ROLES = 'user_roles';
+    const EVENT_LOG_OCCURRED = 'occurred';
+    const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
-     * StorageInterface constructor.
-     * @param string
+     * list of the table columns
+     * @return array
      */
-    public function __construct($param = '');
+    public static function tableColumns();
 
     /**
      * Creates new log record
@@ -55,29 +59,11 @@ interface StorageInterface
     public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
 
     /**
-     * Create storage
-     * @return string (table name or file path)
-     */
-    public function createStorage();
-
-    /**
-     * Destroy storage
-     * @return bool
-     */
-    public function dropStorage();
-
-    /**
      * Select
      * 
      * @param array $params
      * @return array
      */
     public function searchInstances(array $params = []);
-
-    /**
-     * list of the table columns
-     * @return array
-     */
-    public function tableColumns();
-
+    
 }

@@ -21,38 +21,36 @@
 
 namespace oat\taoEventLog\scripts\install;
 
+use common_exception_Error;
 use common_ext_action_InstallAction;
 use common_report_Report;
 use oat\oatbox\action\Action;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\taoEventLog\model\LoggerService;
-use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\StorageInterface;
 
 /**
- * Class RegisterRdsEventLog
- * @package oat\taoMonitoring\scripts\install
+ * Class RegisterLoggerService
+ * @package oat\taoEventLog\scripts\install
  */
-class RegisterRdsEventLog extends common_ext_action_InstallAction implements Action
+class RegisterLoggerService extends common_ext_action_InstallAction implements Action
 {
     /**
      * @param $params
      * @return common_report_Report
+     * @throws common_exception_Error
      */
     public function __invoke($params)
     {
-        $persistenceId = count($params) > 0 ? reset($params) : 'default';
+        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
+            LoggerService::OPTION_STORAGE => StorageInterface::SERVICE_ID,
+            LoggerService::OPTION_ROTATION_PERIOD => 'P90D'
+        ]));
 
-        /** Register new service */
-        $this->registerService(LoggerService::SERVICE_ID, new LoggerService([RdsStorage::OPTION_PERSISTENCE => $persistenceId]));
+        $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
 
-        /** @var RdsStorage $storage */
-        $storage = new RdsStorage($persistenceId);
-        $storage->createStorage();
-
-        $this->registerEvent(LoginFailedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
-        $this->registerEvent(LoginSucceedEvent::class, [$this->getServiceManager()->get(LoggerService::SERVICE_ID), 'logEvent']);
-
-        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Service'));
+        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }
 }

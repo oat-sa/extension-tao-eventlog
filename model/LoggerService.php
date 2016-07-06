@@ -21,14 +21,16 @@
 
 namespace oat\taoEventLog\model;
 
-use common_Logger;
 use common_session_Session;
 use common_session_SessionManager;
 use Context;
 use DateTime;
+use DateTimeImmutable;
 use JsonSerializable;
+use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
+use oat\oatbox\service\ServiceManager;
 use oat\oatbox\user\User;
 use oat\taoEventLog\model\storage\RdsStorage;
 
@@ -40,27 +42,14 @@ class LoggerService extends ConfigurableService
 {
     const SERVICE_ID = 'taoEventLog/logger';
 
-    /** @var StorageInterface */
-    private $storage;
-
-    /**
-     * @param StorageInterface $storage
-     */
-    public function setStorage(StorageInterface $storage)
-    {
-        $this->storage = $storage;
-    }
+    const OPTION_STORAGE = 'storage';
+    const OPTION_ROTATION_PERIOD = 'rotation_period';
 
     /**
      * @param Event $event
      */
-    public function logEvent(Event $event)
+    public static function logEvent(Event $event)
     {
-        if (!is_subclass_of($event, JsonSerializable::class)) {
-            common_Logger::d(sprintf('Event "%s" should implements JsonSerializable interface for to be logged by EventLog extension', $event->getName()));
-            return;
-        }
-
         /** @var Context $context */
         $context = Context::getInstance();
 
@@ -70,30 +59,45 @@ class LoggerService extends ConfigurableService
         /** @var User $currentUser */
         $currentUser = $session->getUser();
 
-        $this->getStorage()->log(
+        $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
+
+        static::getStorage()->log(
             $event->getName(),
             $context->getRequest()->getRequestURI(),
             $currentUser->getIdentifier(),
             join(',', $currentUser->getRoles()),
             (new DateTime())->format(DateTime::ISO8601),
-            json_encode($event, JSON_PRETTY_PRINT)
+            json_encode($data, JSON_PRETTY_PRINT)
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function rotate()
+    {
+        $period = new DateInterval($this->getOption(self::OPTION_ROTATION_PERIOD));
+        $beforeDate = (new DateTimeImmutable())->sub($period);
+        
+        return $this->getStorage()->removeOldLogEntries($beforeDate);
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function searchInstances(array $params = [])
+    {
+        return $this->getStorage()->searchInstances($params);
     }
 
     /**
      * @return RdsStorage|StorageInterface
      */
-    private function getStorage()
+    private static function getStorage()
     {
-        if (!isset($this->storage)) {
-            $this->storage = new RdsStorage($this->getOption(RdsStorage::OPTION_PERSISTENCE));
-        }
+        $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
 
-        return $this->storage;
-    }
-    
-    public function searchInstances(array $params=[])
-    {
-        return $this->getStorage()->searchInstances($params);
+        return ServiceManager::getServiceManager()->get($storage);
     }
 }
