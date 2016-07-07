@@ -41,12 +41,6 @@ interface StorageInterface
     const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
-     * list of the table columns
-     * @return array
-     */
-    public static function tableColumns();
-
-    /**
      * Creates new log record
      * @param string $eventName
      * @param string $currentAction
