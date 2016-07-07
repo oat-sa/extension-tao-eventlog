@@ -1,3 +1,4 @@
+<?php
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,19 +14,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2014 (original work) Open Assessment Technologies SA;
  *
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
+ * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
 
-define(function () {
-    'use strict';
+namespace oat\taoDelivery\scripts\update;
 
-    return {
-        'TaoEventLog': {
-            'actions': {
-                'index': 'controller/TaoEventLog/show'
-            }
-        }
-    };
-});
+use common_ext_ExtensionUpdater;
+
+class Updater extends common_ext_ExtensionUpdater
+{
+    /**
+     * @param $initialVersion
+     * @return string $versionUpdatedTo
+     * @internal param string $currentVersion
+     */
+    public function update($initialVersion)
+    {
+        // Implement update() method.
+    }
+}

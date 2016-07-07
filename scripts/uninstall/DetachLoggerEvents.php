@@ -1,3 +1,4 @@
+<?php
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,17 +16,25 @@
  *
  * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
  *
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
+ * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
 
-define(function () {
-    'use strict';
+namespace oat\taoEventLog\scripts\uninstall;
 
-    return {
-        'TaoEventLog': {
-            'actions': {
-                'index': 'controller/TaoEventLog/show'
-            }
-        }
-    };
-});
+use oat\oatbox\event\EventManager;
+use oat\oatbox\service\ServiceManager;
+use oat\tao\model\event\LoginFailedEvent;
+use oat\tao\model\event\LoginSucceedEvent;
+use oat\taoEventLog\model\LoggerService;
+
+if (!ServiceManager::getServiceManager()->has(EventManager::CONFIG_ID)) {
+    return;
+}
+
+/** @var EventManager $eventManager */
+$eventManager = ServiceManager::getServiceManager()->get(EventManager::CONFIG_ID);
+
+$eventManager->detach(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
+
+ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
