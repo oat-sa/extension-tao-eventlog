@@ -24,7 +24,6 @@ namespace oat\taoEventLog\scripts\install;
 use common_exception_Error;
 use common_ext_action_InstallAction;
 use common_report_Report;
-use oat\oatbox\action\Action;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\taoEventLog\model\LoggerService;
@@ -34,7 +33,7 @@ use oat\taoEventLog\model\StorageInterface;
  * Class RegisterLoggerService
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterLoggerService extends common_ext_action_InstallAction implements Action
+class RegisterLoggerService extends common_ext_action_InstallAction
 {
     /**
      * @param $params

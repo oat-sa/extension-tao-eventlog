@@ -29,7 +29,6 @@ use common_report_Report;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
-use oat\oatbox\action\Action;
 use oat\taoEventLog\model\storage\RdsStorage;
 use oat\taoEventLog\model\StorageInterface;
 
@@ -37,7 +36,7 @@ use oat\taoEventLog\model\StorageInterface;
  * Class RegisterRdsStorage
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterRdsStorage extends common_ext_action_InstallAction implements Action
+class RegisterRdsStorage extends common_ext_action_InstallAction
 {
     /**
      * @param $params

@@ -27,6 +27,10 @@ use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\taoEventLog\model\LoggerService;
 
+if (!ServiceManager::getServiceManager()->has(EventManager::CONFIG_ID)) {
+    return;
+}
+
 /** @var EventManager $eventManager */
 $eventManager = ServiceManager::getServiceManager()->get(EventManager::CONFIG_ID);
 
