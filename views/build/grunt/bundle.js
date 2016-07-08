@@ -24,16 +24,6 @@ module.exports = function(grunt) {
     /**
      * Compile tao files into a bundle
      */
-    //requirejs.taoeventlogbundle = {
-    //    options: {
-    //        baseUrl : '../js',
-    //        mainConfigFile : './config/requirejs.build.js',
-    //        paths : paths,
-    //        include : ['lib/require'].concat(ext.getExtensionsControllers(['taoEventLog'])),
-    //        exclude : ['history'],
-    //        name: 'taoEventLog/controller/routes'
-    //    }
-    //};
     requirejs.taoeventlogbundle = {
         options: {
             baseUrl : '../js',
