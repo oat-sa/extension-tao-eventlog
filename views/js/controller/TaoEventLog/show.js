@@ -88,7 +88,12 @@ define([
                     sortable: true,
                     filterable: true,
                     transform: function(roles, row) {
-                        var list = roles ? roles.split(',') : [''];
+                        var list = [''];
+
+                        if (roles) {
+                            list = roles.split(',');
+                        }
+
                         row.roles_list = list.join('<br>');
 
                         return list.shift();
