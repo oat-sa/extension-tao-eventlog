@@ -50,6 +50,8 @@ define([
                             $('.' + k, $eventViewer).html(
                                 '<pre>' + str + '</pre>'
                             );
+                        } else if (k == 'user_roles') {
+                            $('.' + k, $eventViewer).html(event['roles_list']);
                         } else {
                             $('.' + k, $eventViewer).html(event[k]);
                         }
@@ -85,8 +87,16 @@ define([
                     label: __('User Roles'),
                     sortable: true,
                     filterable: true,
-                    transform: function(roles) {
-                        return roles ? roles.split(',').join('<br>') : '';
+                    transform: function(roles, row) {
+                        var list = [''];
+
+                        if (roles) {
+                            list = roles.split(',');
+                        }
+
+                        row.roles_list = list.join('<br>');
+
+                        return list.shift();
                     }
                 }, {
                     id: 'occurred',
