@@ -23,6 +23,7 @@ namespace oat\taoEventLog\controller;
 
 use oat\taoEventLog\model\LoggerService;
 use tao_actions_CommonModule;
+use tao_helpers_Uri;
 
 /**
  * Sample controller
@@ -50,10 +51,21 @@ class TaoEventLog extends tao_actions_CommonModule {
         $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
         $results = $loggerService->searchInstances($this->getRequestParameters());
 
+        // prettify data
         array_walk($results['data'], function (&$row) {
+            $row['raw'] = array_map(null, $row);
+
             $row['id'] = 'identifier-' . $row['id'];
+            $row['event_name'] = array_pop(explode('\\', $row['event_name']));
+            $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']);
+
+            $roles = explode(',', $row['user_roles']);
+            foreach ($roles as &$role) {
+                $role =  tao_helpers_Uri::getUniqueId($role);
+            }
+            $row['user_roles'] = join(', ', $roles);
         });
-        
+
         $results['page'] = $this->getRequestParameter('page');
         $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
         

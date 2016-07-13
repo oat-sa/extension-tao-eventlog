@@ -23,6 +23,7 @@ namespace oat\taoEventLog\model;
 
 use common_session_Session;
 use common_session_SessionManager;
+use common_user_User;
 use Context;
 use DateTime;
 use DateTimeImmutable;
@@ -31,7 +32,6 @@ use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
-use oat\oatbox\user\User;
 use oat\taoEventLog\model\storage\RdsStorage;
 
 /**
@@ -56,7 +56,7 @@ class LoggerService extends ConfigurableService
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
 
-        /** @var User $currentUser */
+        /** @var common_user_User $currentUser */
         $currentUser = $session->getUser();
 
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
@@ -65,7 +65,7 @@ class LoggerService extends ConfigurableService
             $event->getName(),
             $context->getRequest()->getRequestURI(),
             $currentUser->getIdentifier(),
-            join(',', $currentUser->getRoles()),
+            join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
             (new DateTime())->format(DateTime::ISO8601),
             json_encode($data, JSON_PRETTY_PRINT)
         );

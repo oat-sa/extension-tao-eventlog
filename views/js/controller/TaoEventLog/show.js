@@ -51,7 +51,7 @@ define([
                                 '<pre>' + str + '</pre>'
                             );
                         } else if (k == 'user_roles') {
-                            $('.' + k, $eventViewer).html(event['roles_list']);
+                            $('.' + k, $eventViewer).html(event['user_roles'].split(',').join('<br>'));
                         } else {
                             $('.' + k, $eventViewer).html(event[k]);
                         }
@@ -68,6 +68,12 @@ define([
                 filter: true,
                 rowSelection: true,
                 model: [{
+                    id: 'identifier',
+                    label: __('ID'),
+                    transform: function (id, row) {
+                        return row.raw.id;
+                    }
+                }, {
                     id: 'event_name',
                     label: __('Event Name'),
                     sortable: true,
@@ -86,18 +92,7 @@ define([
                     id: 'user_roles',
                     label: __('User Roles'),
                     sortable: true,
-                    filterable: true,
-                    transform: function(roles, row) {
-                        var list = [''];
-
-                        if (roles) {
-                            list = roles.split(',');
-                        }
-
-                        row.roles_list = list.join('<br>');
-
-                        return list.shift();
-                    }
+                    filterable: true
                 }, {
                     id: 'occurred',
                     label: __('Occurred'),
@@ -110,7 +105,7 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
-                        updateEventDetails(event);
+                        updateEventDetails(event.raw);
 
                         //the 1st time it comes hidden
                         $eventViewer.removeClass('hidden');

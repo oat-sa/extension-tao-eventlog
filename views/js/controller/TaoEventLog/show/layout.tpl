@@ -1,3 +1,6 @@
+<header class="section-header flex-container-full">
+    <h2>{{__ 'Log watcher'}}</h2>
+</header>
 <div class="log">
     <section class="log-browser">
         <div class="filters"></div>
