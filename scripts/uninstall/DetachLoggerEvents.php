@@ -25,6 +25,12 @@ use oat\oatbox\event\EventManager;
 use oat\oatbox\service\ServiceManager;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
+use oat\tao\model\event\RoleChangedEvent;
+use oat\tao\model\event\RoleCreatedEvent;
+use oat\tao\model\event\RoleRemovedEvent;
+use oat\tao\model\event\UserCreatedEvent;
+use oat\tao\model\event\UserRemovedEvent;
+use oat\tao\model\event\UserUpdatedEvent;
 use oat\taoEventLog\model\LoggerService;
 
 if (!ServiceManager::getServiceManager()->has(EventManager::CONFIG_ID)) {
@@ -36,5 +42,12 @@ $eventManager = ServiceManager::getServiceManager()->get(EventManager::CONFIG_ID
 
 $eventManager->detach(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(RoleCreatedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(RoleChangedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(UserCreatedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
+$eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
+
 
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);

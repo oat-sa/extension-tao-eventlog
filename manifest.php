@@ -22,15 +22,16 @@ return array(
     'label' => 'Test-taker Event Logging',
     'description' => 'The event logging system that catches and logs all actions of test-takers',
     'license' => 'GPL-2.0',
-    'version' => '0.1.0',
+    'version' => '0.1.1',
     'author' => 'Open Assessment Technologies SA',
     'requires' => array(
-        'tao' => '>=5.1.0'
+        'tao' => '>=5.3.0'
     ),
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => array(
         array('grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', array('ext' => 'taoEventLog')),
     ),
+    'update' => 'oat\\taoEventLog\\scripts\\update\\Updater',
     'install' => [
         'php' => [
             \oat\taoEventLog\scripts\install\RegisterRdsStorage::class,

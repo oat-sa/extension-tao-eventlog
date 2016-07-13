@@ -19,7 +19,7 @@
  * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
 
-namespace oat\taoDelivery\scripts\update;
+namespace oat\taoEventLog\scripts\update;
 
 use common_ext_ExtensionUpdater;
 
@@ -28,10 +28,9 @@ class Updater extends common_ext_ExtensionUpdater
     /**
      * @param $initialVersion
      * @return string $versionUpdatedTo
-     * @internal param string $currentVersion
      */
     public function update($initialVersion)
     {
-        // Implement update() method.
+        $this->skip('0.1.0', '0.1.1');
     }
 }
