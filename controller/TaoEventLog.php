@@ -21,6 +21,8 @@
 
 namespace oat\taoEventLog\controller;
 
+use oat\tao\model\export\implementation\CsvExporter;
+use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use oat\taoEventLog\model\LoggerService;
 use tao_actions_CommonModule;
 use tao_helpers_Uri;
@@ -33,7 +35,18 @@ use tao_helpers_Uri;
  * @license GPL-2.0
  *
  */
-class TaoEventLog extends tao_actions_CommonModule {
+class TaoEventLog extends tao_actions_CommonModule
+{
+    /** @var LoggerService */
+    private $loggerService;
+
+    /**
+     * TaoEventLog constructor.
+     */
+    public function __construct()
+    {
+        $this->loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+    }
 
     /**
      * A possible entry point to tao
@@ -46,10 +59,8 @@ class TaoEventLog extends tao_actions_CommonModule {
      * Load json data with results
      */
     public function search()
-    {        
-        /** @var LoggerService $loggerService */
-        $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
-        $results = $loggerService->searchInstances($this->getRequestParameters());
+    {
+        $results = $this->loggerService->searchInstances($this->getRequestParameters());
 
         // prettify data
         array_walk($results['data'], function (&$row) {
@@ -70,5 +81,19 @@ class TaoEventLog extends tao_actions_CommonModule {
         $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
         
         $this->returnJson($results, 200);
+    }
+
+    /**
+     * Export log entries from database to csv file
+     */
+    public function export()
+    {
+        $delimiter = $this->hasRequestParameter('field_delimiter') ? html_entity_decode($this->getRequestParameter('field_delimiter')) : ',';
+        $enclosure = $this->hasRequestParameter('field_encloser') ? html_entity_decode($this->getRequestParameter('field_encloser')) : '"';
+        $columnNames = $this->hasRequestParameter('first_row_column_names');
+        
+        $csvExporter = new CsvExporter((new LogEntryCsvExporter())->export());
+        setcookie('fileDownload', 'true', 0, '/');
+        $csvExporter->export($columnNames, true, $delimiter, $enclosure);
     }
 }

@@ -74,6 +74,8 @@ define([
             //set up the student list
             $eventList.datatable({
                 url: listUrl,
+                sortby: 'occurred',
+                sortorder: 'desc',
                 filter: true,
                 rowSelection: true,
                 model: [{
