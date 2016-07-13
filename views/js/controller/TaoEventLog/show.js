@@ -23,8 +23,9 @@ define([
     'i18n',
     'helpers',
     'ui/datatable',
-    'tpl!taoEventLog/controller/TaoEventLog/show/layout'
-], function ($, __, helpers, datatable, layoutTpl) {
+    'tpl!taoEventLog/controller/TaoEventLog/show/layout',
+    'taoEventLog/components/export/modalExporter'
+], function ($, __, helpers, datatable, layoutTpl, exporter) {
     'use strict';
 
     //the endpoints
@@ -40,6 +41,7 @@ define([
             var $layout = $(layoutTpl());
             var $eventList = $('.log-browser .log-table', $layout);
             var $eventViewer = $('.event-viewer', $layout);
+            var $exportLink = $('.js-export', $layout);
             
             var updateEventDetails = function updateEventDetails(event) {
                 for (var k in event) {
@@ -58,6 +60,13 @@ define([
                     }
                 }
             };
+            
+            $exportLink.on('click', function () {
+                exporter({
+                    title: __('Export Log Entries'),
+                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog')
+                });
+            });
 
             //append the layout to the current view container
             $('.content').append($layout);
