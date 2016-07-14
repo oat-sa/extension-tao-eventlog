@@ -50,7 +50,9 @@ class RegisterLoggerService extends common_ext_action_InstallAction
     {
         $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
             LoggerService::OPTION_STORAGE => StorageInterface::SERVICE_ID,
-            LoggerService::OPTION_ROTATION_PERIOD => 'P90D'
+            LoggerService::OPTION_ROTATION_PERIOD => 'P90D',
+            LoggerService::OPTION_EXPORTABLE_QUANTITY => 10000,
+            LoggerService::OPTION_EXPORTABLE_PERIOD => 'PT24H'
         ]));
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);

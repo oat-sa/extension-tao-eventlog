@@ -21,8 +21,13 @@
 
 namespace oat\taoEventLog\controller;
 
+use DateTime;
+use oat\tao\model\export\implementation\CsvExporter;
+use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use oat\taoEventLog\model\LoggerService;
 use tao_actions_CommonModule;
+use tao_helpers_Uri;
+use tao_helpers_Date;
 
 /**
  * Sample controller
@@ -32,7 +37,18 @@ use tao_actions_CommonModule;
  * @license GPL-2.0
  *
  */
-class TaoEventLog extends tao_actions_CommonModule {
+class TaoEventLog extends tao_actions_CommonModule
+{
+    /** @var LoggerService */
+    private $loggerService;
+
+    /**
+     * TaoEventLog constructor.
+     */
+    public function __construct()
+    {
+        $this->loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+    }
 
     /**
      * A possible entry point to tao
@@ -45,18 +61,50 @@ class TaoEventLog extends tao_actions_CommonModule {
      * Load json data with results
      */
     public function search()
-    {        
-        /** @var LoggerService $loggerService */
-        $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
-        $results = $loggerService->searchInstances($this->getRequestParameters());
+    {
+        $results = $this->loggerService->searchInstances($this->getRequestParameters());
 
+        // prettify data
         array_walk($results['data'], function (&$row) {
+            $row['raw'] = array_map(null, $row);
+
             $row['id'] = 'identifier-' . $row['id'];
+
+            $eventNameChunks = explode('\\', $row['event_name']);
+            $row['event_name'] = array_pop($eventNameChunks);
+            $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']);
+
+            $roles = explode(',', $row['user_roles']);
+            foreach ($roles as &$role) {
+                $role =  tao_helpers_Uri::getUniqueId($role);
+            }
+            $row['user_roles'] = join(', ', $roles);
+
+            $row['occurred'] = tao_helpers_Date::displayeDate((new DateTime($row['occurred']))->getTimestamp());
         });
-        
+
         $results['page'] = $this->getRequestParameter('page');
         $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
         
         $this->returnJson($results, 200);
+    }
+
+    /**
+     * Export log entries from database to csv file
+     */
+    public function export()
+    {
+        $delimiter = $this->hasRequestParameter('field_delimiter') ? html_entity_decode($this->getRequestParameter('field_delimiter')) : ',';
+        $enclosure = $this->hasRequestParameter('field_encloser') ? html_entity_decode($this->getRequestParameter('field_encloser')) : '"';
+        $columnNames = $this->hasRequestParameter('first_row_column_names');
+        
+        if (!$exported = (new LogEntryCsvExporter())->export()) {
+
+            return $this->returnJson(['message' => 'Not found exportable log entries. Please, check export configuration.'], 404);
+        }
+
+        $csvExporter = new CsvExporter($exported);
+        setcookie('fileDownload', 'true', 0, '/');
+        $csvExporter->export($columnNames, true, $delimiter, $enclosure);
     }
 }

@@ -1,6 +1,11 @@
 <div class="log">
     <section class="log-browser">
-        <div class="filters"></div>
+        <header>
+            <h2>{{__ 'Log watcher'}}</h2>
+            <div class="header-buttons">
+                <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
+            </div>
+        </header>
         <div class="log-table"></div>
     </section>
     <section class="event-viewer hidden">

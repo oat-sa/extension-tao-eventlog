@@ -23,8 +23,9 @@ define([
     'i18n',
     'helpers',
     'ui/datatable',
-    'tpl!taoEventLog/controller/TaoEventLog/show/layout'
-], function ($, __, helpers, datatable, layoutTpl) {
+    'tpl!taoEventLog/controller/TaoEventLog/show/layout',
+    'taoEventLog/components/export/modalExporter'
+], function ($, __, helpers, datatable, layoutTpl, exporter) {
     'use strict';
 
     //the endpoints
@@ -40,6 +41,7 @@ define([
             var $layout = $(layoutTpl());
             var $eventList = $('.log-browser .log-table', $layout);
             var $eventViewer = $('.event-viewer', $layout);
+            var $exportLink = $('.js-export', $layout);
             
             var updateEventDetails = function updateEventDetails(event) {
                 for (var k in event) {
@@ -51,13 +53,20 @@ define([
                                 '<pre>' + str + '</pre>'
                             );
                         } else if (k == 'user_roles') {
-                            $('.' + k, $eventViewer).html(event['roles_list']);
+                            $('.' + k, $eventViewer).html(event['user_roles'].split(',').join('<br>'));
                         } else {
                             $('.' + k, $eventViewer).html(event[k]);
                         }
                     }
                 }
             };
+            
+            $exportLink.on('click', function () {
+                exporter({
+                    title: __('Export Log Entries'),
+                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog')
+                });
+            });
 
             //append the layout to the current view container
             $('.content').append($layout);
@@ -65,9 +74,17 @@ define([
             //set up the student list
             $eventList.datatable({
                 url: listUrl,
+                sortby: 'occurred',
+                sortorder: 'desc',
                 filter: true,
                 rowSelection: true,
                 model: [{
+                    id: 'identifier',
+                    label: __('ID'),
+                    transform: function (id, row) {
+                        return row.raw.id;
+                    }
+                }, {
                     id: 'event_name',
                     label: __('Event Name'),
                     sortable: true,
@@ -87,16 +104,8 @@ define([
                     label: __('User Roles'),
                     sortable: true,
                     filterable: true,
-                    transform: function(roles, row) {
-                        var list = [''];
-
-                        if (roles) {
-                            list = roles.split(',');
-                        }
-
-                        row.roles_list = list.join('<br>');
-
-                        return list.shift();
+                    transform: function (roles) {
+                        return roles.split(', ').shift();
                     }
                 }, {
                     id: 'occurred',
@@ -110,7 +119,7 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
-                        updateEventDetails(event);
+                        updateEventDetails(event.raw);
 
                         //the 1st time it comes hidden
                         $eventViewer.removeClass('hidden');
