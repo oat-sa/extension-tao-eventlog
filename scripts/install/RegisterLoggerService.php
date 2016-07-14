@@ -26,6 +26,12 @@ use common_ext_action_InstallAction;
 use common_report_Report;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
+use oat\tao\model\event\RoleChangedEvent;
+use oat\tao\model\event\RoleCreatedEvent;
+use oat\tao\model\event\RoleRemovedEvent;
+use oat\tao\model\event\UserCreatedEvent;
+use oat\tao\model\event\UserRemovedEvent;
+use oat\tao\model\event\UserUpdatedEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 
@@ -49,6 +55,12 @@ class RegisterLoggerService extends common_ext_action_InstallAction
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(RoleCreatedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(RoleChangedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(UserCreatedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }
