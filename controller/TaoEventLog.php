@@ -21,11 +21,13 @@
 
 namespace oat\taoEventLog\controller;
 
+use DateTime;
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use oat\taoEventLog\model\LoggerService;
 use tao_actions_CommonModule;
 use tao_helpers_Uri;
+use tao_helpers_Date;
 
 /**
  * Sample controller
@@ -67,7 +69,9 @@ class TaoEventLog extends tao_actions_CommonModule
             $row['raw'] = array_map(null, $row);
 
             $row['id'] = 'identifier-' . $row['id'];
-            $row['event_name'] = array_pop(explode('\\', $row['event_name']));
+
+            $eventNameChunks = explode('\\', $row['event_name']);
+            $row['event_name'] = array_pop($eventNameChunks);
             $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']);
 
             $roles = explode(',', $row['user_roles']);
@@ -75,6 +79,8 @@ class TaoEventLog extends tao_actions_CommonModule
                 $role =  tao_helpers_Uri::getUniqueId($role);
             }
             $row['user_roles'] = join(', ', $roles);
+
+            $row['occurred'] = tao_helpers_Date::displayeDate((new DateTime($row['occurred']))->getTimestamp());
         });
 
         $results['page'] = $this->getRequestParameter('page');

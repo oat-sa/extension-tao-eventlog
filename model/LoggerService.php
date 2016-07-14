@@ -69,7 +69,7 @@ class LoggerService extends ConfigurableService
             $currentUser->getIdentifier(),
             join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
             (new DateTime())->format(DateTime::ISO8601),
-            json_encode($data, JSON_PRETTY_PRINT)
+            json_encode($data)
         );
     }
 
