@@ -21,10 +21,11 @@
 
 namespace oat\taoEventLog\model\export\implementation;
 
+use DateInterval;
+use DateTimeImmutable;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\export\Exporter;
 use oat\taoEventLog\model\LoggerService;
-use oat\taoEventLog\model\storage\RdsStorage;
 
 /**
  * Class LogEntryCsvExporter
@@ -49,6 +50,9 @@ class LogEntryCsvExporter implements Exporter
      */
     public function export(array $params = [])
     {
+        $params['rows'] = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
+        $params['till'] = (new DateTimeImmutable())->sub(new DateInterval($this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_PERIOD)));
+
         $data = $this->loggerService->searchInstances($params);
 
         return $data['data'];

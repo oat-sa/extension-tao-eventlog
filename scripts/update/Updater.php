@@ -22,7 +22,12 @@
 namespace oat\taoEventLog\scripts\update;
 
 use common_ext_ExtensionUpdater;
+use oat\taoEventLog\model\LoggerService;
 
+/**
+ * Class Updater
+ * @package oat\taoEventLog\scripts\update
+ */
 class Updater extends common_ext_ExtensionUpdater
 {
     /**
@@ -32,5 +37,18 @@ class Updater extends common_ext_ExtensionUpdater
     public function update($initialVersion)
     {
         $this->skip('0.1.0', '0.1.1');
+
+        if ($this->isVersion('0.1.1')) {
+            /** @var LoggerService $loggerService */
+            $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+            $currentConfig = $loggerService->getOptions();
+
+            $currentConfig[LoggerService::OPTION_EXPORTABLE_QUANTITY] = 10000;
+            $currentConfig[LoggerService::OPTION_EXPORTABLE_PERIOD] = 'PT24H';
+
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($currentConfig));
+
+            $this->setVersion('0.2.0');
+        }
     }
 }

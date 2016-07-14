@@ -24,6 +24,7 @@ namespace oat\taoEventLog\model\storage;
 use common_persistence_Manager;
 use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
+use DateTime;
 use DateTimeImmutable;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
@@ -34,6 +35,7 @@ use oat\taoEventLog\model\StorageInterface;
  */
 class RdsStorage extends ConfigurableService implements StorageInterface
 {
+    const DATETIME_FORMAT = 'Y-m-d H:i:s';
     /**
      * Persistence for DB
      * @var common_persistence_Persistence
@@ -73,7 +75,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     {
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        return $this->getPersistence()->query($sql, [$beforeDate->format('Y-m-d H:i:s')]);
+        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATETIME_FORMAT)]);
     }
 
     /**
@@ -92,16 +94,24 @@ class RdsStorage extends ConfigurableService implements StorageInterface
             $sql .= ' WHERE ' . current($params['filtercolumns']) . " LIKE ?";
             $parameters[] = '%' . $params['filterquery'] . '%';
         } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
-            $sql .= " WHERE "
+            $sql .= ' WHERE '
                 . self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
                 . self::EVENT_LOG_ACTION . " LIKE ? OR "
                 . self::EVENT_LOG_USER_ID . " LIKE ? OR "
-                . self::EVENT_LOG_USER_ROLES . " LIKE ?"
+                . self::EVENT_LOG_USER_ROLES . " LIKE ? "
             ;
             
             for ($i = 0; $i < 4; $i++) {
                 $parameters[] = '%' . $params['filterquery'] . '%';
             }
+        }
+
+        if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
+            if (mb_strpos($sql, 'WHERE') === false) {
+                $sql .= ' WHERE ';
+            }
+            $sql .= ' ' . self::EVENT_LOG_OCCURRED . " >= ? ";
+            $parameters[] = $params['till']->format(self::DATETIME_FORMAT);
         }
 
         $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
@@ -129,7 +139,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
         $sql .= ' LIMIT ? OFFSET ?';
         $parameters[] = $rows;
         $parameters[] = $page * $rows;
-        
+
         $stmt = $this->getPersistence()->query($sql, $parameters);
         
         $ret = [];

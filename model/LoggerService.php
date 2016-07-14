@@ -44,6 +44,8 @@ class LoggerService extends ConfigurableService
 
     const OPTION_STORAGE = 'storage';
     const OPTION_ROTATION_PERIOD = 'rotation_period';
+    const OPTION_EXPORTABLE_PERIOD = 'exportable_period';
+    const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
 
     /**
      * @param Event $event
