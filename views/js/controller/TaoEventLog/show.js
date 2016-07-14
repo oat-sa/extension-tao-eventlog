@@ -103,7 +103,10 @@ define([
                     id: 'user_roles',
                     label: __('User Roles'),
                     sortable: true,
-                    filterable: true
+                    filterable: true,
+                    transform: function (roles) {
+                        return roles.split(', ').shift();
+                    }
                 }, {
                     id: 'occurred',
                     label: __('Occurred'),
