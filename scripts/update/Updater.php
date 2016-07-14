@@ -22,6 +22,9 @@
 namespace oat\taoEventLog\scripts\update;
 
 use common_ext_ExtensionUpdater;
+use oat\funcAcl\model\event\AccessRightAddedEvent;
+use oat\funcAcl\model\event\AccessRightRemovedEvent;
+use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
 
 /**
@@ -49,6 +52,19 @@ class Updater extends common_ext_ExtensionUpdater
             $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($currentConfig));
 
             $this->setVersion('0.2.0');
+        }
+
+        if ($this->isVersion('0.2.0')) {
+
+            /** @var EventManager $eventManager */
+            $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+            $eventManager->attach(AccessRightAddedEvent::class, [LoggerService::class, 'logEvent']);
+            $eventManager->attach(AccessRightRemovedEvent::class, [LoggerService::class, 'logEvent']);
+
+            $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            $this->setVersion('0.2.1');
         }
     }
 }
