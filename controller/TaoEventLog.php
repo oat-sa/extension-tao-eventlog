@@ -92,7 +92,12 @@ class TaoEventLog extends tao_actions_CommonModule
         $enclosure = $this->hasRequestParameter('field_encloser') ? html_entity_decode($this->getRequestParameter('field_encloser')) : '"';
         $columnNames = $this->hasRequestParameter('first_row_column_names');
         
-        $csvExporter = new CsvExporter((new LogEntryCsvExporter())->export());
+        if (!$exported = (new LogEntryCsvExporter())->export()) {
+
+            return $this->returnJson(['message' => 'Not found exportable log entries. Please, check export configuration.'], 404);
+        }
+
+        $csvExporter = new CsvExporter($exported);
         setcookie('fileDownload', 'true', 0, '/');
         $csvExporter->export($columnNames, true, $delimiter, $enclosure);
     }

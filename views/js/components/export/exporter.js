@@ -69,7 +69,7 @@ define([
                         },
                         failCallback : function (jqXHR) {
                             loadingBar.stop();
-                            var response = $.parseJSON(jqXHR.responseText);
+                            var response = $.parseJSON($(jqXHR).text());
                             if (response) {
                                 feedback().error(new Error(response.message));
                             } else {
