@@ -1,26 +1,40 @@
 <div class="log">
-    <section class="log-browser">
-        <header>
-            <h2>{{__ 'Log watcher'}}</h2>
-            <div class="header-buttons">
-                <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
-            </div>
-        </header>
-        <div class="log-table"></div>
-    </section>
-    <section class="event-viewer hidden">
-        
-        <h2>{{__ "Event"}} #<span class="id"></span></h2>
-        
-        <ul class="list">
-            <li><strong>{{__ "Event Name"}}</strong>: <span class="event_name"></span></li>
-            <li><strong>{{__ "Action"}}</strong>: <span class="action"></span></li>
-            <li><strong>{{__ "User ID"}}</strong>: <span class="user_id"></span></li>
-            <li><strong>{{__ "User Roles"}}</strong>: <span class="user_roles"></span></li>
-            <li><strong>{{__ "Occurred"}}</strong>: <span class="occurred"></span></li>
-        </ul>
+    <div class="grid-row">
+        <div class="col-7">
+            <section class="log-browser">
+                <header>
+                    <h2>{{__ 'Log watcher'}}</h2>
+                    <div class="header-buttons">
+                        <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
+                    </div>
+                </header>
+                <div class="log-table"></div>
+            </section>
+        </div>
+        <div class="col-5">
+            <section class="event-viewer hidden">
+                <div class="grid-row">
+                    <div class="col-10">
+                        <h3>{{__ "Event"}} #<span class="id"></span></h3>
+                    </div>
+                </div>
 
-        <p><strong>{{__ "Properties"}}</strong>:</p>
-        <div class="code properties"></div>
-    </section>
+                {{#each dataTypes}}
+                
+                    <div class="grid-row">
+                        <div class="col-12">
+                            <strong>{{title}}</strong>
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="col-10 desc">
+                            <span class="{{key}}"></span>
+                        </div>
+                    </div>
+
+                {{/each}}
+
+            </section>
+        </div>
+    </div>
 </div>

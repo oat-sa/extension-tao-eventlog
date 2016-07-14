@@ -38,7 +38,18 @@ define([
          */
         start: function start() {
 
-            var $layout = $(layoutTpl());
+            var data = {
+                dataTypes: [
+                    { key: 'event_name', title: __('Event Name') },
+                    { key: 'action', title: __('Action') },
+                    { key: 'user_id', title: __('User ID') },
+                    { key: 'user_roles', title: __('User Roles') },
+                    { key: 'occurred', title: __('Occurred') },
+                    { key: 'properties', title: __('Properties') }
+                ]
+            };
+            
+            var $layout = $(layoutTpl(data));
             var $eventList = $('.log-browser .log-table', $layout);
             var $eventViewer = $('.event-viewer', $layout);
             var $exportLink = $('.js-export', $layout);

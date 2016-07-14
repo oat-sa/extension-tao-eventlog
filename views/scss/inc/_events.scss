@@ -1,38 +1,37 @@
 .section-container .content-block {
   margin: 0;
-  padding: 0 0 0 50px;
-  .log {
-    display: flex;
-    flex-flow: nowrap;
-    justify-content: space-between;
-
-    .log-browser, .event-viewer {
-      flex-basis: 49.5%;
-      position: relative;
-    }
-
-    .log-browser {
-      .search-events {
-        margin-bottom: 20px;
-        label {
-          float: right;
+  .content {
+    width: 100%;
+    .log {
+      .grid-row {
+        width: 100%;
+      }
+      .log-browser {
+        .search-events {
+          margin-bottom: 20px;
+          label {
+            float: right;
+          }
+        }
+        .log-table table td {
+          word-wrap: break-word;
+          word-break: break-all;
         }
       }
-    }
-    
-    .event-viewer {
-      margin-left: 20px;
-      
-      ul.list {
-        list-style: none;
-        padding-left: 0;
-        li {
-          padding-bottom: 5px;
+
+      .event-viewer {
+        margin-left: 20px;
+
+        h3 {
+          background-color: $uiClickableDefaultBg;
+          padding: 5px 0 5px 15px;
         }
-      }
-      
-      b {
-        font-size: 1.2em;
+
+        .desc {
+          padding-left: 20px;
+          word-wrap: break-word;
+          word-break: break-all;
+        }
       }
     }
   }
