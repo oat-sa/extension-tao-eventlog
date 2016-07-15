@@ -49,5 +49,11 @@ $eventManager->detach(UserCreatedEvent::class, [LoggerService::class, 'logEvent'
 $eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
+if (\common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')) {
+    $eventManager->detach(\oat\taoDeliveryRdf\model\event\DeliveryCreatedEvent::class, [LoggerService::class, 'logEvent']);
+    $eventManager->detach(\oat\taoDeliveryRdf\model\event\DeliveryRemovedEvent::class, [LoggerService::class, 'logEvent']);
+    $eventManager->detach(\oat\taoDeliveryRdf\model\event\DeliveryUpdatedEvent::class, [LoggerService::class, 'logEvent']);
+}
+
 
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
