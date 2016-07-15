@@ -87,5 +87,34 @@ class Updater extends common_ext_ExtensionUpdater
 
             $this->setVersion('0.3.2');
         }
+
+        if ($this->isVersion('0.3.2')) {
+
+
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
+                /** @var EventManager $eventManager */
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
+
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            }
+
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            }
+
+            $this->setVersion('0.3.3');
+        }
     }
 }

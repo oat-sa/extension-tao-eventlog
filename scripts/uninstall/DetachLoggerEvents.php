@@ -21,6 +21,7 @@
 
 namespace oat\taoEventLog\scripts\uninstall;
 
+use common_ext_ExtensionsManager;
 use oat\oatbox\event\EventManager;
 use oat\oatbox\service\ServiceManager;
 use oat\tao\model\event\LoginFailedEvent;
@@ -50,16 +51,30 @@ $eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent'
 $eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
 
-if (\common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
     $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
 }
 
 
-if (\common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')) {
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')) {
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+}
+
+
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
+}
+
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
+    $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
 }
 
 
