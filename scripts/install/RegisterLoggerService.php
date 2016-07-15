@@ -23,6 +23,7 @@ namespace oat\taoEventLog\scripts\install;
 
 use common_exception_Error;
 use common_ext_action_InstallAction;
+use common_ext_ExtensionsManager;
 use common_report_Report;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
@@ -63,6 +64,15 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         $this->registerEvent(UserCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
+
+
+        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
+        ) {
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+        }
+
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }
