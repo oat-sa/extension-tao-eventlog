@@ -50,27 +50,15 @@ $eventManager->detach(UserCreatedEvent::class, [LoggerService::class, 'logEvent'
 $eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
-
 if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
     $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
 }
 
-
 if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')) {
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
-}
-
-if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
 }
 
 if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
@@ -85,6 +73,16 @@ if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
 if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
     $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+}
+
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
 }
 
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);

@@ -142,13 +142,13 @@ class Updater extends common_ext_ExtensionUpdater
                 /** @var EventManager $eventManager */
                 $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
-                $eventManager->attach('oat\\funcAcl\\model\\event\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
 
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
             }

@@ -94,13 +94,13 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         }
 
         if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
         }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
