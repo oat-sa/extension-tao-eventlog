@@ -63,14 +63,19 @@ class LoggerService extends ConfigurableService
 
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
 
-        static::getStorage()->log(
-            $event->getName(),
-            $context->getRequest()->getRequestURI(),
-            $currentUser->getIdentifier(),
-            join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
-            (new DateTime())->format(DateTime::ISO8601),
-            json_encode($data)
-        );
+        try {
+            static::getStorage()->log(
+                $event->getName(),
+                $context->getRequest()->getRequestURI(),
+                $currentUser->getIdentifier(),
+                join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
+                (new DateTime())->format(DateTime::ISO8601),
+                json_encode($data)
+            );
+        } catch (\Exception $e) {
+            \common_Logger::e('Error logging to DB ' . $e->getMessage());
+        }
+
     }
 
     /**
