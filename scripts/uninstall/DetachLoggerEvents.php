@@ -70,6 +70,7 @@ if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
     $eventManager->detach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
 }
 
 if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {

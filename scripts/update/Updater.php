@@ -101,6 +101,7 @@ class Updater extends common_ext_ExtensionUpdater
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
 
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
 
