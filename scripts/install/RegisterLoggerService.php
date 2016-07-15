@@ -23,9 +23,8 @@ namespace oat\taoEventLog\scripts\install;
 
 use common_exception_Error;
 use common_ext_action_InstallAction;
+use common_ext_ExtensionsManager;
 use common_report_Report;
-use oat\funcAcl\model\event\AccessRightAddedEvent;
-use oat\funcAcl\model\event\AccessRightRemovedEvent;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\tao\model\event\RoleChangedEvent;
@@ -65,8 +64,11 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         $this->registerEvent(UserCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
-        $this->registerEvent(AccessRightAddedEvent::class,   [LoggerService::class, 'logEvent']);
-        $this->registerEvent(AccessRightRemovedEvent::class, [LoggerService::class, 'logEvent']);
+
+        if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
+            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
+        }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }

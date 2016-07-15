@@ -49,5 +49,7 @@ $eventManager->detach(UserCreatedEvent::class, [LoggerService::class, 'logEvent'
 $eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
+$eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
+$eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
 
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
