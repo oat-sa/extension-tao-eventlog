@@ -49,6 +49,13 @@ $eventManager->detach(UserCreatedEvent::class, [LoggerService::class, 'logEvent'
 $eventManager->detach(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
+
+if (\common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
+    $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
+}
+
+
 if (\common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')) {
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);

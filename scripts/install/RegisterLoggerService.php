@@ -57,7 +57,7 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         ]));
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
-        $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class,[LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleChangedEvent::class, [LoggerService::class, 'logEvent']);
@@ -73,6 +73,11 @@ class RegisterLoggerService extends common_ext_action_InstallAction
             $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
         }
 
+
+        if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
+            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
+        }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
     }
