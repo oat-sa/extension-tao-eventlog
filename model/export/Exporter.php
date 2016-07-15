@@ -1,3 +1,4 @@
+<?php
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,17 +16,19 @@
  *
  * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
  *
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
+ * @author Ivan klimchuk <klimchuk@1pt.com>
  */
 
-define(function () {
-    'use strict';
+namespace oat\taoEventLog\model\export;
 
-    return {
-        'TaoEventLog': {
-            'actions': {
-                'index': 'controller/TaoEventLog/show'
-            }
-        }
-    };
-});
+/**
+ * Interface Exporter
+ * @package oat\taoEventLog\model\export
+ */
+interface Exporter
+{
+    /**
+     * @return mixed
+     */
+    public function export();
+}
