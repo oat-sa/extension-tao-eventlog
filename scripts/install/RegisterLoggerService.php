@@ -79,7 +79,6 @@ class RegisterLoggerService extends common_ext_action_InstallAction
             $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
         }
 
-
         if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
             $this->registerEvent('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
@@ -92,6 +91,16 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
             $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+        }
+
+        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\funcAcl\\model\\event\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
         }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
