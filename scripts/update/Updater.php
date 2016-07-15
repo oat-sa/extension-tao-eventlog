@@ -72,9 +72,7 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('0.3.1');
         }
 
-
         if ($this->isVersion('0.3.1')) {
-
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
                 /** @var EventManager $eventManager */
@@ -90,7 +88,6 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('0.3.2')) {
-
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
                 /** @var EventManager $eventManager */
@@ -131,11 +128,32 @@ class Updater extends common_ext_ExtensionUpdater
             $tableResults->changeColumn(StorageInterface::EVENT_LOG_ACTION, ["length" => 1000]);
 
             $queries = $persistence->getPlatform()->getMigrateSchemaSql($fromSchema, $schema);
+
             foreach ($queries as $query) {
                 $persistence->exec($query);
             }
 
             $this->setVersion('0.3.3');
+        }
+
+        if ($this->isVersion('0.3.3')) {
+
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
+                /** @var EventManager $eventManager */
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
+
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+            }
+
+            $this->setVersion('0.3.4');
         }
     }
 }
