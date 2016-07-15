@@ -65,6 +65,8 @@ class Updater extends common_ext_ExtensionUpdater
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
             }
             $this->setVersion('0.3.1');
         }
