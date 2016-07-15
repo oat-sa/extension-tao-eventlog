@@ -25,6 +25,7 @@ use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\StorageInterface;
 
 /**
  * Class Updater
@@ -86,6 +87,55 @@ class Updater extends common_ext_ExtensionUpdater
             }
 
             $this->setVersion('0.3.2');
+        }
+
+        if ($this->isVersion('0.3.2')) {
+
+
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
+                /** @var EventManager $eventManager */
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
+
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            }
+
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            }
+
+            $storageService = $this->getServiceManager()->get(StorageInterface::SERVICE_ID);
+
+            /** @var \common_persistence_SqlPersistence $persistence */
+            $persistence = $storageService->getPersistence();
+
+            $schemaManager = $persistence->getDriver()->getSchemaManager();
+            $schema = $schemaManager->createSchema();
+            $fromSchema = clone $schema;
+
+            /** @var \Doctrine\DBAL\Schema\Table $tableResults */
+            $tableResults = $schema->getTable(StorageInterface::EVENT_LOG_TABLE_NAME);
+
+            $tableResults->changeColumn(StorageInterface::EVENT_LOG_ACTION, ["length" => 1000]);
+
+            $queries = $persistence->getPlatform()->getMigrateSchemaSql($fromSchema, $schema);
+            foreach ($queries as $query) {
+                $persistence->exec($query);
+            }
+
+            $this->setVersion('0.3.3');
         }
     }
 }
