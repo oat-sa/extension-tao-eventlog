@@ -65,6 +65,15 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         $this->registerEvent(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
+
+        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
+        ) {
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+        }
+
+
         if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
             $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
