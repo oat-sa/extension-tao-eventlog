@@ -23,6 +23,7 @@ namespace oat\taoEventLog\scripts\update;
 
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
+use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
 
 /**
@@ -58,9 +59,12 @@ class Updater extends common_ext_ExtensionUpdater
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
             ) {
-                $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
-                $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
-                $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+                /** @var EventManager $eventManager */
+                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+                $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
             }
             $this->setVersion('0.3.1');
         }
