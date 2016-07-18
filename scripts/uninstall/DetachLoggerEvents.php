@@ -85,4 +85,14 @@ if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker'))
     $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
 }
 
+if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemExportEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemImportEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemCreatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemUpdatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
+}
+
+
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);

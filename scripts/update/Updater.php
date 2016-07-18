@@ -41,6 +41,10 @@ class Updater extends common_ext_ExtensionUpdater
     {
         $this->skip('0.1.0', '0.1.1');
 
+        /** @var EventManager $eventManager */
+        $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
+
+
         if ($this->isVersion('0.1.1')) {
             /** @var LoggerService $loggerService */
             $loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
@@ -60,9 +64,6 @@ class Updater extends common_ext_ExtensionUpdater
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
             ) {
-                /** @var EventManager $eventManager */
-                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
-
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
@@ -75,8 +76,6 @@ class Updater extends common_ext_ExtensionUpdater
         if ($this->isVersion('0.3.1')) {
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
-                /** @var EventManager $eventManager */
-                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
                 $eventManager->attach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
@@ -90,8 +89,6 @@ class Updater extends common_ext_ExtensionUpdater
         if ($this->isVersion('0.3.2')) {
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
-                /** @var EventManager $eventManager */
-                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
@@ -105,7 +102,6 @@ class Updater extends common_ext_ExtensionUpdater
             }
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
-                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
                 $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
@@ -139,8 +135,6 @@ class Updater extends common_ext_ExtensionUpdater
         if ($this->isVersion('0.3.3')) {
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
-                /** @var EventManager $eventManager */
-                $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
 
                 $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
@@ -155,5 +149,21 @@ class Updater extends common_ext_ExtensionUpdater
 
             $this->setVersion('0.3.4');
         }
+
+        if ($this->isVersion('0.3.4')) {
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemExportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemImportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemCreatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemUpdatedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemRemovedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->attach('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
+
+                $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+            }
+            $this->setVersion('0.4.0');
+
+        }
+
     }
 }
