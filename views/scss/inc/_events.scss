@@ -16,6 +16,10 @@
         .log-table table td {
           word-wrap: break-word;
           word-break: break-all;
+          &:first-child {
+            word-wrap: normal;
+            word-break: normal;
+          }
         }
       }
 
