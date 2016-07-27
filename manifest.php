@@ -25,7 +25,7 @@ return array(
     'version' => '0.5.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => array(
-        'tao' => '>=5.10.3'
+        'tao' => '>=6.3.0'
     ),
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => array(

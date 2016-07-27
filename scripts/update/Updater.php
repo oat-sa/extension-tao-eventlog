@@ -168,7 +168,7 @@ class Updater extends common_ext_ExtensionUpdater
 
         if ($this->isVersion('0.4.0')) {
 
-            $eventManager->attach(LoggableEvent::class, [LoggerService::class, 'logEvent']);
+            $eventManager->attach('oat\\tao\\model\\event\\LoggableEvent', [LoggerService::class, 'logEvent']);
             $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
 
             $this->setVersion('0.5.0');
