@@ -24,6 +24,7 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
+use oat\tao\model\event\LoggableEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 
@@ -43,7 +44,6 @@ class Updater extends common_ext_ExtensionUpdater
 
         /** @var EventManager $eventManager */
         $eventManager = $this->getServiceManager()->get(EventManager::CONFIG_ID);
-
 
         if ($this->isVersion('0.1.1')) {
             /** @var LoggerService $loggerService */
@@ -151,6 +151,7 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('0.3.4')) {
+
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
                 $eventManager->attach('oat\\taoItems\\model\\event\\ItemExportEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoItems\\model\\event\\ItemImportEvent', [LoggerService::class, 'logEvent']);
@@ -161,8 +162,16 @@ class Updater extends common_ext_ExtensionUpdater
 
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
             }
-            $this->setVersion('0.4.0');
 
+            $this->setVersion('0.4.0');
+        }
+
+        if ($this->isVersion('0.4.0')) {
+
+            $eventManager->attach(LoggableEvent::class, [LoggerService::class, 'logEvent']);
+            $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+
+            $this->setVersion('0.5.0');
         }
 
     }
