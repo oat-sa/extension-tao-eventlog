@@ -24,6 +24,7 @@ namespace oat\taoEventLog\scripts\uninstall;
 use common_ext_ExtensionsManager;
 use oat\oatbox\event\EventManager;
 use oat\oatbox\service\ServiceManager;
+use oat\tao\model\event\LoggableEvent;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\tao\model\event\RoleChangedEvent;
@@ -41,6 +42,7 @@ if (!ServiceManager::getServiceManager()->has(EventManager::CONFIG_ID)) {
 /** @var EventManager $eventManager */
 $eventManager = ServiceManager::getServiceManager()->get(EventManager::CONFIG_ID);
 
+$eventManager->detach(LoggableEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
 $eventManager->detach(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
@@ -93,6 +95,5 @@ if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
     $eventManager->detach('oat\\taoItems\\model\\event\\ItemRemovedEvent', [LoggerService::class, 'logEvent']);
     $eventManager->detach('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
 }
-
 
 ServiceManager::getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
