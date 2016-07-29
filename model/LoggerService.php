@@ -52,8 +52,9 @@ class LoggerService extends ConfigurableService
      */
     public static function logEvent(Event $event)
     {
-        /** @var Context $context */
-        $context = Context::getInstance();
+        $action = 'cli' === php_sapi_name()
+            ? $_SERVER['PHP_SELF']
+            : Context::getInstance()->getRequest()->getRequestURI();
 
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
@@ -66,7 +67,7 @@ class LoggerService extends ConfigurableService
         try {
             static::getStorage()->log(
                 $event->getName(),
-                $context->getRequest()->getRequestURI(),
+                $action,
                 $currentUser->getIdentifier(),
                 join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
                 (new DateTime())->format(DateTime::ISO8601),
