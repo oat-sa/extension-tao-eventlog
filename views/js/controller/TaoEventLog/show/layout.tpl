@@ -8,6 +8,7 @@
                         <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
                     </div>
                 </header>
+                <div class="log-table-filters"></div>
                 <div class="log-table"></div>
             </section>
         </div>

@@ -1,3 +1,27 @@
+/*Date picker should be above top menu*/
+.ui-datepicker {
+  z-index: 8000 !important;
+}
+
+/*Default datatable filter is overkill*/
+.datatable-wrapper>.filter {
+  display: none;
+}
+
+.log-table-filters {
+  margin: 30px 0 15px 0;
+
+  border: 1px $uiGeneralContentBorder solid;
+  background: $canvas;
+  padding: 30px 0 20px 30px;
+  @include simple-border();
+  max-width: 500px;
+
+  .date-range input {
+    min-width: 100px;
+  }
+}
+
 .section-container .content-block {
   margin: 0;
   .content {
@@ -13,12 +37,15 @@
             float: right;
           }
         }
-        .log-table table td {
-          word-wrap: break-word;
-          word-break: break-all;
-          &:first-child {
-            word-wrap: normal;
-            word-break: normal;
+        .log-table {
+
+          table td {
+            word-wrap: break-word;
+            word-break: break-all;
+            &:first-child, &:last-child {
+              word-wrap: normal;
+              word-break: normal;
+            }
           }
         }
       }

@@ -24,8 +24,10 @@ define([
     'helpers',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
-    'taoEventLog/components/export/modalExporter'
-], function ($, __, helpers, datatable, layoutTpl, exporter) {
+    'tpl!taoEventLog/controller/TaoEventLog/show/filters',
+    'taoEventLog/components/export/modalExporter',
+    'ui/dateRange'
+], function ($, __, helpers, datatable, layoutTpl, filtersTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
@@ -40,20 +42,51 @@ define([
 
             var data = {
                 dataTypes: [
-                    { key: 'event_name', title: __('Event Name') },
-                    { key: 'action', title: __('Action') },
-                    { key: 'user_id', title: __('User ID') },
-                    { key: 'user_roles', title: __('User Roles') },
-                    { key: 'occurred', title: __('Occurred') },
-                    { key: 'properties', title: __('Properties') }
+                    {key: 'event_name', title: __('Event Name')},
+                    {key: 'action', title: __('Action')},
+                    {key: 'user_id', title: __('User ID')},
+                    {key: 'user_roles', title: __('User Roles')},
+                    {key: 'occurred', title: __('Occurred')},
+                    {key: 'properties', title: __('Properties')}
                 ]
             };
-            
+
             var $layout = $(layoutTpl(data));
+            var $eventFilter = $('.log-browser .log-table-filters', $layout);
             var $eventList = $('.log-browser .log-table', $layout);
             var $eventViewer = $('.event-viewer', $layout);
             var $exportLink = $('.js-export', $layout);
-            
+
+            var $filters = $(filtersTpl());
+            var $filterBtn = $('button', $filters);
+            var $dateRange = $('.date-range', $filters);
+            var $filterText = $('input[name="filter"]', $filters);
+            var $filterRange = dateRangeFactory({
+                pickerType: 'datetimepicker',
+                renderTo: $dateRange,
+                pickerConfig: {
+                    // configurations from lib/jquery.timePicker.js
+                    dateFormat: 'yy-mm-dd',
+                    timeFormat: 'HH:mm:ss'
+                }
+            });
+
+            $filterBtn.off('click').on('click', function() {
+
+                $eventList.datatable('options', {
+                    params: {
+                        periodStart: $filterRange.getStart(),
+                        periodEnd: $filterRange.getEnd(),
+                        filterquery: $filterText.val()
+                    }
+                });
+
+                $eventList.datatable('refresh');
+
+            });
+
+            $filters.appendTo($eventFilter);
+
             var updateEventDetails = function updateEventDetails(event) {
                 for (var k in event) {
                     if (event.hasOwnProperty(k)) {
@@ -71,7 +104,7 @@ define([
                     }
                 }
             };
-            
+
             $exportLink.on('click', function () {
                 exporter({
                     title: __('Export Log Entries'),
@@ -81,7 +114,7 @@ define([
 
             //append the layout to the current view container
             $('.content').append($layout);
-            
+
             //set up the student list
             $eventList.datatable({
                 url: listUrl,
@@ -100,12 +133,12 @@ define([
                     label: __('Event Name'),
                     sortable: true,
                     filterable: true
-                },{
+                }, {
                     id: 'action',
                     label: __('Action'),
                     sortable: true,
                     filterable: true
-                },{
+                }, {
                     id: 'user_id',
                     label: __('User ID'),
                     sortable: true,
@@ -121,10 +154,9 @@ define([
                 }, {
                     id: 'occurred',
                     label: __('Occurred'),
-                    sortable: true,
-                    filterable: true
+                    sortable: true
                 }],
-                
+
                 listeners: {
                     /**
                      * When a row is selected, we update the student viewer
