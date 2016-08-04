@@ -24,10 +24,9 @@ define([
     'helpers',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
-    'tpl!taoEventLog/controller/TaoEventLog/show/filters',
     'taoEventLog/components/export/modalExporter',
     'ui/dateRange'
-], function ($, __, helpers, datatable, layoutTpl, filtersTpl, exporter, dateRangeFactory) {
+], function ($, __, helpers, datatable, layoutTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
@@ -57,13 +56,9 @@ define([
             var $eventViewer = $('.event-viewer', $layout);
             var $exportLink = $('.js-export', $layout);
 
-            var $filters = $(filtersTpl());
-            var $filterBtn = $('button', $filters);
-            var $dateRange = $('.date-range', $filters);
-            var $filterText = $('input[name="filter"]', $filters);
             var $filterRange = dateRangeFactory({
                 pickerType: 'datetimepicker',
-                renderTo: $dateRange,
+                renderTo: $eventFilter,
                 pickerConfig: {
                     // configurations from lib/jquery.timePicker.js
                     dateFormat: 'yy-mm-dd',
@@ -71,21 +66,18 @@ define([
                 }
             });
 
-            $filterBtn.off('click').on('click', function() {
+            $filterRange.on('submit', function() {
 
                 $eventList.datatable('options', {
                     params: {
                         periodStart: $filterRange.getStart(),
-                        periodEnd: $filterRange.getEnd(),
-                        filterquery: $filterText.val()
+                        periodEnd: $filterRange.getEnd()
                     }
                 });
 
                 $eventList.datatable('refresh');
-
             });
 
-            $filters.appendTo($eventFilter);
 
             var updateEventDetails = function updateEventDetails(event) {
                 for (var k in event) {
