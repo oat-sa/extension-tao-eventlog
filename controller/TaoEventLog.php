@@ -21,6 +21,7 @@
 
 namespace oat\taoEventLog\controller;
 
+use common_session_SessionManager;
 use DateTime;
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
@@ -80,7 +81,10 @@ class TaoEventLog extends tao_actions_CommonModule
             }
             $row['user_roles'] = join(', ', $roles);
 
-            $row['occurred'] = tao_helpers_Date::displayeDate((new DateTime($row['occurred']))->getTimestamp());
+            $date = new DateTime($row['occurred'], new \DateTimeZone('UTC'));
+            $date->setTimezone(new \DateTimeZone(common_session_SessionManager::getSession()->getTimeZone()));
+
+            $row['occurred'] = tao_helpers_Date::displayeDate($date->getTimestamp());
         });
 
         $results['page'] = $this->getRequestParameter('page');

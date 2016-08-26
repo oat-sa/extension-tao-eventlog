@@ -70,7 +70,8 @@ class LoggerService extends ConfigurableService
                 $action,
                 $currentUser->getIdentifier(),
                 join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
-                (new DateTime())->format(DateTime::ISO8601),
+                // time in the unix timestamp (like a utc)
+                (new DateTime('now', new \DateTimeZone('UTC')))->format(DateTime::ISO8601),
                 json_encode($data)
             );
         } catch (\Exception $e) {

@@ -29,9 +29,6 @@ interface StorageInterface
 {
     const SERVICE_ID = 'taoEventLog/storage';
 
-    const OPTION_PERSISTENCE = 'persistence';
-
-    const EVENT_LOG_TABLE_NAME = 'event_log';
     const EVENT_LOG_ID = 'id';
     const EVENT_LOG_EVENT_NAME = 'event_name';
     const EVENT_LOG_ACTION = 'action';
@@ -39,6 +36,7 @@ interface StorageInterface
     const EVENT_LOG_USER_ROLES = 'user_roles';
     const EVENT_LOG_OCCURRED = 'occurred';
     const EVENT_LOG_PROPERTIES = 'properties';
+    const EVENT_LOG_TIMEZONE = 'timezone';
 
     /**
      * Creates new log record
