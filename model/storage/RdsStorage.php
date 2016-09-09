@@ -63,7 +63,6 @@ class RdsStorage extends ConfigurableService implements StorageInterface
                 self::EVENT_LOG_USER_ROLES => $userRoles,
                 self::EVENT_LOG_OCCURRED => $occurred,
                 self::EVENT_LOG_PROPERTIES => json_encode($data),
-                self::EVENT_LOG_TIMEZONE => TIME_ZONE
             ]
         );
 

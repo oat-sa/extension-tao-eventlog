@@ -36,7 +36,6 @@ interface StorageInterface
     const EVENT_LOG_USER_ROLES = 'user_roles';
     const EVENT_LOG_OCCURRED = 'occurred';
     const EVENT_LOG_PROPERTIES = 'properties';
-    const EVENT_LOG_TIMEZONE = 'timezone';
 
     /**
      * Creates new log record

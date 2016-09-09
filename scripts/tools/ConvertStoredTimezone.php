@@ -67,11 +67,6 @@ class ConvertStoredTimezone implements Action
                     continue;
                 }
 
-                if (!empty($row['time_zone'])) {
-                    $this->report->add(new \common_report_Report(\common_report_Report::TYPE_INFO, 'Would not be converted date in id="' . $row['id'] . '" date is already converted (has time zone)'));
-                    continue;
-                }
-
                 if ($this->dryrun) {
                     $this->report->add(new \common_report_Report(\common_report_Report::TYPE_SUCCESS, 'Would be changed date "' . $row['occurred'] . '" to "' . $this->convertToUtcDate($row['occurred']) . '"'));
                 } else {
@@ -106,8 +101,8 @@ class ConvertStoredTimezone implements Action
     {
         /** @var \common_persistence_SqlPersistence $persistence */
         $persistence = $storageService->getPersistence();
-        $sql = "UPDATE " . RdsStorage::EVENT_LOG_TABLE_NAME . " SET `occurred` = ?, time_zone = ? WHERE id = ?";
-        $r = $persistence->exec($sql, [$occurred, TIME_ZONE, $id]);
+        $sql = "UPDATE " . RdsStorage::EVENT_LOG_TABLE_NAME . " SET `occurred` = ? WHERE id = ?";
+        $r = $persistence->exec($sql, [$occurred, $id]);
 
         return $r === 1;
     }

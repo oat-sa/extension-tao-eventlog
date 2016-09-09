@@ -165,13 +165,6 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('0.4.0');
         }
 
-        $this->skip('0.4.0', '0.5.0');
-
-        if ($this->isVersion('0.5.0')) {
-            $addColumn = new AddTimezoneColumn();
-            $addColumn([]);
-            $this->setVersion('0.6.0');
-        }
-
+        $this->skip('0.4.0', '0.4.1');
     }
 }

@@ -60,6 +60,7 @@ class TaoEventLog extends tao_actions_CommonModule
 
     /**
      * Load json data with results
+     * dates for GUI should be in user time zone
      */
     public function search()
     {
@@ -67,6 +68,10 @@ class TaoEventLog extends tao_actions_CommonModule
 
         // prettify data
         array_walk($results['data'], function (&$row) {
+
+            $date = new DateTime($row['occurred'], new \DateTimeZone('UTC'));
+            $row['occurred'] = tao_helpers_Date::displayeDate($date->getTimestamp());
+
             $row['raw'] = array_map(null, $row);
 
             $row['id'] = 'identifier-' . $row['id'];
@@ -80,11 +85,6 @@ class TaoEventLog extends tao_actions_CommonModule
                 $role =  tao_helpers_Uri::getUniqueId($role);
             }
             $row['user_roles'] = join(', ', $roles);
-
-            $date = new DateTime($row['occurred'], new \DateTimeZone('UTC'));
-            $date->setTimezone(new \DateTimeZone(common_session_SessionManager::getSession()->getTimeZone()));
-
-            $row['occurred'] = tao_helpers_Date::displayeDate($date->getTimestamp());
         });
 
         $results['page'] = $this->getRequestParameter('page');
@@ -95,6 +95,7 @@ class TaoEventLog extends tao_actions_CommonModule
 
     /**
      * Export log entries from database to csv file
+     * dates should be in UTC
      */
     public function export()
     {

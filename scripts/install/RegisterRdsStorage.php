@@ -71,7 +71,6 @@ class RegisterRdsStorage extends common_ext_action_InstallAction
             $table->addColumn(StorageInterface::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
             $table->addColumn(StorageInterface::EVENT_LOG_USER_ROLES,  "text",     ["notnull" => true, 'default' => '', 'comment' => 'User roles']);
             $table->addColumn(StorageInterface::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
-            $table->addColumn(StorageInterface::EVENT_LOG_TIMEZONE, 'string', ["length" => 120]);
             $table->addColumn(StorageInterface::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
 
             $table->setPrimaryKey([StorageInterface::EVENT_LOG_ID]);
