@@ -21,7 +21,7 @@
 
 namespace oat\taoEventLog\controller;
 
-use common_session_SessionManager;
+
 use DateTime;
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
