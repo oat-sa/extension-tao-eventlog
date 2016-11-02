@@ -26,6 +26,7 @@ use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
+use oat\taoEventLog\scripts\update\rds\AddTimezoneColumn;
 
 /**
  * Class Updater
@@ -162,10 +163,8 @@ class Updater extends common_ext_ExtensionUpdater
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
             }
             $this->setVersion('0.4.0');
-
         }
 
-        $this->skip('0.4.0', '0.5.0');
-
+        $this->skip('0.4.0', '0.5.1');
     }
 }

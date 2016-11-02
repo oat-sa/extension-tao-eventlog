@@ -47,7 +47,7 @@ class RegisterRdsStorage extends common_ext_action_InstallAction
     {
         $persistenceId = count($params) > 0 ? reset($params) : 'default';
 
-        $this->registerService(StorageInterface::SERVICE_ID, new RdsStorage([StorageInterface::OPTION_PERSISTENCE => $persistenceId]));
+        $this->registerService(StorageInterface::SERVICE_ID, new RdsStorage([RdsStorage::OPTION_PERSISTENCE => $persistenceId]));
 
         $storageService = $this->getServiceManager()->get(StorageInterface::SERVICE_ID);
 
@@ -62,7 +62,7 @@ class RegisterRdsStorage extends common_ext_action_InstallAction
         $fromSchema = clone $schema;
 
         try {
-            $table = $schema->createTable(StorageInterface::EVENT_LOG_TABLE_NAME);
+            $table = $schema->createTable(RdsStorage::EVENT_LOG_TABLE_NAME);
             $table->addOption('engine', 'MyISAM');
 
             $table->addColumn(StorageInterface::EVENT_LOG_ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
