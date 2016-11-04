@@ -35,7 +35,9 @@ use oat\taoEventLog\model\StorageInterface;
  */
 class RdsStorage extends ConfigurableService implements StorageInterface
 {
-    const DATETIME_FORMAT = 'Y-m-d H:i:s';
+    const OPTION_PERSISTENCE = 'persistence';
+    const EVENT_LOG_TABLE_NAME = 'event_log';
+
     /**
      * Persistence for DB
      * @var common_persistence_Persistence
@@ -60,7 +62,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
                 self::EVENT_LOG_USER_ID => $userIdentifier,
                 self::EVENT_LOG_USER_ROLES => $userRoles,
                 self::EVENT_LOG_OCCURRED => $occurred,
-                self::EVENT_LOG_PROPERTIES => json_encode($data)
+                self::EVENT_LOG_PROPERTIES => json_encode($data),
             ]
         );
 
@@ -75,7 +77,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     {
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATETIME_FORMAT)]);
+        return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
     }
 
     private function addSqlCondition(&$sql, $condition) {
@@ -137,7 +139,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
         if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
 
             $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . " >= ? ");
-            $parameters[] = $params['till']->format(self::DATETIME_FORMAT);
+            $parameters[] = $params['till']->format(DateTime::ISO8601);
         }
 
         $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
