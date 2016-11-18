@@ -101,15 +101,14 @@ class RdsStorage extends ConfigurableService implements StorageInterface
 
         $parameters = [];
 
-
         if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
             $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '>= ?');
-            $parameters[] = date('Y-m-d H:i:s', strtotime($params['periodStart']));
+            $parameters[] = $params['periodStart'];
         }
 
         if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
             $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '<= ?');
-            $parameters[] = date('Y-m-d H:i:s', strtotime($params['periodEnd']));
+            $parameters[] = $params['periodEnd'];
         }
 
         if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns']) 
