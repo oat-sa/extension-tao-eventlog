@@ -167,14 +167,15 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('0.4.0');
         }
 
-        if ($this->isVersion('0.4.0')) {
+        $this->skip('0.4.0', '0.5.2');
+
+        if ($this->isVersion('0.5.2')) {
 
             $eventManager->attach('oat\\tao\\model\\event\\LoggableEvent', [LoggerService::class, 'logEvent']);
-            $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
 
-            $this->setVersion('0.5.0');
+            $this->setVersion('0.6.0');
         }
 
-        $this->skip('0.4.0', '0.6.0');
     }
 }
