@@ -70,7 +70,8 @@ class LoggerService extends ConfigurableService
                 $action,
                 $currentUser->getIdentifier(),
                 join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
-                (new DateTime())->format(DateTime::ISO8601),
+                // time in the unix timestamp (like a utc)
+                (new DateTime('now', new \DateTimeZone('UTC')))->format(DateTime::ISO8601),
                 json_encode($data)
             );
         } catch (\Exception $e) {
@@ -96,6 +97,20 @@ class LoggerService extends ConfigurableService
      */
     public function searchInstances(array $params = [])
     {
+        /** @var common_session_Session $session */
+        $session = common_session_SessionManager::getSession();
+
+        $timeZone = $session->getTimeZone();
+        $utc = new \DateTimeZone('UTC');
+
+        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
+            $params['periodStart'] = (new DateTime($params['periodStart'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
+        }
+
+        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
+            $params['periodEnd'] = (new DateTime($params['periodEnd'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
+        }
+
         return $this->getStorage()->searchInstances($params);
     }
 

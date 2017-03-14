@@ -35,7 +35,9 @@ use oat\taoEventLog\model\StorageInterface;
  */
 class RdsStorage extends ConfigurableService implements StorageInterface
 {
-    const DATETIME_FORMAT = 'Y-m-d H:i:s';
+    const OPTION_PERSISTENCE = 'persistence';
+    const EVENT_LOG_TABLE_NAME = 'event_log';
+
     /**
      * Persistence for DB
      * @var common_persistence_Persistence
@@ -60,7 +62,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
                 self::EVENT_LOG_USER_ID => $userIdentifier,
                 self::EVENT_LOG_USER_ROLES => $userRoles,
                 self::EVENT_LOG_OCCURRED => $occurred,
-                self::EVENT_LOG_PROPERTIES => json_encode($data)
+                self::EVENT_LOG_PROPERTIES => json_encode($data),
             ]
         );
 
@@ -75,7 +77,18 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     {
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATETIME_FORMAT)]);
+        return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
+    }
+
+    private function addSqlCondition(&$sql, $condition) {
+
+        if (mb_strpos($sql, 'WHERE') === false) {
+            $sql .= ' WHERE ';
+        } else {
+            $sql .= ' AND ';
+        }
+
+        $sql .= '(' . $condition . ')';
     }
 
     /**
@@ -88,30 +101,44 @@ class RdsStorage extends ConfigurableService implements StorageInterface
 
         $parameters = [];
 
+        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
+            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '>= ?');
+            $parameters[] = $params['periodStart'];
+        }
+
+        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
+            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '<= ?');
+            $parameters[] = $params['periodEnd'];
+        }
+
         if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns']) 
                 && in_array(current($params['filtercolumns']), self::tableColumns())) {
-            
-            $sql .= ' WHERE ' . current($params['filtercolumns']) . " LIKE ?";
+
+            $column = current($params['filtercolumns']);
+
+            $this->addSqlCondition($sql, $column . " LIKE ?");
+
             $parameters[] = '%' . $params['filterquery'] . '%';
+
         } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
-            $sql .= ' WHERE '
-                . self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
+
+            $condition = self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
                 . self::EVENT_LOG_ACTION . " LIKE ? OR "
                 . self::EVENT_LOG_USER_ID . " LIKE ? OR "
                 . self::EVENT_LOG_USER_ROLES . " LIKE ? "
             ;
-            
+
+            $this->addSqlCondition($sql, $condition);
+
             for ($i = 0; $i < 4; $i++) {
                 $parameters[] = '%' . $params['filterquery'] . '%';
             }
         }
 
         if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
-            if (mb_strpos($sql, 'WHERE') === false) {
-                $sql .= ' WHERE ';
-            }
-            $sql .= ' ' . self::EVENT_LOG_OCCURRED . " >= ? ";
-            $parameters[] = $params['till']->format(self::DATETIME_FORMAT);
+
+            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . " >= ? ");
+            $parameters[] = $params['till']->format(DateTime::ISO8601);
         }
 
         $orderBy = isset($params['sortby']) ? $params['sortby'] : '';

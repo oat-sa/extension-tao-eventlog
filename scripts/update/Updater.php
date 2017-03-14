@@ -14,7 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2014 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2014-2016 (original work) Open Assessment Technologies SA;
  *
  * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
@@ -27,6 +27,7 @@ use oat\oatbox\event\EventManager;
 use oat\tao\model\event\LoggableEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
+use oat\taoEventLog\scripts\update\rds\AddTimezoneColumn;
 
 /**
  * Class Updater
@@ -174,5 +175,6 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('0.5.0');
         }
 
+        $this->skip('0.4.0', '0.6.0');
     }
 }
