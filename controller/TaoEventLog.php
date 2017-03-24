@@ -78,7 +78,7 @@ class TaoEventLog extends tao_actions_CommonModule
 
             $eventNameChunks = explode('\\', $row['event_name']);
             $row['event_name'] = array_pop($eventNameChunks);
-            $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']);
+            $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']) ?: $row['user_id'];
 
             $roles = explode(',', $row['user_roles']);
             foreach ($roles as &$role) {
