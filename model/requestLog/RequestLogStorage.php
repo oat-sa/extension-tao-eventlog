@@ -47,7 +47,7 @@ interface RequestLogStorage
      * @param User|null $user
      * @return boolean
      */
-    public function logCurrentSession(Request $request = null, User $user = null);
+    public function log(Request $request = null, User $user = null);
 
     /**
      * Find user requests.

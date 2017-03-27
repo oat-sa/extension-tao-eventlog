@@ -46,7 +46,7 @@ class RdsRequestLogStorage implements RequestLogStorage
     /**
      * @inheritdoc
      */
-    public function logCurrentSession(Request $request = null, User $user = null)
+    public function log(Request $request = null, User $user = null)
     {
         // TODO: Implement logCurrentSession() method.
     }
