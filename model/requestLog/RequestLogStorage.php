@@ -38,7 +38,7 @@ interface RequestLogStorage
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
 
-    const SERVICE_ID = 'taoEventLog/ActivityLogStorage';
+    const SERVICE_ID = 'taoEventLog/RequestLogStorage';
 
     /**
      * Log request data.
