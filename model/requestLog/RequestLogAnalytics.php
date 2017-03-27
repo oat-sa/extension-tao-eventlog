@@ -19,20 +19,48 @@
  *
  */
 
-namespace oat\taoEventLog\model\activityLog;
+namespace oat\taoEventLog\model\requestLog;
 
 use \DateTime;
 use \DateInterval;
 
 /**
- * Interface AnalyticsInterface
- * @package oat\taoEventLog\model\activityLog
+ * Interface RequestLogAnalytics
+ * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-interface AnalyticsInterface
+interface RequestLogAnalytics
 {
     /**
-     * Get analytics for period of time
+     * Get analytics grouped for period of time
+     *
+     * result example:
+     * ```
+     * [
+     *     [
+     *          [...]
+     *     ],
+     *     [
+     *          [...],
+     *          [
+     *              'user_id' => 'http://sample/first.rdf#i1490617729993174',
+     *              'user_role' => [
+     *                  'http://www.tao.lu/Ontologies/TAO.rdf#BackOfficeRole',
+     *                  'http://www.tao.lu/Ontologies/TAOLTI.rdf#LtiDeliveryProviderManagerRole',
+     *               ],
+     *              'action' => 'http://yourdomain/tao/Main/index?structure=settings&ext=tao&section=settings_ext_mng',
+     *              'event_time' => '1490617792.5479',
+     *              'details' => [
+     *                  'login' => 'proctor'
+     *              ],
+     *          ],
+     *          [...]
+     *     ],
+     *     [
+     *          [...]
+     *     ],
+     * ]
+     * ```
      *
      * @param array $filters filters by user id, url, role etc.
      * @param DateTime|null $since
