@@ -21,14 +21,14 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
-use DateTime;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\requestLog\RequestLogStorage;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Class RdsRequestLogStorage
@@ -46,27 +46,94 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
     const COLUMN_EVENT_TIME = self::EVENT_TIME;
     const COLUMN_DETAILS = self::DETAILS;
 
+    /** @var \Doctrine\DBAL\Connection */
+    private $connection;
+
     /**
      * @inheritdoc
      */
     public function log(Request $request = null, User $user = null)
     {
-        // TODO: Implement logCurrentSession() method.
+        if ($request === null) {
+            $request = ServerRequest::fromGlobals();
+        }
+
+        if ($user === null) {
+            $user = \common_session_SessionManager::getSession()->getUser();
+        }
+
+        $data = [
+            self::USER_ID => $user->getIdentifier(),
+            self::USER_ROLES => implode(',', $user->getRoles()),
+            self::COLUMN_ACTION => $request->getUri(),
+            self::COLUMN_EVENT_TIME => microtime(true),
+            self::COLUMN_DETAILS => json_encode([
+                'method' => $request->getMethod(),
+            ]),
+        ];
+        $this->getPersistence()->insert(self::TABLE_NAME, $data);
     }
 
     /**
      * @inheritdoc
      */
-    public function find(array $filters = [])
+    public function find(array $filters = [], array $options = [])
     {
-        // TODO: build filters here
-        return new RdsRequestLogIterator($this->getPersistence(), $this->getQueryBuilder());
+        $queryBuilder = $this->getQueryBuilder();
+        if (isset($options['limit'])) {
+            $queryBuilder->setMaxResults(intval($options['limit']));
+        }
+        if (isset($options['offset'])) {
+            $queryBuilder->setFirstResult(intval($options['offset']));
+        }
+
+        foreach ($filters as $filter) {
+            $this->addFilter($queryBuilder, $filter);
+        }
+        return new RdsRequestLogIterator($this->getPersistence(), $queryBuilder);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $filter
+     */
+    private function addFilter(QueryBuilder $queryBuilder, array $filter)
+    {
+        $colName = strtolower($filter[0]);
+        $operation = strtolower($filter[1]);
+        $val = $filter[2];
+        $val2 = isset($filter[3]) ? $filter[3] : null;
+        
+        if (!in_array($colName, [
+            self::USER_ID,
+            self::USER_ROLES,
+            self::COLUMN_ACTION,
+            self::COLUMN_EVENT_TIME,
+            self::COLUMN_DETAILS,
+        ])) {
+            return;
+        }
+
+        if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
+            return;
+        }
+        $params = [];
+        if ($operation === 'between') {
+            $queryBuilder->where("r.$colName between ? AND ?");
+            $params[] = $val;
+            $params[] = $val2;
+        } else {
+            $queryBuilder->where("r.$colName $operation ?");
+            $params[] = $val;
+        }
+        $params = array_merge($queryBuilder->getParameters(), $params);
+        $queryBuilder->setParameters($params);
     }
 
     /**
      * @return \common_persistence_SqlPersistence
      */
-    protected function getPersistence()
+    private function getPersistence()
     {
         $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
         return $persistenceManager->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
@@ -75,7 +142,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
     /**
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
-    protected function getQueryBuilder()
+    private function getQueryBuilder()
     {
         if ($this->connection === null) {
             $this->connection = \Doctrine\DBAL\DriverManager::getConnection(
@@ -84,7 +151,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             );
         }
 
-        return $this->connection->createQueryBuilder()->select('*')->from(RdsStorage::TABLE_NAME, 'r');
+        return $this->connection->createQueryBuilder()->select('*')->from(self::TABLE_NAME, 'r');
     }
 
     /**

@@ -21,7 +21,6 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use \DateTime;
 use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 
@@ -85,7 +84,8 @@ interface RequestLogStorage
      * ]
      * ```
      * @param array $filters filters by user id, url, role etc.
+     * @param array $options
      * @return \Iterator
      */
-    public function find(array $filters = [], $options = []);
+    public function find(array $filters = [], array $options = []);
 }

@@ -22,9 +22,10 @@
 namespace oat\taoEventLog\test\model\requestLog\rds;
 
 use oat\tao\test\TaoPhpUnitTestRunner;
-use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage as RdsStorage;
 use oat\oatbox\service\ServiceManager;
 use oat\oatbox\service\ServiceNotFoundException;
+use GuzzleHttp\Psr7\Request;
 
 /**
  * Class RdsRequestLogStorageTest
@@ -34,6 +35,8 @@ use oat\oatbox\service\ServiceNotFoundException;
 class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 {
 
+    protected $fixtures;
+
     /**
      * Check whether rds request log is installed
      */
@@ -42,7 +45,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $persistence = $this->getPersistence();
         $schemaManager = $persistence->getDriver()->getSchemaManager();
         $schema = $schemaManager->createSchema();
-        if (!$schema->hasTable(RdsRequestLogStorage::TABLE_NAME)) {
+        if (!$schema->hasTable(RdsStorage::TABLE_NAME)) {
             $this->markTestSkipped(
                 'RdsRequestLogStorage table is not exist.'
             );
@@ -52,17 +55,118 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 
     public function testLog()
     {
-        $serviceManager = ServiceManager::getServiceManager();
+        $request = new Request(
+            'GET',
+            '/taoDeliveryRdf/RestDelivery/generate'
+        );
+        $user = new TestUser([
+            'admin', 'proctor',
+        ], 'http://sample/first.rdf#i00000000000000001_test_record');
+        $service = $this->getService();
+        $service->log($request, $user);
+
+        $stmt = $this->getPersistence()->query(
+            'select * from ' .RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME .' DESC limit 1'
+        );
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $this->assertEquals($user->getIdentifier(), $data[RdsStorage::COLUMN_USER_ID]);
+        $this->assertEquals(implode(',', $user->getRoles()), $data[RdsStorage::COLUMN_USER_ROLES]);
+        $this->assertEquals('/taoDeliveryRdf/RestDelivery/generate', $data[RdsStorage::COLUMN_ACTION]);
+    }
+
+    public function testFind()
+    {
+        $this->loadFixture();
+        $service = $this->getService();
+        $iterator = $service->find([], [
+            'limit' => 1,
+            'offset' => 1,
+        ]);
+        $data = $iterator->current();
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+        $this->assertEquals($this->fixtures[1][RdsStorage::COLUMN_EVENT_TIME], $data[RdsStorage::COLUMN_EVENT_TIME]);
+
+
+        $iterator = $service->find([
+            [RdsStorage::USER_ID, '=', 'http://sample/first.rdf#i00000000000000003_test_record']
+        ]);
+        $data = $iterator->current();
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+        $this->assertEquals('http://sample/first.rdf#i00000000000000003_test_record', $data[RdsStorage::COLUMN_USER_ID]);
+
+
+        $iterator = $service->find([
+            [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3623, 1490703795.3624]
+        ]);
+        $this->assertEquals(1490703795.3623, $iterator->current()[RdsStorage::COLUMN_EVENT_TIME]);
+        $iterator->next();
+        $this->assertEquals(1490703795.3624, $iterator->current()[RdsStorage::COLUMN_EVENT_TIME]);
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
     }
 
     /**
-     * @return RdsRequestLogStorage
+     * Load fixtures to table
+     */
+    protected function loadFixture()
+    {
+        $query = 'INSERT INTO '.RdsStorage::TABLE_NAME.' ('
+            .RdsStorage::COLUMN_USER_ID.', '.RdsStorage::COLUMN_USER_ROLES.', '.RdsStorage::COLUMN_ACTION.', '.RdsStorage::COLUMN_EVENT_TIME.', '.RdsStorage::COLUMN_DETAILS.') '
+            .'VALUES  (?, ?, ?, ?, ?)';
+
+        $this->fixtures = [
+            [
+                RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000001_test_record',
+                RdsStorage::COLUMN_USER_ROLES => 'testtaker',
+                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/login',
+                RdsStorage::COLUMN_EVENT_TIME => 1490703795.3622,
+                RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 0]),
+            ],
+            [
+                RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000002_test_record',
+                RdsStorage::COLUMN_USER_ROLES => 'admin,proctor,manager',
+                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/index',
+                RdsStorage::COLUMN_EVENT_TIME => 1490703795.3623,
+                RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 1]),
+            ],
+            [
+                RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000003_test_record',
+                RdsStorage::COLUMN_USER_ROLES => 'admin,proctor',
+                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/login',
+                RdsStorage::COLUMN_EVENT_TIME => 1490703795.3624,
+                RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 2]),
+            ],
+            [
+                RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000004_test_record',
+                RdsStorage::COLUMN_USER_ROLES => 'admin,proctor',
+                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/index',
+                RdsStorage::COLUMN_EVENT_TIME => 1490703795.3625,
+                RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 3]),
+            ],
+        ];
+
+        $persistence = $this->getPersistence();
+        foreach ($this->fixtures as $fixture) {
+            $persistence->exec($query, array(
+                $fixture[RdsStorage::COLUMN_USER_ID],
+                $fixture[RdsStorage::COLUMN_USER_ROLES],
+                $fixture[RdsStorage::COLUMN_ACTION],
+                $fixture[RdsStorage::COLUMN_EVENT_TIME],
+                $fixture[RdsStorage::COLUMN_DETAILS],
+            ));
+        }
+    }
+
+    /**
+     * @return RdsStorage
      */
     protected function getService()
     {
         $serviceManager = ServiceManager::getServiceManager();
-        $service = new RdsRequestLogStorage([
-            RdsRequestLogStorage::OPTION_PERSISTENCE => $this->getPersistence()->getPersistenceId
+        $service = new RdsStorage([
+            RdsStorage::OPTION_PERSISTENCE => $this->getPersistenceId()
         ]);
         $service->setServiceManager($serviceManager);
 
@@ -76,9 +180,9 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
     {
         $serviceManager = ServiceManager::getServiceManager();
         try {
-            $service = $serviceManager->get(RdsRequestLogStorage::SERVICE_ID);
-            if ($service instanceof RdsRequestLogStorage) {
-                $persistenceId = $service->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE);
+            $service = $serviceManager->get(RdsStorage::SERVICE_ID);
+            if ($service instanceof RdsStorage) {
+                $persistenceId = $service->getOption(RdsStorage::OPTION_PERSISTENCE);
             } else {
                 $persistenceId = 'default';
             }
@@ -96,5 +200,40 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $serviceManager = ServiceManager::getServiceManager();
         $persistenceManager = $serviceManager->get(\common_persistence_Manager::SERVICE_ID);
         return $persistenceManager->getPersistenceById($this->getPersistenceId());
+    }
+
+    /**
+     * Clear test data before and after each test method
+     * @after
+     * @before
+     */
+    protected function deleteTestData()
+    {
+        $sql = 'DELETE FROM ' . RdsStorage::TABLE_NAME .
+            ' WHERE ' . RdsStorage::COLUMN_USER_ID . " LIKE '%_test_record'";
+
+        $this->getPersistence()->exec($sql);
+    }
+}
+
+class TestUser extends \common_test_TestUser
+{
+    protected $roles;
+    protected $id;
+
+    public function __construct(array $roles, $id)
+    {
+        $this->roles = $roles;
+        $this->id = $id;
+    }
+
+    public function getIdentifier()
+    {
+        return $this->id;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }
