@@ -70,7 +70,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         );
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($user->getIdentifier(), $data[RdsStorage::COLUMN_USER_ID]);
-        $this->assertEquals(implode(',', $user->getRoles()), $data[RdsStorage::COLUMN_USER_ROLES]);
+        $this->assertEquals(',' . implode(',', $user->getRoles()) . ',', $data[RdsStorage::COLUMN_USER_ROLES]);
         $this->assertEquals('/taoDeliveryRdf/RestDelivery/generate', $data[RdsStorage::COLUMN_ACTION]);
     }
 

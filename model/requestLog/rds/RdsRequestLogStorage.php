@@ -64,7 +64,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
 
         $data = [
             self::USER_ID => $user->getIdentifier(),
-            self::USER_ROLES => implode(',', $user->getRoles()),
+            self::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
             self::COLUMN_ACTION => $request->getUri(),
             self::COLUMN_EVENT_TIME => microtime(true),
             self::COLUMN_DETAILS => json_encode([
