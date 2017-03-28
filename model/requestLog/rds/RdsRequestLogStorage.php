@@ -28,6 +28,7 @@ use oat\taoEventLog\model\requestLog\RequestLogStorage;
 use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Class RdsRequestLogStorage
@@ -54,13 +55,9 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
     }
 
     /**
-     *
-     * @param array $filters
-     * @param DateTime|null $since
-     * @param DateTime|null $until
-     * @return RdsRequestLogIterator
+     * @inheritdoc
      */
-    public function find(array $filters = [], DateTime $since = null, DateTime $until = null)
+    public function find(array $filters = [])
     {
         // TODO: build filters here
         return new RdsRequestLogIterator($this->getPersistence(), $this->getQueryBuilder());
@@ -110,7 +107,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
             $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
-            $table->addColumn(static::COLUMN_EVENT_TIME, "string", array("notnull" => true, "length" => 255));
+            $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale'=>4, "notnull" => true]);
             $table->addColumn(static::COLUMN_DETAILS, "text", ["notnull" => false]);
             $table->addIndex([static::COLUMN_USER_ID], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_USER_ID);
             $table->addIndex([static::COLUMN_EVENT_TIME], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME);

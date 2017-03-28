@@ -248,9 +248,9 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
     {
         $serviceManager = ServiceManager::getServiceManager();
         try {
-            $rdsQueueService = $serviceManager->get(RdsRequestLogStorage::SERVICE_ID);
-            if ($rdsQueueService instanceof RdsRequestLogStorage) {
-                $persistenceId = $rdsQueueService->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE);
+            $service = $serviceManager->get(RdsRequestLogStorage::SERVICE_ID);
+            if ($service instanceof RdsRequestLogStorage) {
+                $persistenceId = $service->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE);
             } else {
                 $persistenceId = 'default';
             }

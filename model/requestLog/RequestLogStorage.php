@@ -52,14 +52,14 @@ interface RequestLogStorage
     /**
      * Find user requests.
      *
-     * result example:
+     * Result example:
      * ```
      * [
      *     [...],
      *     [
      *         'user_id' => 'http://sample/first.rdf#i1490617729993174',
      *         'user_role' => 'http://www.tao.lu/Ontologies/TAO.rdf#BackOfficeRole,http://www.tao.lu/Ontologies/TAOLTI.rdf#LtiDeliveryProviderManagerRole',
-     *         'action' => 'http://yourdomain/tao/Main/index?structure=settings&ext=tao&section=settings_ext_mng',
+     *         'action' => '/tao/Main/index?structure=settings&ext=tao&section=settings_ext_mng',
      *         'event_time' => '1490617792.5479',
      *         'details' => '"{\"login\":\"proctor\"}"', //json encoded additional data
      *     ],
@@ -67,10 +67,25 @@ interface RequestLogStorage
      * ]
      * ```
      *
+     * Filters parameter example:
+     * ```
+     * [
+     *   ['user_id', 'in', ['http://sample/first.rdf#i1490617729993174', 'http://sample/first.rdf#i1490617729993174'],
+     *   ['event_time', 'between', '1490703795.3624', '1490704796.2467'],
+     *   ['action', '=', '/tao/Main/login'],
+     * ]
+     * ```
+     * Available operations: `<`, `>`, `<>`, `<=`, `>=`, `=`, `between`, `like`
+     *
+     * Options parameter example:
+     * ```
+     * [
+     *      'limit' => 100,
+     *      'offset' => 200
+     * ]
+     * ```
      * @param array $filters filters by user id, url, role etc.
-     * @param DateTime|null $since
-     * @param DateTime|null $until
      * @return \Iterator
      */
-    public function find(array $filters = [], DateTime $since = null, DateTime $until = null);
+    public function find(array $filters = [], $options = []);
 }
