@@ -70,7 +70,7 @@ interface RequestLogStorage
      * @param array $filters filters by user id, url, role etc.
      * @param DateTime|null $since
      * @param DateTime|null $until
-     * @return array
+     * @return \Iterator
      */
     public function find(array $filters = [], DateTime $since = null, DateTime $until = null);
 }

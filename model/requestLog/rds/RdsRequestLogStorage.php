@@ -19,23 +19,25 @@
  *
  */
 
-namespace oat\taoEventLog\model\activityLog\implementation;
+namespace oat\taoEventLog\model\requestLog\rds;
 
 use DateTime;
+use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\requestLog\RequestLogStorage;
 use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
+use Doctrine\DBAL\Schema\SchemaException;
 
 /**
- * Class RdsStorage
- * @package oat\taoEventLog\model\activityLog\implementation
+ * Class RdsRequestLogStorage
+ * @package oat\taoEventLog\model\requestLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage implements RequestLogStorage
+class RdsRequestLogStorage extends ConfigurableService implements RequestLogStorage
 {
     const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'user_activity_log';
+    const TABLE_NAME = 'request_log';
 
     const COLUMN_USER_ID = self::USER_ID;
     const COLUMN_USER_ROLES = self::USER_ROLES;
@@ -52,17 +54,45 @@ class RdsRequestLogStorage implements RequestLogStorage
     }
 
     /**
+     *
      * @param array $filters
      * @param DateTime|null $since
      * @param DateTime|null $until
-     * @return array
+     * @return RdsRequestLogIterator
      */
     public function find(array $filters = [], DateTime $since = null, DateTime $until = null)
     {
-        // TODO: Implement find() method.
+        // TODO: build filters here
+        return new RdsRequestLogIterator($this->getPersistence(), $this->getQueryBuilder());
     }
 
     /**
+     * @return \common_persistence_SqlPersistence
+     */
+    protected function getPersistence()
+    {
+        $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
+        return $persistenceManager->getPersistenceById($this->getOption(self::OPTION_PERSISTENCE));
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
+    protected function getQueryBuilder()
+    {
+        if ($this->connection === null) {
+            $this->connection = \Doctrine\DBAL\DriverManager::getConnection(
+                $this->getPersistence()->getDriver()->getParams(),
+                new \Doctrine\DBAL\Configuration()
+            );
+        }
+
+        return $this->connection->createQueryBuilder()->select('*')->from(RdsStorage::TABLE_NAME, 'r');
+    }
+
+    /**
+     * Initialize RDS Request log storage and register serrvice.
+     *
      * @param string $persistenceId
      * @return \common_report_Report
      */
@@ -75,7 +105,7 @@ class RdsRequestLogStorage implements RequestLogStorage
         $fromSchema = clone $schema;
 
         try {
-            $table = $schema->createTable(RdsDeliveryLogService::TABLE_NAME);
+            $table = $schema->createTable(self::TABLE_NAME);
             $table->addOption('engine', 'InnoDB');
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
             $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true]);
@@ -93,7 +123,7 @@ class RdsRequestLogStorage implements RequestLogStorage
             $persistence->exec($query);
         }
 
-        ServiceManager::getServiceManager()->registerService(
+        ServiceManager::getServiceManager()->register(
             self::SERVICE_ID,
             new self([self::OPTION_PERSISTENCE => $persistenceId])
         );

@@ -26,7 +26,7 @@ use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
-use oat\taoEventLog\scripts\update\rds\AddTimezoneColumn;
+use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 
 /**
  * Class Updater
@@ -165,6 +165,11 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('0.4.0');
         }
 
-        $this->skip('0.4.0', '0.5.3'); 
+        $this->skip('0.4.0', '0.5.3');
+
+        if ($this->isVersion('0.5.3')) {
+            RdsRequestLogStorage::install('default');
+            $this->setVersion('0.6.0');
+        }
     }
 }
