@@ -170,8 +170,6 @@ class Updater extends common_ext_ExtensionUpdater
 
         if ($this->isVersion('0.5.3')) {
             RdsRequestLogStorage::install('default');
-            $eventManager->attach(BeforeAction::class, [RdsRequestLogStorage::SERVICE_ID, 'catchEvent']);
-            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
             $this->setVersion('0.6.0');
         }
 
