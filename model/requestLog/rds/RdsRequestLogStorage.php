@@ -143,13 +143,16 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
         }
         $params = [];
         if ($operation === 'between') {
-            $queryBuilder->where("r.$colName between ? AND ?");
+            $condition = "r.$colName between ? AND ?";
             $params[] = $val;
             $params[] = $val2;
         } else {
-            $queryBuilder->where("r.$colName $operation ?");
+            $condition = "r.$colName $operation ?";
             $params[] = $val;
         }
+
+        $queryBuilder->andWhere($condition);
+
         $params = array_merge($queryBuilder->getParameters(), $params);
         $queryBuilder->setParameters($params);
     }

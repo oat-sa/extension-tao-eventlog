@@ -132,6 +132,12 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         ]);
         $this->assertEquals(2, $result);
 
+        $result = $service->count([
+            [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3622, 1490703795.3625],
+            [RdsStorage::COLUMN_USER_ROLES, 'like', 'admin'],
+        ]);
+        $this->assertEquals(3, $result);
+
 
         $result = $service->count([
             [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%']
