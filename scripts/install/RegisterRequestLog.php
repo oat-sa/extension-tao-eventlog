@@ -43,6 +43,7 @@ class RegisterRequestLog extends AbstractAction
         $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
         RdsRequestLogStorage::install('default');
         $eventManager->attach(BeforeAction::class, [RdsRequestLogStorage::SERVICE_ID, 'catchEvent']);
+        $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered and created EventLog Rds Storage'));
     }
 }
