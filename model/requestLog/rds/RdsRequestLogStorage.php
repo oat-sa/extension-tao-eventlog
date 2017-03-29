@@ -119,7 +119,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
         }
 
         $stmt = $this->getPersistence()->query(
-            'SELECT count(*) FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
+            'SELECT count(*) as count FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         return intval($data['count']);
     }
