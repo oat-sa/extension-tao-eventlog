@@ -88,4 +88,12 @@ interface RequestLogStorage
      * @return \Iterator
      */
     public function find(array $filters = [], array $options = []);
+
+    /**
+     * Count number of records by given search criteria
+     *
+     * @param array $filters @see self::find() description.
+     * @return integer
+     */
+    public function count(array $filters = []);
 }

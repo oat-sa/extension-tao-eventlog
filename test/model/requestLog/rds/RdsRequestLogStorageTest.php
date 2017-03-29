@@ -105,6 +105,44 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $this->assertEquals(1490703795.3624, $iterator->current()[RdsStorage::COLUMN_EVENT_TIME]);
         $iterator->next();
         $this->assertFalse($iterator->valid());
+
+
+        $iterator = $service->find([
+            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%']
+        ]);
+        $this->assertEquals('http://sample/first.rdf#i00000000000000002_test_record', $iterator->current()[RdsStorage::COLUMN_USER_ID]);
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
+
+
+    public function testCount()
+    {
+        $this->loadFixture();
+        $service = $this->getService();
+
+        $result = $service->count([
+            [RdsStorage::USER_ID, '=', 'http://sample/first.rdf#i00000000000000003_test_record']
+        ]);
+        $this->assertEquals(1, $result);
+
+
+        $result = $service->count([
+            [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3623, 1490703795.3624]
+        ]);
+        $this->assertEquals(2, $result);
+
+
+        $result = $service->count([
+            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%']
+        ]);
+        $this->assertEquals(1, $result);
+
+
+        $result = $service->count([
+            [RdsStorage::COLUMN_USER_ID, '=', 'unexistent']
+        ]);
+        $this->assertEquals(0, $result);
     }
 
     /**

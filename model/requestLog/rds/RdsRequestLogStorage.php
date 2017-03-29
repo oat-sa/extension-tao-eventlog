@@ -80,6 +80,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
     public function find(array $filters = [], array $options = [])
     {
         $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->select('*');
         if (isset($options['limit'])) {
             $queryBuilder->setMaxResults(intval($options['limit']));
         }
@@ -91,6 +92,29 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             $this->addFilter($queryBuilder, $filter);
         }
         return new RdsRequestLogIterator($this->getPersistence(), $queryBuilder);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function count(array $filters = [])
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->select('count('.self::COLUMN_USER_ID.') as count');
+        if (isset($options['limit'])) {
+            $queryBuilder->setMaxResults(intval($options['limit']));
+        }
+        if (isset($options['offset'])) {
+            $queryBuilder->setFirstResult(intval($options['offset']));
+        }
+
+        foreach ($filters as $filter) {
+            $this->addFilter($queryBuilder, $filter);
+        }
+
+        $stmt = $this->getPersistence()->query($queryBuilder->getSQL(), $queryBuilder->getParameters());
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return intval($data['count']);
     }
 
     /**
@@ -151,7 +175,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             );
         }
 
-        return $this->connection->createQueryBuilder()->select('*')->from(self::TABLE_NAME, 'r');
+        return $this->connection->createQueryBuilder()->from(self::TABLE_NAME, 'r');
     }
 
     /**
