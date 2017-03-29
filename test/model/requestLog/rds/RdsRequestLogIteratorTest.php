@@ -173,7 +173,9 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
             );
         }
 
-        return $this->connection->createQueryBuilder()->select('*')->from(RdsStorage::TABLE_NAME, 'r');
+        return $this->connection->createQueryBuilder()->select('*')
+            ->from(RdsStorage::TABLE_NAME, 'r')
+            ->where(RdsStorage::USER_ID.' like ?')->setParameters(['%_test_record']);
     }
 
     /**

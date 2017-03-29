@@ -21,7 +21,6 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
-use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\requestLog\RequestLogStorage;
 use GuzzleHttp\Psr7\Request;
@@ -29,13 +28,14 @@ use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
+use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
 
 /**
  * Class RdsRequestLogStorage
  * @package oat\taoEventLog\model\requestLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage extends ConfigurableService implements RequestLogStorage
+class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorage
 {
     const OPTION_PERSISTENCE = 'persistence_id';
     const TABLE_NAME = 'request_log';
@@ -62,8 +62,13 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             $user = \common_session_SessionManager::getSession()->getUser();
         }
 
+        $userId = $user->getIdentifier();
+        if ($userId === null) {
+            $userId = get_class($user);
+        }
+
         $data = [
-            self::USER_ID => $user->getIdentifier(),
+            self::USER_ID => $userId,
             self::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
             self::COLUMN_ACTION => $request->getUri(),
             self::COLUMN_EVENT_TIME => microtime(true),
@@ -87,6 +92,9 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
         if (isset($options['offset'])) {
             $queryBuilder->setFirstResult(intval($options['offset']));
         }
+        if (isset($options['group']) && in_array($options['group'], $this->getColumnNames())) {
+            $queryBuilder->groupBy($options['group']);
+        }
 
         foreach ($filters as $filter) {
             $this->addFilter($queryBuilder, $filter);
@@ -97,22 +105,21 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
     /**
      * @inheritdoc
      */
-    public function count(array $filters = [])
+    public function count(array $filters = [], array $options = [])
     {
         $queryBuilder = $this->getQueryBuilder();
-        $queryBuilder->select('count('.self::COLUMN_USER_ID.') as count');
-        if (isset($options['limit'])) {
-            $queryBuilder->setMaxResults(intval($options['limit']));
-        }
-        if (isset($options['offset'])) {
-            $queryBuilder->setFirstResult(intval($options['offset']));
-        }
+        $queryBuilder->select('user_id');
 
         foreach ($filters as $filter) {
             $this->addFilter($queryBuilder, $filter);
         }
+        if (isset($options['group']) && in_array($options['group'], $this->getColumnNames())) {
+            $queryBuilder->select($options['group']);
+            $queryBuilder->groupBy($options['group']);
+        }
 
-        $stmt = $this->getPersistence()->query($queryBuilder->getSQL(), $queryBuilder->getParameters());
+        $stmt = $this->getPersistence()->query(
+            'SELECT count(*) FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         return intval($data['count']);
     }
@@ -128,13 +135,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
         $val = $filter[2];
         $val2 = isset($filter[3]) ? $filter[3] : null;
         
-        if (!in_array($colName, [
-            self::USER_ID,
-            self::USER_ROLES,
-            self::COLUMN_ACTION,
-            self::COLUMN_EVENT_TIME,
-            self::COLUMN_DETAILS,
-        ])) {
+        if (!in_array($colName, $this->getColumnNames())) {
             return;
         }
 
@@ -155,6 +156,20 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
 
         $params = array_merge($queryBuilder->getParameters(), $params);
         $queryBuilder->setParameters($params);
+    }
+
+    /**
+     * @return array
+     */
+    private function getColumnNames()
+    {
+        return [
+            self::USER_ID,
+            self::USER_ROLES,
+            self::COLUMN_ACTION,
+            self::COLUMN_EVENT_TIME,
+            self::COLUMN_DETAILS,
+        ];
     }
 
     /**
@@ -199,7 +214,7 @@ class RdsRequestLogStorage extends ConfigurableService implements RequestLogStor
             $table = $schema->createTable(self::TABLE_NAME);
             $table->addOption('engine', 'InnoDB');
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
-            $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true]);
+            $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true, "length" => 4096]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
             $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale'=>4, "notnull" => true]);
             $table->addColumn(static::COLUMN_DETAILS, "text", ["notnull" => false]);

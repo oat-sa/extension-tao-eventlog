@@ -27,6 +27,7 @@ use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\tao\model\event\BeforeAction;
 
 /**
  * Class Updater
@@ -169,6 +170,8 @@ class Updater extends common_ext_ExtensionUpdater
 
         if ($this->isVersion('0.5.3')) {
             RdsRequestLogStorage::install('default');
+            $eventManager->attach(BeforeAction::class, [RdsRequestLogStorage::SERVICE_ID, 'catchEvent']);
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
             $this->setVersion('0.6.0');
         }
     }

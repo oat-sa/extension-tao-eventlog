@@ -78,7 +78,9 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
     {
         $this->loadFixture();
         $service = $this->getService();
-        $iterator = $service->find([], [
+        $iterator = $service->find([
+            [RdsStorage::USER_ID, 'like', '%_test_record']
+        ], [
             'limit' => 1,
             'offset' => 1,
         ]);
@@ -98,6 +100,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 
 
         $iterator = $service->find([
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
             [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3623, 1490703795.3624]
         ]);
         $this->assertEquals(1490703795.3623, $iterator->current()[RdsStorage::COLUMN_EVENT_TIME]);
@@ -108,7 +111,8 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 
 
         $iterator = $service->find([
-            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%']
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
+            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%'],
         ]);
         $this->assertEquals('http://sample/first.rdf#i00000000000000002_test_record', $iterator->current()[RdsStorage::COLUMN_USER_ID]);
         $iterator->next();
@@ -128,25 +132,33 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 
 
         $result = $service->count([
-            [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3623, 1490703795.3624]
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
+            [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3623, 1490703795.3624],
         ]);
         $this->assertEquals(2, $result);
 
         $result = $service->count([
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
             [RdsStorage::COLUMN_EVENT_TIME, 'between', 1490703795.3622, 1490703795.3625],
-            [RdsStorage::COLUMN_USER_ROLES, 'like', 'admin'],
+            [RdsStorage::COLUMN_USER_ROLES, 'like', '%admin%'],
         ]);
         $this->assertEquals(3, $result);
 
+        $result = $service->count([
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
+        ], ['group' => RdsStorage::COLUMN_ACTION]);
+        $this->assertEquals(2, $result);
+
 
         $result = $service->count([
-            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%']
+            [RdsStorage::USER_ID, 'like', '%_test_record'],
+            [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%'],
         ]);
         $this->assertEquals(1, $result);
 
 
         $result = $service->count([
-            [RdsStorage::COLUMN_USER_ID, '=', 'unexistent']
+            [RdsStorage::COLUMN_USER_ID, '=', 'unexistent'],
         ]);
         $this->assertEquals(0, $result);
     }

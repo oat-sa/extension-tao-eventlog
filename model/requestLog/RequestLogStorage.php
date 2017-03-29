@@ -80,7 +80,8 @@ interface RequestLogStorage
      * ```
      * [
      *      'limit' => 100,
-     *      'offset' => 200
+     *      'offset' => 200,
+     *      'group' => 'user_id,
      * ]
      * ```
      * @param array $filters filters by user id, url, role etc.
@@ -91,9 +92,16 @@ interface RequestLogStorage
 
     /**
      * Count number of records by given search criteria
+     * Options parameter example:
+     * ```
+     * [
+     *      'group' => 'user_id,
+     * ]
+     * ```
      *
      * @param array $filters @see self::find() description.
+     * @param array $options
      * @return integer
      */
-    public function count(array $filters = []);
+    public function count(array $filters = [], array $options = []);
 }
