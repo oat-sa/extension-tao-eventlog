@@ -35,7 +35,8 @@ return array(
     'install' => [
         'php' => [
             \oat\taoEventLog\scripts\install\RegisterRdsStorage::class,
-            \oat\taoEventLog\scripts\install\RegisterLoggerService::class
+            \oat\taoEventLog\scripts\install\RegisterLoggerService::class,
+            \oat\taoEventLog\scripts\install\RegisterRequestLog::class,
         ]
     ],
     'uninstall' => [
