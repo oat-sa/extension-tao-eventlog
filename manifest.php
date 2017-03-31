@@ -22,7 +22,7 @@ return array(
     'label' => 'Test-taker Event Logging',
     'description' => 'The event logging system that catches and logs all actions of test-takers',
     'license' => 'GPL-2.0',
-    'version' => '0.5.3',
+    'version' => '0.6.1',
     'author' => 'Open Assessment Technologies SA',
     'requires' => array(
         'tao' => '>=7.3.0'
@@ -35,7 +35,8 @@ return array(
     'install' => [
         'php' => [
             \oat\taoEventLog\scripts\install\RegisterRdsStorage::class,
-            \oat\taoEventLog\scripts\install\RegisterLoggerService::class
+            \oat\taoEventLog\scripts\install\RegisterLoggerService::class,
+            \oat\taoEventLog\scripts\install\RegisterRequestLog::class,
         ]
     ],
     'uninstall' => [
