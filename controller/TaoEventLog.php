@@ -26,9 +26,12 @@ use DateTime;
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\storage\RdsStorage;
 use tao_actions_CommonModule;
 use tao_helpers_Uri;
 use tao_helpers_Date;
+use oat\tao\model\datatable\implementation\DatatableRequest;
+use Slim\Http\Request;
 
 /**
  * Sample controller
@@ -64,7 +67,38 @@ class TaoEventLog extends tao_actions_CommonModule
      */
     public function search()
     {
-        $results = $this->loggerService->searchInstances($this->getRequestParameters());
+        $params = $this->getRequestParameters();
+        $filters = [];
+
+        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
+            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '>', $params['periodStart']];
+        }
+        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
+            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '<', $params['periodEnd']];
+        }
+        if ((isset($params['periodStart']) && isset($params['periodStart']))) {
+            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, 'between', $params['periodStart'], $params['periodEnd']];
+        }
+        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns'])) {
+            $column = current($params['filtercolumns']);
+            $filters[] = [$column, 'like', '%' . $params['filterquery'] . '%'];
+        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
+            $filters[] = [RdsStorage::EVENT_LOG_EVENT_NAME, 'like', '%' . $params['filterquery'] . '%'];
+            $filters[] = [RdsStorage::EVENT_LOG_ACTION, 'like', '%' . $params['filterquery'] . '%'];
+            $filters[] = [RdsStorage::EVENT_LOG_USER_ID, 'like', '%' . $params['filterquery'] . '%'];
+            $filters[] = [RdsStorage::EVENT_LOG_USER_ROLES, 'like', '%' . $params['filterquery'] . '%'];
+        }
+
+        $datatableRequest = DatatableRequest::fromGlobals();
+        $results = [
+            'data' => $this->loggerService->searchInstances($filters, [
+                'limit'=>$datatableRequest->getRows(),
+                'offset'=>($datatableRequest->getPage() - 1) * $datatableRequest->getRows(),
+                'sort'=>$datatableRequest->getSortBy(),
+                'order'=>$datatableRequest->getSortOrder(),
+            ]),
+            'records' => $this->loggerService->count($filters),
+        ];
 
         // prettify data
         array_walk($results['data'], function (&$row) {

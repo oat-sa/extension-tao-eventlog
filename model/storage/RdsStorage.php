@@ -28,6 +28,7 @@ use DateTime;
 use DateTimeImmutable;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Class RdsStorage
@@ -43,6 +44,12 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      * @var common_persistence_Persistence
      */
     private $persistence;
+
+    /** @var array */
+    protected $parameters;
+
+    /** @var string */
+    protected $sql;
 
     /**
      * @param string $eventName
@@ -80,107 +87,146 @@ class RdsStorage extends ConfigurableService implements StorageInterface
         return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
     }
 
-    private function addSqlCondition(&$sql, $condition) {
-
-        if (mb_strpos($sql, 'WHERE') === false) {
-            $sql .= ' WHERE ';
-        } else {
-            $sql .= ' AND ';
-        }
-
-        $sql .= '(' . $condition . ')';
-    }
-
     /**
      * @param array $params
+     * @deprecated use $this->search() instead
      * @return array
      */
     public function searchInstances(array $params = [])
     {
-        $sql = 'SELECT * FROM ' . self::EVENT_LOG_TABLE_NAME;
+        return $this->search($params);
+    }
 
-        $parameters = [];
-
-        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '>= ?');
-            $parameters[] = $params['periodStart'];
+    /**
+     *
+     * Filters parameter example:
+     * ```
+     * [
+     *   ['user_id', 'in', ['http://sample/first.rdf#i1490617729993174', 'http://sample/first.rdf#i1490617729993174'],
+     *   ['occurred', 'between', '2017-04-13 15:29:21', '2017-04-14 15:29:21'],
+     *   ['action', '=', '/tao/Main/login'],
+     * ]
+     * ```
+     * Available operations: `<`, `>`, `<>`, `<=`, `>=`, `=`, `between`, `like`
+     *
+     * Options parameter example:
+     * ```
+     * [
+     *      'limit' => 100,
+     *      'offset' => 200,
+     *      'sort' => 'occurred',
+     *      'order' => 'ASC',
+     *      'group' => 'user_id,
+     * ]
+     * ```
+     *
+     *
+     * @param array $filters
+     * @param array $options
+     * @return array
+     * @todo return \Iterator instead of array
+     */
+    public function search(array $filters = [], array $options = [])
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->select('*');
+        if (isset($options['limit'])) {
+            $queryBuilder->setMaxResults(intval($options['limit']));
+        }
+        if (isset($options['offset'])) {
+            $queryBuilder->setFirstResult(intval($options['offset']));
+        }
+        if (isset($options['group']) && in_array($options['group'], self::tableColumns())) {
+            $queryBuilder->groupBy($options['group']);
         }
 
-        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '<= ?');
-            $parameters[] = $params['periodEnd'];
+        foreach ($filters as $filter) {
+            $this->addFilter($queryBuilder, $filter);
         }
 
-        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns']) 
-                && in_array(current($params['filtercolumns']), self::tableColumns())) {
+        $sort = isset($options['sort']) ? $options['sort'] : '';
+        $order = isset($options['order']) ? strtoupper($options['order']) : ' ASC';
 
-            $column = current($params['filtercolumns']);
-
-            $this->addSqlCondition($sql, $column . " LIKE ?");
-
-            $parameters[] = '%' . $params['filterquery'] . '%';
-
-        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
-
-            $condition = self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
-                . self::EVENT_LOG_ACTION . " LIKE ? OR "
-                . self::EVENT_LOG_USER_ID . " LIKE ? OR "
-                . self::EVENT_LOG_USER_ROLES . " LIKE ? "
-            ;
-
-            $this->addSqlCondition($sql, $condition);
-
-            for ($i = 0; $i < 4; $i++) {
-                $parameters[] = '%' . $params['filterquery'] . '%';
-            }
+        if (in_array($sort, self::tableColumns()) && in_array($order, ['ASC', 'DESC'])) {
+            $queryBuilder->addOrderBy($sort, $order);
         }
 
-        if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
-
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . " >= ? ");
-            $parameters[] = $params['till']->format(DateTime::ISO8601);
+        if ($sort !== 'id') {
+            $queryBuilder->addOrderBy('id', 'DESC');
         }
 
-        $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
-        $orderDir = isset($params['sortorder']) ? strtoupper($params['sortorder']) : ' ASC';
 
-        $sql .= ' ORDER BY ';
-        $orderSep = '';
+        $sql = $queryBuilder->getSQL();
+        $params = $queryBuilder->getParameters();
+        $stmt = $this->getPersistence()->query($sql, $params);
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $data;
+    }
 
-        if (in_array($orderBy, self::tableColumns()) && in_array($orderDir, ['ASC', 'DESC'])) {
-            $sql .= $orderBy . ' ' . $orderDir;
-            $orderSep = ', ';
+    /**
+     * @param array $filters
+     * @param array $options
+     * @return integer
+     */
+    public function count(array $filters = [], array $options = [])
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->select(self::EVENT_LOG_USER_ID);
+
+        foreach ($filters as $filter) {
+            $this->addFilter($queryBuilder, $filter);
+        }
+        if (isset($options['group']) && in_array($options['group'], self::tableColumns())) {
+            $queryBuilder->select($options['group']);
+            $queryBuilder->groupBy($options['group']);
         }
 
-        if ($orderBy != 'id') {
-            $sql .= $orderSep . 'id DESC';
+        $stmt = $this->getPersistence()->query(
+            'SELECT count(*) as count FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return intval($data['count']);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $filter
+     */
+    private function addFilter(QueryBuilder $queryBuilder, array $filter)
+    {
+        $colName = strtolower($filter[0]);
+        $operation = strtolower($filter[1]);
+        $val = $filter[2];
+        $val2 = isset($filter[3]) ? $filter[3] : null;
+
+        if (!in_array($colName, $this->tableColumns())) {
+            return;
         }
-        
-        $page = isset($params['page']) ? (intval($params['page']) - 1) : 0;
-        $rows = isset($params['rows']) ? intval($params['rows']) : 25;
 
-        if ($page < 0) {
-            $page = 0;
+        if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
+            return;
+        }
+        $params = [];
+        if ($operation === 'between') {
+            $condition = "r.$colName between ? AND ?";
+            $params[] = $val;
+            $params[] = $val2;
+        } else {
+            $condition = "r.$colName $operation ?";
+            $params[] = $val;
         }
 
-        $sql .= ' LIMIT ? OFFSET ?';
-        $parameters[] = $rows;
-        $parameters[] = $page * $rows;
+        $queryBuilder->andWhere($condition);
 
-        $stmt = $this->getPersistence()->query($sql, $parameters);
-        
-        $ret = [];
-        $ret['data'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        
-        $countSql = str_replace('SELECT *', 'SELECT COUNT(id)', $sql);
-        $countSql = mb_strcut($countSql, 0, mb_strpos($countSql, 'ORDER BY'));
-        $parameters = array_slice($parameters, 0, count($parameters)-2);
-        
-        $stmt = $this->getPersistence()->query($countSql, $parameters);
-        $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
-        $ret['records'] = array_shift($total);
-        
-        return $ret;
+        $params = array_merge($queryBuilder->getParameters(), $params);
+        $queryBuilder->setParameters($params);
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
+    private function getQueryBuilder()
+    {
+        return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from(self::EVENT_LOG_TABLE_NAME, 'r');
     }
 
     /**
@@ -205,8 +251,11 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     public function getPersistence()
     {
+        $persistenceId = $this->getOption(self::OPTION_PERSISTENCE);
         if (is_null($this->persistence)) {
-            $this->persistence = common_persistence_Manager::getPersistence($this->getOption(self::OPTION_PERSISTENCE));
+            $this->persistence = $this->getServiceManager()
+                ->get(common_persistence_Manager::SERVICE_ID)
+                ->getPersistenceById($persistenceId);
         }
 
         return $this->persistence;

@@ -47,14 +47,30 @@ interface StorageInterface
      * @param array $data
      * @return mixed
      */
-    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
+    public function log(
+        $eventName = '',
+        $currentAction = '',
+        $userIdentifier = '',
+        $userRole = '',
+        $occurred = '',
+        $data = []
+    );
 
     /**
      * Select
-     * 
-     * @param array $params
+     *
+     * @param array $filters
+     * @param array $options
      * @return array
      */
-    public function searchInstances(array $params = []);
-    
+    public function search(array $filters = [], array $options = []);
+
+    /**
+     * Count records in log which are meet the search criteria
+     *
+     * @param array $filters
+     * @param array $options
+     * @return integer
+     */
+    public function count(array $filters = [], array $options = []);
 }
