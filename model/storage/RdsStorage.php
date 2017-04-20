@@ -45,11 +45,11 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     private $persistence;
 
-    /** @var array */
-    protected $parameters;
-
     /** @var string */
-    protected $sql;
+    protected $sql = '';
+
+    /** @var array */
+    protected $parameters = [];
 
     /**
      * @param string $eventName

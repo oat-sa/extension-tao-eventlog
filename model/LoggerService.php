@@ -118,6 +118,24 @@ class LoggerService extends ConfigurableService
      */
     protected function prepareParams(array $params)
     {
+        return $this->getStorage()->search($this->prepareParams($params));
+    }
+
+    /**
+     * @param array $params
+     * @return int
+     */
+    public function count(array $params = [])
+    {
+        return self::getStorage()->count($this->prepareParams($params));
+    }
+
+    /**
+     * @param $params
+     * @return mixed
+     */
+    protected function prepareParams(array $params)
+    {
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
 

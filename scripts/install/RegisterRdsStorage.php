@@ -48,7 +48,6 @@ class RegisterRdsStorage extends common_ext_action_InstallAction
         $persistenceId = count($params) > 0 ? reset($params) : 'default';
         $storageService = new RdsStorage([RdsStorage::OPTION_PERSISTENCE => $persistenceId]);
         $this->registerService(StorageInterface::SERVICE_ID, $storageService);
-
         $this->createTable($storageService->getPersistence());
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered and created EventLog Rds Storage'));
     }

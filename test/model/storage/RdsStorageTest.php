@@ -111,7 +111,6 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
                 'test_action_' . $i,
                 'test_user_' . $i,
                 'role_' . (($i%5)+1) . ',role_2' . (($i%5)+2),
-                //'2017-04-19T12:'.($i%60).':11+0000',
                 '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00',
                 ['id'=>$i]
             );
