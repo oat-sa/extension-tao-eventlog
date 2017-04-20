@@ -106,7 +106,7 @@ class LoggerService extends ConfigurableService
      */
     public function count(array $params = [])
     {
-        return $this->getStorage()->count($this->prepareParams($params));
+        return self::getStorage()->count($this->prepareParams($params));
     }
 
     /**

@@ -147,7 +147,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     public function count(array $params = [])
     {
-        $this->sql = 'SELECT COUNT(id) FROM ' . self::EVENT_LOG_TABLE_NAME;
+        $this->sql = 'SELECT COUNT('.self::EVENT_LOG_ID.') FROM ' . self::EVENT_LOG_TABLE_NAME;
         $this->prepareQuery($params);
         $stmt = $this->getPersistence()->query($this->sql, $this->parameters);
         $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
