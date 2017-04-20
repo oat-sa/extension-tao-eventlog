@@ -113,24 +113,6 @@ class LoggerService extends ConfigurableService
     }
 
     /**
-     * @param array $params
-     * @return array
-     */
-    protected function prepareParams(array $params)
-    {
-        return $this->getStorage()->search($this->prepareParams($params));
-    }
-
-    /**
-     * @param array $params
-     * @return int
-     */
-    public function count(array $params = [])
-    {
-        return self::getStorage()->count($this->prepareParams($params));
-    }
-
-    /**
      * @param $params
      * @return mixed
      */
@@ -158,7 +140,6 @@ class LoggerService extends ConfigurableService
     private static function getStorage()
     {
         $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
-
         return ServiceManager::getServiceManager()->get($storage);
     }
 }
