@@ -50,11 +50,19 @@ interface StorageInterface
     public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
 
     /**
-     * Select
+     * Search records in log which are meet the search criteria
      * 
      * @param array $params
      * @return array
      */
-    public function searchInstances(array $params = []);
-    
+    public function search(array $params = []);
+
+    /**
+     * Count records in log which are meet the search criteria
+     *
+     * @param array $params
+     * @return integer
+     */
+    public function count(array $params = []);
+
 }
