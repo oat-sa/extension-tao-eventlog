@@ -104,7 +104,6 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     public function search(array $params = [])
     {
         $this->sql = 'SELECT * FROM ' . self::EVENT_LOG_TABLE_NAME;
-        $this->parameters = [];
         $this->prepareQuery($params);
 
         $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
@@ -149,7 +148,6 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     public function count(array $params = [])
     {
         $this->sql = 'SELECT COUNT(id) FROM ' . self::EVENT_LOG_TABLE_NAME;
-        $this->parameters = [];
         $this->prepareQuery($params);
         $stmt = $this->getPersistence()->query($this->sql, $this->parameters);
         $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
@@ -161,6 +159,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     protected function prepareQuery(array $params)
     {
+        $this->parameters = [];
         if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
             $this->addSqlCondition($this->sql, self::EVENT_LOG_OCCURRED . '>= ?');
             $this->parameters[] = $params['periodStart'];
@@ -196,7 +195,6 @@ class RdsStorage extends ConfigurableService implements StorageInterface
         }
 
         if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
-
             $this->addSqlCondition($this->sql, self::EVENT_LOG_OCCURRED . " >= ? ");
             $this->parameters[] = $params['till']->format(DateTime::ISO8601);
         }
