@@ -98,7 +98,7 @@ class LoggerService extends ConfigurableService
      */
     public function searchInstances(array $filters = [], array $options = [])
     {
-        return $this->getStorage()->search($this->prepareParams($filters), $options);
+        return $this->getStorage()->search($filters, $options);
     }
 
     /**
@@ -109,29 +109,7 @@ class LoggerService extends ConfigurableService
      */
     public function count(array $filters = [], array $options = [])
     {
-        return $this->getStorage()->count($this->prepareParams($filters, $options));
-    }
-
-    /**
-     * @param $params
-     * @return mixed
-     */
-    protected function prepareParams(array $params)
-    {
-        /** @var common_session_Session $session */
-        $session = common_session_SessionManager::getSession();
-
-        $timeZone = $session->getTimeZone();
-        $utc = new \DateTimeZone('UTC');
-
-        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
-            $params['periodStart'] = (new DateTime($params['periodStart'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
-        }
-
-        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
-            $params['periodEnd'] = (new DateTime($params['periodEnd'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
-        }
-        return $params;
+        return $this->getStorage()->count($filters, $options);
     }
 
     /**

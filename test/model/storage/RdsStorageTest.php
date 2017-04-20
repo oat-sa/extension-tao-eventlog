@@ -83,6 +83,13 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
         ]);
         $this->assertEquals(11, count($result));
         $this->assertEquals('test_user_29', $result[0][RdsStorage::EVENT_LOG_USER_ID]);//default order is desc
+
+
+        $result = $storage->search([
+            [RdsStorage::EVENT_LOG_EVENT_NAME, 'like', '%_EvEnT_10%'], //case insensitive like
+        ]);
+        $this->assertEquals(1, count($result));
+        $this->assertEquals('test_event_10', $result[0][RdsStorage::EVENT_LOG_EVENT_NAME]);
     }
 
     /**

@@ -210,6 +210,9 @@ class RdsStorage extends ConfigurableService implements StorageInterface
             $condition = "r.$colName between ? AND ?";
             $params[] = $val;
             $params[] = $val2;
+        } else if ($operation === 'like') {
+            $condition = "lower(r.$colName) $operation ?";
+            $params[] = strtolower($val);
         } else {
             $condition = "r.$colName $operation ?";
             $params[] = $val;

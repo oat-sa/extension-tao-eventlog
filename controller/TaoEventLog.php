@@ -32,6 +32,7 @@ use tao_helpers_Uri;
 use tao_helpers_Date;
 use oat\tao\model\datatable\implementation\DatatableRequest;
 use Slim\Http\Request;
+use oat\taoEventLog\model\datatable\EventLogDatatable;
 
 /**
  * Sample controller
@@ -67,64 +68,7 @@ class TaoEventLog extends tao_actions_CommonModule
      */
     public function search()
     {
-        $params = $this->getRequestParameters();
-        $filters = [];
-
-        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
-            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '>', $params['periodStart']];
-        }
-        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
-            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '<', $params['periodEnd']];
-        }
-        if ((isset($params['periodStart']) && isset($params['periodStart']))) {
-            $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, 'between', $params['periodStart'], $params['periodEnd']];
-        }
-        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns'])) {
-            $column = current($params['filtercolumns']);
-            $filters[] = [$column, 'like', '%' . $params['filterquery'] . '%'];
-        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
-            $filters[] = [RdsStorage::EVENT_LOG_EVENT_NAME, 'like', '%' . $params['filterquery'] . '%'];
-            $filters[] = [RdsStorage::EVENT_LOG_ACTION, 'like', '%' . $params['filterquery'] . '%'];
-            $filters[] = [RdsStorage::EVENT_LOG_USER_ID, 'like', '%' . $params['filterquery'] . '%'];
-            $filters[] = [RdsStorage::EVENT_LOG_USER_ROLES, 'like', '%' . $params['filterquery'] . '%'];
-        }
-
-        $datatableRequest = DatatableRequest::fromGlobals();
-        $results = [
-            'data' => $this->loggerService->searchInstances($filters, [
-                'limit'=>$datatableRequest->getRows(),
-                'offset'=>($datatableRequest->getPage() - 1) * $datatableRequest->getRows(),
-                'sort'=>$datatableRequest->getSortBy(),
-                'order'=>$datatableRequest->getSortOrder(),
-            ]),
-            'records' => $this->loggerService->count($filters),
-        ];
-
-        // prettify data
-        array_walk($results['data'], function (&$row) {
-
-            $date = new DateTime($row['occurred'], new \DateTimeZone('UTC'));
-            $row['occurred'] = tao_helpers_Date::displayeDate($date->getTimestamp());
-
-            $row['raw'] = array_map(null, $row);
-
-            $row['id'] = 'identifier-' . $row['id'];
-
-            $eventNameChunks = explode('\\', $row['event_name']);
-            $row['event_name'] = array_pop($eventNameChunks);
-            $row['user_id'] = tao_helpers_Uri::getUniqueId($row['user_id']) ?: $row['user_id'];
-
-            $roles = explode(',', $row['user_roles']);
-            foreach ($roles as &$role) {
-                $role =  tao_helpers_Uri::getUniqueId($role);
-            }
-            $row['user_roles'] = join(', ', $roles);
-        });
-
-        $results['page'] = $this->getRequestParameter('page');
-        $results['total'] = ceil($results['records'] / $this->getRequestParameter('rows'));
-        
-        $this->returnJson($results, 200);
+        $this->returnJson(new EventLogDatatable());
     }
 
     /**
