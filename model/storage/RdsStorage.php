@@ -44,6 +44,12 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     private $persistence;
 
+    /** @var string */
+    protected $sql = '';
+
+    /** @var array */
+    protected $parameters = [];
+
     /**
      * @param string $eventName
      * @param string $currentAction
@@ -95,65 +101,24 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      * @param array $params
      * @return array
      */
-    public function searchInstances(array $params = [])
+    public function search(array $params = [])
     {
-        $sql = 'SELECT * FROM ' . self::EVENT_LOG_TABLE_NAME;
-
-        $parameters = [];
-
-        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '>= ?');
-            $parameters[] = $params['periodStart'];
-        }
-
-        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . '<= ?');
-            $parameters[] = $params['periodEnd'];
-        }
-
-        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns']) 
-                && in_array(current($params['filtercolumns']), self::tableColumns())) {
-
-            $column = current($params['filtercolumns']);
-
-            $this->addSqlCondition($sql, $column . " LIKE ?");
-
-            $parameters[] = '%' . $params['filterquery'] . '%';
-
-        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
-
-            $condition = self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
-                . self::EVENT_LOG_ACTION . " LIKE ? OR "
-                . self::EVENT_LOG_USER_ID . " LIKE ? OR "
-                . self::EVENT_LOG_USER_ROLES . " LIKE ? "
-            ;
-
-            $this->addSqlCondition($sql, $condition);
-
-            for ($i = 0; $i < 4; $i++) {
-                $parameters[] = '%' . $params['filterquery'] . '%';
-            }
-        }
-
-        if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
-
-            $this->addSqlCondition($sql, self::EVENT_LOG_OCCURRED . " >= ? ");
-            $parameters[] = $params['till']->format(DateTime::ISO8601);
-        }
+        $this->sql = 'SELECT * FROM ' . self::EVENT_LOG_TABLE_NAME;
+        $this->prepareQuery($params);
 
         $orderBy = isset($params['sortby']) ? $params['sortby'] : '';
         $orderDir = isset($params['sortorder']) ? strtoupper($params['sortorder']) : ' ASC';
 
-        $sql .= ' ORDER BY ';
+        $this->sql .= ' ORDER BY ';
         $orderSep = '';
 
         if (in_array($orderBy, self::tableColumns()) && in_array($orderDir, ['ASC', 'DESC'])) {
-            $sql .= $orderBy . ' ' . $orderDir;
+            $this->sql .= $orderBy . ' ' . $orderDir;
             $orderSep = ', ';
         }
 
         if ($orderBy != 'id') {
-            $sql .= $orderSep . 'id DESC';
+            $this->sql .= $orderSep . 'id DESC';
         }
         
         $page = isset($params['page']) ? (intval($params['page']) - 1) : 0;
@@ -163,24 +128,76 @@ class RdsStorage extends ConfigurableService implements StorageInterface
             $page = 0;
         }
 
-        $sql .= ' LIMIT ? OFFSET ?';
-        $parameters[] = $rows;
-        $parameters[] = $page * $rows;
+        $this->sql .= ' LIMIT ? OFFSET ?';
+        $this->parameters[] = $rows;
+        $this->parameters[] = $page * $rows;
 
-        $stmt = $this->getPersistence()->query($sql, $parameters);
+        $stmt = $this->getPersistence()->query($this->sql, $this->parameters);
         
         $ret = [];
         $ret['data'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        
-        $countSql = str_replace('SELECT *', 'SELECT COUNT(id)', $sql);
-        $countSql = mb_strcut($countSql, 0, mb_strpos($countSql, 'ORDER BY'));
-        $parameters = array_slice($parameters, 0, count($parameters)-2);
-        
-        $stmt = $this->getPersistence()->query($countSql, $parameters);
-        $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
-        $ret['records'] = array_shift($total);
-        
+        $ret['records'] = $this->count($params);
+
         return $ret;
+    }
+
+    /**
+     * @param array $params
+     * @return integer
+     */
+    public function count(array $params = [])
+    {
+        $this->sql = 'SELECT COUNT('.self::EVENT_LOG_ID.') FROM ' . self::EVENT_LOG_TABLE_NAME;
+        $this->prepareQuery($params);
+        $stmt = $this->getPersistence()->query($this->sql, $this->parameters);
+        $total = current($stmt->fetchAll(\PDO::FETCH_ASSOC));
+        return array_shift($total);
+    }
+
+    /**
+     * @param array $params
+     */
+    protected function prepareQuery(array $params)
+    {
+        $this->parameters = [];
+        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
+            $this->addSqlCondition($this->sql, self::EVENT_LOG_OCCURRED . '>= ?');
+            $this->parameters[] = $params['periodStart'];
+        }
+
+        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
+            $this->addSqlCondition($this->sql, self::EVENT_LOG_OCCURRED . '<= ?');
+            $this->parameters[] = $params['periodEnd'];
+        }
+
+        if (isset($params['filterquery']) && isset($params['filtercolumns']) && count($params['filtercolumns'])
+            && in_array(current($params['filtercolumns']), self::tableColumns())) {
+
+            $column = current($params['filtercolumns']);
+
+            $this->addSqlCondition($this->sql, $column . " LIKE ?");
+
+            $this->parameters[] = '%' . $params['filterquery'] . '%';
+
+        } elseif (isset($params['filterquery']) && !empty($params['filterquery'])) {
+
+            $condition = self::EVENT_LOG_EVENT_NAME . " LIKE ? OR "
+                . self::EVENT_LOG_ACTION . " LIKE ? OR "
+                . self::EVENT_LOG_USER_ID . " LIKE ? OR "
+                . self::EVENT_LOG_USER_ROLES . " LIKE ? "
+            ;
+
+            $this->addSqlCondition($this->sql, $condition);
+
+            for ($i = 0; $i < 4; $i++) {
+                $this->parameters[] = '%' . $params['filterquery'] . '%';
+            }
+        }
+
+        if (isset($params['till']) && $params['till'] instanceof DateTimeImmutable) {
+            $this->addSqlCondition($this->sql, self::EVENT_LOG_OCCURRED . " >= ? ");
+            $this->parameters[] = $params['till']->format(DateTime::ISO8601);
+        }
     }
 
     /**
@@ -205,8 +222,11 @@ class RdsStorage extends ConfigurableService implements StorageInterface
      */
     public function getPersistence()
     {
+        $persistenceId = $this->getOption(self::OPTION_PERSISTENCE);
         if (is_null($this->persistence)) {
-            $this->persistence = common_persistence_Manager::getPersistence($this->getOption(self::OPTION_PERSISTENCE));
+            $this->persistence = $this->getServiceManager()
+                ->get(common_persistence_Manager::SERVICE_ID)
+                ->getPersistenceById($persistenceId);
         }
 
         return $this->persistence;
