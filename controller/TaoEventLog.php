@@ -22,16 +22,10 @@
 namespace oat\taoEventLog\controller;
 
 
-use DateTime;
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use oat\taoEventLog\model\LoggerService;
-use oat\taoEventLog\model\storage\RdsStorage;
 use tao_actions_CommonModule;
-use tao_helpers_Uri;
-use tao_helpers_Date;
-use oat\tao\model\datatable\implementation\DatatableRequest;
-use Slim\Http\Request;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 
 /**
