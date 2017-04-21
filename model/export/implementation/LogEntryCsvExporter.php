@@ -50,11 +50,14 @@ class LogEntryCsvExporter implements Exporter
      */
     public function export(array $params = [])
     {
-        $params['rows'] = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
-        $params['till'] = (new DateTimeImmutable())->sub(new DateInterval($this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_PERIOD)));
+        $from = (new DateTimeImmutable())
+            ->sub(new DateInterval($this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_PERIOD)))
+            ->format(\DateTime::ISO8601);
+        $options['limit'] = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
+        $filters[] = ['occurred', '>' , $from];
 
-        $data = $this->loggerService->searchInstances($params);
+        $data = $this->loggerService->searchInstances($filters, $options);
 
-        return $data['data'];
+        return $data;
     }
 }
