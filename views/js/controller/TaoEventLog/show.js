@@ -114,6 +114,7 @@ define([
                 sortorder: 'desc',
                 filter: true,
                 rowSelection: true,
+                filterStrategy: 'multiple',
                 model: [{
                     id: 'identifier',
                     label: __('ID'),

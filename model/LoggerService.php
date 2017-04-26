@@ -92,43 +92,24 @@ class LoggerService extends ConfigurableService
     }
 
     /**
-     * @param array $params
+     * @param array $filters
+     * @param array $options
      * @return array
      */
-    public function searchInstances(array $params = [])
+    public function searchInstances(array $filters = [], array $options = [])
     {
-        return $this->getStorage()->search($this->prepareParams($params));
+        return $this->getStorage()->search($filters, $options);
     }
 
     /**
-     * @param array $params
-     * @return int
+     * Count records in log which are meet the search criteria
+     * @param array $filters
+     * @param array $options
+     * @return integer
      */
-    public function count(array $params = [])
+    public function count(array $filters = [], array $options = [])
     {
-        return self::getStorage()->count($this->prepareParams($params));
-    }
-
-    /**
-     * @param $params
-     * @return mixed
-     */
-    protected function prepareParams(array $params)
-    {
-        /** @var common_session_Session $session */
-        $session = common_session_SessionManager::getSession();
-
-        $timeZone = $session->getTimeZone();
-        $utc = new \DateTimeZone('UTC');
-
-        if ((isset($params['periodStart']) && !empty($params['periodStart']))) {
-            $params['periodStart'] = (new DateTime($params['periodStart'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
-        }
-
-        if ((isset($params['periodEnd']) && !empty($params['periodEnd']))) {
-            $params['periodEnd'] = (new DateTime($params['periodEnd'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(DateTime::ISO8601);
-        }
-        return $params;
+        return $this->getStorage()->count($filters, $options);
     }
 
     /**
@@ -137,7 +118,6 @@ class LoggerService extends ConfigurableService
     private static function getStorage()
     {
         $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
-
         return ServiceManager::getServiceManager()->get($storage);
     }
 }
