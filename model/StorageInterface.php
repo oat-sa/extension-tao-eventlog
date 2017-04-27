@@ -52,17 +52,19 @@ interface StorageInterface
     /**
      * Search records in log which are meet the search criteria
      * 
-     * @param array $params
+     * @param array $filters
+     * @param array $options
      * @return array
      */
-    public function search(array $params = []);
+    public function search(array $filters = [], array $options = []);
 
     /**
      * Count records in log which are meet the search criteria
      *
-     * @param array $params
+     * @param array $filters
+     * @param array $options
      * @return integer
      */
-    public function count(array $params = []);
+    public function count(array $filters = [], array $options = []);
 
 }
