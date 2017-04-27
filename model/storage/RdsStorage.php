@@ -73,6 +73,21 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
+     * @param LogEntity[] $logEntities
+     * @return boolean
+     */
+    public function bulkLog(array $logEntities)
+    {
+        $i = 0;
+        foreach ($logEntities as $logEntity) {
+            if ($this->log($logEntity)) {
+                $i++;
+            }
+        }
+        return $i === count($logEntities);
+    }
+
+    /**
      * @param DateTimeImmutable $beforeDate
      * @return mixed
      */

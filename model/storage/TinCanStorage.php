@@ -23,7 +23,6 @@ namespace oat\taoEventLog\model\storage;
 
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
-use oat\oatbox\user\User;
 use oat\generis\model\OntologyAwareTrait;
 use oat\taoEventLog\model\LogEntity;
 
@@ -84,6 +83,37 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to LRS ' . $e->getMessage());
         }
+    }
+
+    /**
+     * @param array $logEntities
+     * @return boolean
+     */
+    public function bulkLog(array $logEntities)
+    {
+        $lrs = $this->getLrs();
+
+        $statements = [];
+        foreach ($logEntities as $logEntity) {
+            $statements[] = new \TinCan\Statement([
+                'actor' => $this->getActor($logEntity),
+                'verb'  => $this->getVerb($logEntity),
+                'object' => $this->getObject($logEntity),
+                'context' => $this->getContext($logEntity),
+                'timestamp' => $logEntity->getTime()->format('Y-m-d\TH:i:s.uP'),
+            ]);
+        }
+        try {
+            $response = $lrs->saveStatements($statements);
+            if (!$response->success) {
+                \common_Logger::e($response->content);
+            }
+        } catch (\Exception $e) {
+            \common_Logger::e('Error logging to LRS ' . $e->getMessage());
+            return false;
+        }
+
+        return $response->success;
     }
 
     /**

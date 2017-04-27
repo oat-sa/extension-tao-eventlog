@@ -121,11 +121,19 @@ class LoggerService extends ConfigurableService
     }
 
     /**
+     * @return mixed
+     */
+    public function flush()
+    {
+        return $this->getStorage()->flush();
+    }
+
+    /**
      * @return RdsStorage|StorageInterface
      */
-    private static function getStorage()
+    private function getStorage()
     {
-        $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
-        return ServiceManager::getServiceManager()->get($storage);
+        $storage = $this->getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
+        return $this->getServiceManager()->get($storage);
     }
 }
