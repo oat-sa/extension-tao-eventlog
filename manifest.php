@@ -22,10 +22,10 @@ return array(
     'label' => 'Test-taker Event Logging',
     'description' => 'The event logging system that catches and logs all actions of test-takers',
     'license' => 'GPL-2.0',
-    'version' => '0.8.0',
+    'version' => '1.0.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => array(
-        'tao' => '>=7.3.0',
+        'tao' => '>=9.0.0',
         'generis' => '>=3.25.0',
     ),
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
@@ -55,9 +55,6 @@ return array(
 
         #BASE URL (usually the domain root)
         'BASE_URL' => ROOT_URL . 'taoEventLog/',
-
-        #BASE WWW required by JS
-        'BASE_WWW' => ROOT_URL . 'taoEventLog/views/'
     ),
     'extra' => array(
         'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
