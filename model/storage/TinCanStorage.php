@@ -21,10 +21,6 @@
 
 namespace oat\taoEventLog\model\storage;
 
-use common_persistence_Manager;
-use common_persistence_Persistence;
-use common_persistence_SqlPersistence;
-use DateTimeImmutable;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\oatbox\user\User;
@@ -32,6 +28,7 @@ use oat\generis\model\OntologyAwareTrait;
 use oat\oatbox\event\Event;
 use oat\taoEventLog\model\event\TinCanEvent;
 use oat\dtms\DateTime;
+
 /**
  * Class TinCanStorage
  *
@@ -85,7 +82,7 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
             $statement = new \TinCan\Statement([
                 'actor' => $this->getActor($event, $currentUser),
                 'verb'  => $this->getVerb($event, $currentUser),
-                'object' => $this->getActivity($event, $currentAction),
+                'object' => $this->getObject($event, $currentAction),
                 'context' => $this->getContext($event, $currentUser),
                 'timestamp' => $occurred->format('Y-m-d\TH:i:s.uP'),
             ]);
@@ -102,13 +99,25 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
-     * @param array $params
+     * @param array $filters
+     * @param array $options
      * @return array
      */
-    public function searchInstances(array $params = [])
+    public function search(array $filters = [], array $options = [])
     {
         //ToDo: implement fetching reports
         return [];
+    }
+
+    /**
+     * @param array $filters
+     * @param array $options
+     * @return array
+     */
+    public function count(array $filters = [], array $options = [])
+    {
+        //ToDo: implement count reports
+        return null;
     }
 
     /**
@@ -171,7 +180,7 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
      * @param string $currentAction
      * @return \TinCan\Activity
      */
-    protected function getActivity(Event $event, $currentAction = '')
+    protected function getObject(Event $event, $currentAction = '')
     {
         if ($event instanceof TinCanEvent) {
             $activity = $event->getActivity();
