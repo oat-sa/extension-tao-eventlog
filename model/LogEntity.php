@@ -53,7 +53,7 @@ class LogEntity
      * @param DateTime $time
      * @param array $data
      */
-    public function __construct(Event $event, $action, User $user, DateTime $time, array $data = [])
+    public function __construct(Event $event, $action, User $user, DateTime $time, $data = [])
     {
         $this->event = $event;
         $this->action = $action;
