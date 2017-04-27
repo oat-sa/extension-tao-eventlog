@@ -40,6 +40,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
 {
     const OPTION_PERSISTENCE = 'persistence';
     const EVENT_LOG_TABLE_NAME = 'event_log';
+    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * Persistence for DB
@@ -69,7 +70,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
                 self::EVENT_LOG_ACTION => $currentAction,
                 self::EVENT_LOG_USER_ID => $user->getIdentifier(),
                 self::EVENT_LOG_USER_ROLES => join(',', $user->getRoles()),
-                self::EVENT_LOG_OCCURRED => $occurred->format(DateTime::ISO8601),
+                self::EVENT_LOG_OCCURRED => $occurred->format(self::DATE_TIME_FORMAT),
                 self::EVENT_LOG_PROPERTIES => json_encode($data),
             ]
         );
@@ -85,7 +86,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     {
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
+        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATE_TIME_FORMAT)]);
     }
 
     /**

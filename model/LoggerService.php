@@ -33,6 +33,7 @@ use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\storage\RdsStorage;
 use oat\dtms\DateTime;
+
 /**
  * Class LoggerService
  * @package oat\taoEventLog\model
@@ -54,11 +55,15 @@ class LoggerService extends ConfigurableService
         $action = 'cli' === php_sapi_name()
             ? $_SERVER['PHP_SELF']
             : Context::getInstance()->getRequest()->getRequestURI();
+
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
+
         /** @var common_user_User $currentUser */
         $currentUser = $session->getUser();
+
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
+
         try {
             $this->getStorage()->log(
                 $event,
