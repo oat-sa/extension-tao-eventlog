@@ -25,9 +25,7 @@ use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\oatbox\user\User;
 use oat\generis\model\OntologyAwareTrait;
-use oat\oatbox\event\Event;
-use oat\taoEventLog\model\event\TinCanEvent;
-use oat\dtms\DateTime;
+use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class TinCanStorage
@@ -61,30 +59,20 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     const OPTION_AUTH = 'auth';
 
     /**
-     * @param Event $event
-     * @param string $currentAction
-     * @param User $user
-     * @param DateTime $occurred
-     * @param array $data
+     * @param LogEntity $logEntity
      * @return bool
      */
-    public function log(Event $event, $currentAction, User $user, DateTime $occurred, $data = [])
+    public function log(LogEntity $logEntity)
     {
-        /** @var common_session_Session $session */
-        $session = \common_session_SessionManager::getSession();
-
-        /** @var User $currentUser */
-        $currentUser = $session->getUser();
-
         try {
             $lrs = $this->getLrs();
 
             $statement = new \TinCan\Statement([
-                'actor' => $this->getActor($event, $currentUser),
-                'verb'  => $this->getVerb($event, $currentUser),
-                'object' => $this->getObject($event, $currentAction),
-                'context' => $this->getContext($event, $currentUser),
-                'timestamp' => $occurred->format('Y-m-d\TH:i:s.uP'),
+                'actor' => $this->getActor($logEntity),
+                'verb'  => $this->getVerb($logEntity),
+                'object' => $this->getObject($logEntity),
+                'context' => $this->getContext($logEntity),
+                'timestamp' => $logEntity->getTime()->format('Y-m-d\TH:i:s.uP'),
             ]);
 
             $response = $lrs->saveStatement($statement);
@@ -146,27 +134,26 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
-     * @param Event $event
-     * @param User $user
+     * @param LogEntity $logEntity
      * @return \TinCan\Agent
      */
-    protected function getActor(Event $event, User $user)
+    protected function getActor(LogEntity $logEntity)
     {
         $actor = new \TinCan\Agent([
-            'name' => \oat\tao\helpers\UserHelper::getUserName($user, true),
-            'openid' => _url('tao', 'Users', 'index', ['#' => \tao_helpers_Uri::encode($user->getIdentifier())]),
+            'name' => \oat\tao\helpers\UserHelper::getUserName($logEntity->getUser(), true),
+            'openid' => _url('tao', 'Users', 'index', ['#' => \tao_helpers_Uri::encode($logEntity->getUser()->getIdentifier())]),
         ]);
 
         return $actor;
     }
 
     /**
-     * @param Event $event
-     * @param User $user
+     * @param LogEntity $logEntity
      * @return mixed
      */
-    protected function getVerb(Event $event, User $user)
+    protected function getVerb(LogEntity $logEntity)
     {
+        $event = $logEntity->getEvent();
         if ($event instanceof TinCanEvent) {
             $verb = $event->getVerb();
         } else {
@@ -176,29 +163,29 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
-     * @param Event $event
-     * @param string $currentAction
+     * @param LogEntity $logEntity
      * @return \TinCan\Activity
      */
-    protected function getObject(Event $event, $currentAction = '')
+    protected function getObject(LogEntity $logEntity)
     {
+        $event = $logEntity->getEvent();
         if ($event instanceof TinCanEvent) {
             $activity = $event->getActivity();
         } else {
             $activity = new \TinCan\Activity([
-                'id' => $this->getRootUrl() . 'activities#' . $currentAction
+                'id' => $this->getRootUrl() . 'activities#' . $logEntity->getAction()
             ]);
         }
         return $activity;
     }
 
     /**
-     * @param Event $event
-     * @param User $user
+     * @param LogEntity $logEntity
      * @return \TinCan\Context
      */
-    protected function getContext(Event $event, User $user)
+    protected function getContext(LogEntity $logEntity)
     {
+        $event = $logEntity->getEvent();
         if ($event instanceof TinCanEvent) {
             $context = $event->getContext();
         } else {
@@ -208,7 +195,7 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
         }
 
         $extensions = $context->getExtensions();
-        $extensions->set(PROPERTY_USER_ROLES, join(',', $user->getRoles()));
+        $extensions->set(PROPERTY_USER_ROLES, join(',', $logEntity->getUser()->getRoles()));
 
         $context->setExtensions($extensions);
 
