@@ -27,6 +27,7 @@ use oat\oatbox\service\ServiceManager;
 use oat\oatbox\event\Event;
 use oat\oatbox\user\User;
 use oat\dtms\DateTime;
+use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class RdsStorageTest
@@ -122,13 +123,15 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
             $userProphecy->getIdentifier()->willReturn('test_user_' . $i);
             $userProphecy->getRoles()->willReturn(['role_' . (($i%5)+1) , 'role_2' . (($i%5)+2)]);
 
-            $storage->log(
+            $logEntity = new LogEntity(
                 $eventProphecy->reveal(),
                 'test_action_' . $i,
                 $userProphecy->reveal(),
                 DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00'),
                 ['id'=>$i]
             );
+
+            $storage->log($logEntity);
         }
     }
 }

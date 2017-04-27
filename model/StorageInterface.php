@@ -21,10 +21,6 @@
 
 namespace oat\taoEventLog\model;
 
-use oat\dtms\DateTime;
-use oat\oatbox\event\Event;
-use oat\oatbox\user\User;
-
 /**
  * Interface StorageInterface
  * @package oat\taoEventLog\model
@@ -43,14 +39,9 @@ interface StorageInterface
 
     /**
      * Creates new log record
-     * @param Event $event
-     * @param string $currentAction
-     * @param User $user
-     * @param DateTime $occurred
-     * @param array $data
-     * @return mixed
+     * @param LogEntity $logEntity
      */
-    public function log(Event $event, $currentAction, User $user, DateTime $occurred, $data = []);
+    public function log(LogEntity $logEntity);
 
     /**
      * Search records in log which are meet the search criteria

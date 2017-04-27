@@ -31,6 +31,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use oat\oatbox\event\Event;
 use oat\oatbox\user\User;
 use oat\dtms\DateTime;
+use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class RdsStorage
@@ -55,23 +56,19 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     protected $parameters = [];
 
     /**
-     * @param Event $event
-     * @param string $currentAction
-     * @param User $user
-     * @param DateTime $occurred
-     * @param array $data
+     * @param LogEntity $logEntity
      * @return bool
      */
-    public function log(Event $event, $currentAction, User $user, DateTime $occurred, $data = [])
+    public function log(LogEntity $logEntity)
     {
         $result = $this->getPersistence()->insert(
             self::EVENT_LOG_TABLE_NAME, [
-                self::EVENT_LOG_EVENT_NAME => $event->getName(),
-                self::EVENT_LOG_ACTION => $currentAction,
-                self::EVENT_LOG_USER_ID => $user->getIdentifier(),
-                self::EVENT_LOG_USER_ROLES => join(',', $user->getRoles()),
-                self::EVENT_LOG_OCCURRED => $occurred->format(self::DATE_TIME_FORMAT),
-                self::EVENT_LOG_PROPERTIES => json_encode($data),
+                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
+                self::EVENT_LOG_ACTION => $logEntity->getAction(),
+                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
+                self::EVENT_LOG_USER_ROLES => join(',', $logEntity->getUser()->getRoles()),
+                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
+                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
             ]
         );
 

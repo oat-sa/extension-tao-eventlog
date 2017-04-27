@@ -64,14 +64,16 @@ class LoggerService extends ConfigurableService
 
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
 
+        $logEntity = new LogEntity(
+            $event,
+            $action,
+            $currentUser,
+            (new DateTime('now', new \DateTimeZone('UTC'))),
+            $data
+        );
+
         try {
-            $this->getStorage()->log(
-                $event,
-                $action,
-                $currentUser,
-                (new DateTime('now', new \DateTimeZone('UTC'))),
-                $data
-            );
+            $this->getStorage()->log($logEntity);
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to DB ' . $e->getMessage());
         }
