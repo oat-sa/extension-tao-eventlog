@@ -28,7 +28,17 @@ use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class ProxyStorage
-
+ *
+ * Configuration example:
+ * ```
+ * use oat\taoEventLog\model\storage\ProxyStorage;
+ * return new ProxyStorage([
+ *   ProxyStorage::OPTION_PERSISTENCE => 'eventLogProxy',
+ *   ProxyStorage::OPTION_INTERNAL_STORAGE => new oat\taoEventLog\model\storage\RdsStorage([
+ *     'persistence' => 'default'
+ *   ])
+ * ]);
+ *
  * @package oat\taoEventLog\model\storage
  * @author Aleh Hutnikau <hutnikau@1pt.com>
  */

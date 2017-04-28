@@ -31,7 +31,6 @@ use oat\taoEventLog\model\LogEntity;
  *
  * Configuration example:
  * ```php
- *
  * use \oat\taoEventLog\model\storage\TinCanStorage;
  *
  * return new TinCanStorage([
@@ -123,6 +122,12 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
      */
     public function search(array $filters = [], array $options = [])
     {
+        $options = $this->prepareOptions($options);
+        $filters = $this->prepareFilters($filters);
+
+
+        //$statement = $this->getLrs()->retrieveStatement('bd8399d6-2d87-4d94-be34-821f02a7fffa');
+        //$statement->content;
         //ToDo: implement fetching reports
         return [];
     }
@@ -139,13 +144,73 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
+     * @param array $options
+     * @return array
+     */
+    protected function prepareOptions(array $options)
+    {
+        $result = [];
+        if (isset($options['limit'])) {
+            $result['limit'] = intval($options['limit']);
+        }
+        if (isset($options['offset'])) {
+            //not supported by xAPI
+        }
+        $order = isset($options['order']) ? strtoupper($options['order']) : 'ASC';
+        if ($order === 'ASC') {
+            $result['ascending'] = true;
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $filters
+     * @return array
+     */
+    protected function prepareFilters(array $filters)
+    {
+        $result = [];
+        foreach ($filters as $filter) {
+            $propName = strtolower($filter[0]);
+            $operation = strtolower($filter[1]);
+            $val = $filter[2];
+            $val2 = isset($filter[3]) ? $filter[3] : null;
+
+            if (!in_array($propName, ['agent', 'verb', 'activity'])) {
+                return;
+            }
+
+            if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
+                return;
+            }
+            $params = [];
+            if ($operation === 'between') {
+                $condition = "r.$colName between ? AND ?";
+                $params[] = $val;
+                $params[] = $val2;
+            } else if ($operation === 'like') {
+                $condition = "lower(r.$colName) $operation ?";
+                $params[] = strtolower($val);
+            } else {
+                $condition = "r.$colName $operation ?";
+                $params[] = $val;
+            }
+
+            $queryBuilder->andWhere($condition);
+
+            $params = array_merge($queryBuilder->getParameters(), $params);
+            $queryBuilder->setParameters($params);
+        }
+        return $result;
+    }
+
+    /**
      * @return string
      */
     protected function getRootUrl()
     {
         return \tao_helpers_Uri::getRootUrl();
     }
-
 
     /**
      * @return \TinCan\RemoteLRS
@@ -171,7 +236,10 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     {
         $actor = new \TinCan\Agent([
             'name' => \oat\tao\helpers\UserHelper::getUserName($logEntity->getUser(), true),
-            'openid' => _url('tao', 'Users', 'index', ['#' => \tao_helpers_Uri::encode($logEntity->getUser()->getIdentifier())]),
+            'account' => [
+                'name' => $logEntity->getUser()->getIdentifier(),
+                'homePage' => _url('index', 'Main', 'tao', ['structure'=>'users', 'ext' => 'tao', 'section' => 'list_users']),
+            ]
         ]);
 
         return $actor;
