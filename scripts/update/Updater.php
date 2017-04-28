@@ -174,5 +174,14 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('0.6.0', '0.7.0');
+
+        if ($this->isVersion('0.7.0')) {
+            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
+                $eventManager->attach('oat\\taoProctoring\\model\\event\\DeliveryExecutionFinished', [LoggerService::class, 'logEvent']);
+                $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+            }
+            $this->setVersion('0.8.0');
+        }
+        $this->skip('0.8.0', '1.0.0');
     }
 }
