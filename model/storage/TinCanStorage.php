@@ -56,6 +56,8 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     const OPTION_VERSION = 'version';
     const OPTION_AUTH = 'auth';
 
+    const DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+
     /**
      * @param LogEntity $logEntity
      * @return bool
@@ -124,12 +126,30 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     {
         $options = $this->prepareOptions($options);
         $filters = $this->prepareFilters($filters);
+        $result = [];
 
-
-        //$statement = $this->getLrs()->retrieveStatement('bd8399d6-2d87-4d94-be34-821f02a7fffa');
-        //$statement->content;
-        //ToDo: implement fetching reports
-        return [];
+        $query = array_merge($filters, $options);
+        $statements = $this->getLrs()->queryStatements($query);
+        /** @var \TinCan\Statement $statement */
+        if ($statements->success) {
+            foreach ($statements->content->getStatements() as $statement) {
+                $extensions = $statement->getContext()->getExtensions()->asVersion();
+                $result[] = [
+                    self::EVENT_LOG_ID => $statement->getId(),
+                    self::EVENT_LOG_ACTION => $statement->getObject()->getId(),
+                    self::EVENT_LOG_EVENT_NAME => $statement->getVerb()->getId(),
+                    self::EVENT_LOG_OCCURRED => $statement->getTimestamp(),
+                    self::EVENT_LOG_USER_ROLES => isset($extensions[PROPERTY_USER_ROLES]) ? $extensions[PROPERTY_USER_ROLES] : null,
+                    self::EVENT_LOG_USER_ID => $statement->getActor()->getAccount()->getName(),
+                    self::EVENT_LOG_PROPERTIES => isset($extensions[GENERIS_NS . '#eventData']) ?
+                        json_encode($extensions[GENERIS_NS . '#eventData']) : null,
+                ];
+            }
+        }
+        if (isset($options['offset'])) {
+            $result = array_slice($result, $options['offset']);
+        }
+        return $result;
     }
 
     /**
@@ -139,8 +159,16 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
      */
     public function count(array $filters = [], array $options = [])
     {
-        //ToDo: implement count reports
-        return null;
+        $options = $this->prepareOptions($options);
+        $filters = $this->prepareFilters($filters);
+
+        $result = 0;
+        $statements = $this->getLrs()->queryStatements(array_merge($filters, $options));
+        /** @var \TinCan\Statement $statement */
+        if ($statements->success) {
+            $result = count($statements->content->getStatements());
+        }
+        return $result;
     }
 
     /**
@@ -149,11 +177,16 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
      */
     protected function prepareOptions(array $options)
     {
-        $result = [];
-        if (isset($options['limit'])) {
-            $result['limit'] = intval($options['limit']);
-        }
+        $result = [
+            'offset' => 0,
+        ];
         if (isset($options['offset'])) {
+            $result['offset'] = intval($options['offset']);
+        }
+        if (isset($options['limit'])) {
+            $result['limit'] = $result['offset'] + intval($options['limit']);
+        }
+        if (isset($options['sort'])) {
             //not supported by xAPI
         }
         $order = isset($options['order']) ? strtoupper($options['order']) : 'ASC';
@@ -173,33 +206,46 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
         foreach ($filters as $filter) {
             $propName = strtolower($filter[0]);
             $operation = strtolower($filter[1]);
-            $val = $filter[2];
-            $val2 = isset($filter[3]) ? $filter[3] : null;
+            $val = trim($filter[2], '%');
+            $val2 = isset($filter[3]) ? trim($filter[3], '%') : null;
 
-            if (!in_array($propName, ['agent', 'verb', 'activity'])) {
-                return;
+            if ($propName === self::EVENT_LOG_ID) {
+                $result['statementId'] = $val;
             }
-
-            if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
-                return;
+            if ($propName === self::EVENT_LOG_USER_ID) {
+                $userUri = LOCAL_NAMESPACE . '#' . $val;
+                $result['agent'] = new \TinCan\Agent([
+                    'account' => [
+                        'name' => $userUri,
+                        'homePage' => _url('index', 'Main', 'tao', ['structure'=>'users', 'ext' => 'tao', 'section' => 'list_users']),
+                    ]
+                ]);;
             }
-            $params = [];
-            if ($operation === 'between') {
-                $condition = "r.$colName between ? AND ?";
-                $params[] = $val;
-                $params[] = $val2;
-            } else if ($operation === 'like') {
-                $condition = "lower(r.$colName) $operation ?";
-                $params[] = strtolower($val);
-            } else {
-                $condition = "r.$colName $operation ?";
-                $params[] = $val;
+            if ($propName === self::EVENT_LOG_USER_ROLES) {
+                //can't filter by extensions
             }
-
-            $queryBuilder->andWhere($condition);
-
-            $params = array_merge($queryBuilder->getParameters(), $params);
-            $queryBuilder->setParameters($params);
+            if ($propName === self::EVENT_LOG_EVENT_NAME) {
+                $result['verb'] = new \TinCan\Verb([
+                    'id' => $this->getRootUrl() . 'events#' . str_replace('\\', '/', $val)
+                ]);
+            }
+            if ($propName === self::EVENT_LOG_ACTION) {
+                //todo
+            }
+            if ($propName === self::EVENT_LOG_OCCURRED) {
+                $val = \DateTime::createFromFormat(\DateTime::ISO8601, $val);
+                $val2 = \DateTime::createFromFormat(\DateTime::ISO8601, $val2);
+                if ($operation === 'between') {
+                    $result['since'] = $val->format(self::DATE_TIME_FORMAT);
+                    $result['until'] = $val2->format(self::DATE_TIME_FORMAT);
+                }
+                if ($operation === '>') {
+                    $result['since'] = $val;
+                }
+                if ($operation === '<') {
+                    $result['until'] = $val;
+                }
+            }
         }
         return $result;
     }
@@ -294,6 +340,7 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
 
         $extensions = $context->getExtensions();
         $extensions->set(PROPERTY_USER_ROLES, join(',', $logEntity->getUser()->getRoles()));
+        $extensions->set(GENERIS_NS . '#eventData', json_encode($logEntity->getData()));
 
         $context->setExtensions($extensions);
 
