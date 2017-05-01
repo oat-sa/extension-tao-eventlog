@@ -117,6 +117,7 @@ class ProxyStorage extends ConfigurableService implements StorageInterface
         }
         $this->getInternalStorage()->bulkLog($logEntities);
         $persistence->purge();
+        return $id;
     }
 
     /**
