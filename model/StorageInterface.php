@@ -39,15 +39,9 @@ interface StorageInterface
 
     /**
      * Creates new log record
-     * @param string $eventName
-     * @param string $currentAction
-     * @param string $userIdentifier
-     * @param string $userRole
-     * @param string $occurred
-     * @param array $data
-     * @return mixed
+     * @param LogEntity $logEntity
      */
-    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRole = '', $occurred = '', $data = []);
+    public function log(LogEntity $logEntity);
 
     /**
      * Search records in log which are meet the search criteria

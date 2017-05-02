@@ -24,11 +24,14 @@ namespace oat\taoEventLog\model\storage;
 use common_persistence_Manager;
 use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
-use DateTime;
 use DateTimeImmutable;
 use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
+use oat\oatbox\event\Event;
+use oat\oatbox\user\User;
+use oat\dtms\DateTime;
+use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class RdsStorage
@@ -38,6 +41,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
 {
     const OPTION_PERSISTENCE = 'persistence';
     const EVENT_LOG_TABLE_NAME = 'event_log';
+    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * Persistence for DB
@@ -52,24 +56,19 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     protected $parameters = [];
 
     /**
-     * @param string $eventName
-     * @param string $currentAction
-     * @param string $userIdentifier
-     * @param string $userRoles
-     * @param string $occurred
-     * @param array $data
+     * @param LogEntity $logEntity
      * @return bool
      */
-    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRoles = '', $occurred = '', $data = [])
+    public function log(LogEntity $logEntity)
     {
         $result = $this->getPersistence()->insert(
             self::EVENT_LOG_TABLE_NAME, [
-                self::EVENT_LOG_EVENT_NAME => $eventName,
-                self::EVENT_LOG_ACTION => $currentAction,
-                self::EVENT_LOG_USER_ID => $userIdentifier,
-                self::EVENT_LOG_USER_ROLES => $userRoles,
-                self::EVENT_LOG_OCCURRED => $occurred,
-                self::EVENT_LOG_PROPERTIES => json_encode($data),
+                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
+                self::EVENT_LOG_ACTION => $logEntity->getAction(),
+                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
+                self::EVENT_LOG_USER_ROLES => join(',', $logEntity->getUser()->getRoles()),
+                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
+                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
             ]
         );
 
@@ -84,7 +83,7 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     {
         $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
+        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATE_TIME_FORMAT)]);
     }
 
     /**

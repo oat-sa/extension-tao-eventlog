@@ -21,10 +21,13 @@
 
 namespace oat\taoEventLog\test\model\requestLog\rds;
 
-use oat\dtms\DateTime;
 use oat\tao\test\TaoPhpUnitTestRunner;
 use oat\taoEventLog\model\storage\RdsStorage;
 use oat\oatbox\service\ServiceManager;
+use oat\oatbox\event\Event;
+use oat\oatbox\user\User;
+use oat\dtms\DateTime;
+use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class RdsStorageTest
@@ -113,14 +116,22 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
     protected function loadFixtures(RdsStorage $storage)
     {
         for ($i = 0; $i < 60; $i++) {
-            $storage->log(
-                'test_event_' . $i,
+            $eventProphecy = $this->prophesize(Event::class);
+            $eventProphecy->getName()->willReturn('test_event_' . $i);
+
+            $userProphecy = $this->prophesize(User::class);
+            $userProphecy->getIdentifier()->willReturn('test_user_' . $i);
+            $userProphecy->getRoles()->willReturn(['role_' . (($i%5)+1) , 'role_2' . (($i%5)+2)]);
+
+            $logEntity = new LogEntity(
+                $eventProphecy->reveal(),
                 'test_action_' . $i,
-                'test_user_' . $i,
-                'role_' . (($i%5)+1) . ',role_2' . (($i%5)+2),
-                '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00',
+                $userProphecy->reveal(),
+                DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00'),
                 ['id'=>$i]
             );
+
+            $storage->log($logEntity);
         }
     }
 }
