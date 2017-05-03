@@ -66,7 +66,7 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
 
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoDeliveryRdf')
         ) {
             $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
@@ -74,12 +74,12 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         }
 
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('funcAcl')) {
             $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
         }
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoTests')) {
             $this->registerEvent('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
@@ -88,12 +88,12 @@ class RegisterLoggerService extends common_ext_action_InstallAction
             $this->registerEvent('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
         }
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoDacSimple')) {
             $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
         }
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoTestTaker')) {
             $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
@@ -104,7 +104,7 @@ class RegisterLoggerService extends common_ext_action_InstallAction
         }
 
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoItems')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoItems')) {
             $this->registerEvent('oat\\taoItems\\model\\event\\ItemExportEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoItems\\model\\event\\ItemImportEvent', [LoggerService::class, 'logEvent']);
             $this->registerEvent('oat\\taoItems\\model\\event\\ItemCreatedEvent', [LoggerService::class, 'logEvent']);
@@ -113,7 +113,7 @@ class RegisterLoggerService extends common_ext_action_InstallAction
             $this->registerEvent('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
         }
 
-        if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoProctoring')) {
+        if (common_ext_ExtensionsManager::singleton()->isInstalled('taoProctoring')) {
             $this->registerEvent('oat\\taoProctoring\\model\\event\\DeliveryExecutionFinished', [LoggerService::class, 'logEvent']);
         }
 
