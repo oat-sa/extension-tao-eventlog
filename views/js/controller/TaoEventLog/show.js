@@ -67,12 +67,15 @@ define([
             });
 
             var updateEventDetails = function updateEventDetails(event) {
-                var key;
+                var key, json, str;
                 for (key in event) {
                     if (event.hasOwnProperty(key)) {
                         if (key === 'properties') {
-                            var json = JSON.parse(event[key]);
-                            var str = JSON.stringify(json, undefined, 2);
+                            json = JSON.parse(event[key]);
+                            if (json !== null && typeof json !== 'object') {
+                                json = JSON.parse(json);
+                            }
+                            str = JSON.stringify(json, undefined, 2);
                             $('.' + key, $eventViewer).html(
                                 '<pre>' + str + '</pre>'
                             );
