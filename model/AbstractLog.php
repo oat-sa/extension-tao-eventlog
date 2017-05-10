@@ -14,41 +14,56 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2017  (original work) Open Assessment Technologies SA;
  * 
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
 namespace oat\taoEventLog\model;
 
+use oat\oatbox\event\Event;
+use oat\oatbox\service\ConfigurableService;
+
 /**
- * Interface StorageInterface
+ * Class AbstractLog
  * @package oat\taoEventLog\model
+ * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-interface StorageInterface
+abstract class AbstractLog extends ConfigurableService
 {
-    /**
-     * Creates new log record
-     * @param LogEntity $logEntity
-     */
-    public function log(LogEntity $logEntity);
+    const OPTION_STORAGE = 'storage';
 
     /**
-     * Search records in log which are meet the search criteria
-     * 
+     * @param Event $event
+     */
+    abstract public function log(Event $event);
+
+    /**
      * @param array $filters
      * @param array $options
      * @return array
      */
-    public function search(array $filters = [], array $options = []);
+    public function search(array $filters = [], array $options = [])
+    {
+        return $this->getStorage()->search($filters, $options);
+    }
 
     /**
      * Count records in log which are meet the search criteria
-     *
      * @param array $filters
      * @param array $options
      * @return integer
      */
-    public function count(array $filters = [], array $options = []);
+    public function count(array $filters = [], array $options = [])
+    {
+        return $this->getStorage()->count($filters, $options);
+    }
 
+    /**
+     * @return StorageInterface
+     */
+    protected function getStorage()
+    {
+        $storage = $this->getOption(self::OPTION_STORAGE);
+        return $storage;
+    }
 }

@@ -34,7 +34,7 @@ use oat\tao\model\event\UserCreatedEvent;
 use oat\tao\model\event\UserRemovedEvent;
 use oat\tao\model\event\UserUpdatedEvent;
 use oat\taoEventLog\model\LoggerService;
-use oat\taoEventLog\model\StorageInterface;
+use oat\taoEventLog\model\storage\RdsStorage;
 
 /**
  * Class RegisterLoggerService
@@ -50,7 +50,7 @@ class RegisterLoggerService extends common_ext_action_InstallAction
     public function __invoke($params)
     {
         $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
-            LoggerService::OPTION_STORAGE => StorageInterface::SERVICE_ID,
+            LoggerService::OPTION_STORAGE => RdsStorage::SERVICE_ID,
             LoggerService::OPTION_ROTATION_PERIOD => 'P90D',
             LoggerService::OPTION_EXPORTABLE_QUANTITY => 10000,
             LoggerService::OPTION_EXPORTABLE_PERIOD => 'PT24H'
