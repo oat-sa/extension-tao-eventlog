@@ -66,6 +66,25 @@ define([
                 }
             });
 
+            var updateEventDetails = function updateEventDetails(event) {
+                var key;
+                for (key in event) {
+                    if (event.hasOwnProperty(key)) {
+                        if (key === 'properties') {
+                            var json = JSON.parse(event[key]);
+                            var str = JSON.stringify(json, undefined, 2);
+                            $('.' + key, $eventViewer).html(
+                                '<pre>' + str + '</pre>'
+                            );
+                        } else if (key === 'user_roles') {
+                            $('.' + key, $eventViewer).html(event['user_roles'].split(',').join('<br>'));
+                        } else {
+                            $('.' + key, $eventViewer).html(event[key]);
+                        }
+                    }
+                }
+            };
+
             $filterRange.on('submit', function() {
 
                 $eventList.datatable('options', {
@@ -77,25 +96,6 @@ define([
 
                 $eventList.datatable('refresh');
             });
-
-
-            var updateEventDetails = function updateEventDetails(event) {
-                for (var k in event) {
-                    if (event.hasOwnProperty(k)) {
-                        if (k == 'properties') {
-                            var json = JSON.parse(JSON.parse(event[k]));
-                            var str = JSON.stringify(json, undefined, 2);
-                            $('.' + k, $eventViewer).html(
-                                '<pre>' + str + '</pre>'
-                            );
-                        } else if (k == 'user_roles') {
-                            $('.' + k, $eventViewer).html(event['user_roles'].split(',').join('<br>'));
-                        } else {
-                            $('.' + k, $eventViewer).html(event[k]);
-                        }
-                    }
-                }
-            };
 
             $exportLink.on('click', function () {
                 exporter({
