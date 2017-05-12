@@ -21,70 +21,54 @@
 
 namespace oat\taoEventLog\model\storage;
 
-use common_persistence_Manager;
-use common_persistence_Persistence;
-use common_persistence_SqlPersistence;
-use DateTime;
+use oat\taoEventLog\model\LogEntity;
+use Doctrine\DBAL\Schema\SchemaException;
 use DateTimeImmutable;
-use oat\oatbox\service\ConfigurableService;
-use oat\taoEventLog\model\StorageInterface;
-use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Class RdsStorage
  * @package oat\taoEventLog\model\storage
  */
-class RdsStorage extends ConfigurableService implements StorageInterface
+class RdsStorage extends AbstractRdsStorage
 {
-    const OPTION_PERSISTENCE = 'persistence';
     const EVENT_LOG_TABLE_NAME = 'event_log';
 
+    const SERVICE_ID = 'taoEventLog/storage';
+
+    const EVENT_LOG_ID = self::ID;
+    const EVENT_LOG_EVENT_NAME = 'event_name';
+    const EVENT_LOG_ACTION = 'action';
+    const EVENT_LOG_USER_ID = 'user_id';
+    const EVENT_LOG_USER_ROLES = 'user_roles';
+    const EVENT_LOG_OCCURRED = 'occurred';
+    const EVENT_LOG_PROPERTIES = 'properties';
+
     /**
-     * Persistence for DB
-     * @var common_persistence_Persistence
+     * @return string
      */
-    private $persistence;
-
-    /** @var string */
-    protected $sql = '';
-
-    /** @var array */
-    protected $parameters = [];
+    public function getTableName()
+    {
+        return self::EVENT_LOG_TABLE_NAME;
+    }
 
     /**
-     * @param string $eventName
-     * @param string $currentAction
-     * @param string $userIdentifier
-     * @param string $userRoles
-     * @param string $occurred
-     * @param array $data
+     * @param LogEntity $logEntity
      * @return bool
      */
-    public function log($eventName = '', $currentAction = '', $userIdentifier = '', $userRoles = '', $occurred = '', $data = [])
+    public function log(LogEntity $logEntity)
     {
         $result = $this->getPersistence()->insert(
-            self::EVENT_LOG_TABLE_NAME, [
-                self::EVENT_LOG_EVENT_NAME => $eventName,
-                self::EVENT_LOG_ACTION => $currentAction,
-                self::EVENT_LOG_USER_ID => $userIdentifier,
-                self::EVENT_LOG_USER_ROLES => $userRoles,
-                self::EVENT_LOG_OCCURRED => $occurred,
-                self::EVENT_LOG_PROPERTIES => json_encode($data),
+            $this->getTableName(), [
+                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
+                self::EVENT_LOG_ACTION => $logEntity->getAction(),
+                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
+                self::EVENT_LOG_USER_ROLES => join(',', $logEntity->getUser()->getRoles()),
+                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
+                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
             ]
         );
 
         return $result === 1;
-    }
-
-    /**
-     * @param DateTimeImmutable $beforeDate
-     * @return mixed
-     */
-    public function removeOldLogEntries(DateTimeImmutable $beforeDate)
-    {
-        $sql = "DELETE FROM " . self::EVENT_LOG_TABLE_NAME . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
-
-        return $this->getPersistence()->query($sql, [$beforeDate->format(DateTime::ISO8601)]);
     }
 
     /**
@@ -98,143 +82,18 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
-     *
-     * Filters parameter example:
-     * ```
-     * [
-     *   ['user_id', 'in', ['http://sample/first.rdf#i1490617729993174', 'http://sample/first.rdf#i1490617729993174'],
-     *   ['occurred', 'between', '2017-04-13 15:29:21', '2017-04-14 15:29:21'],
-     *   ['action', '=', '/tao/Main/login'],
-     * ]
-     * ```
-     * Available operations: `<`, `>`, `<>`, `<=`, `>=`, `=`, `between`, `like`
-     *
-     * Options parameter example:
-     * ```
-     * [
-     *      'limit' => 100,
-     *      'offset' => 200,
-     *      'sort' => 'occurred',
-     *      'order' => 'ASC',
-     *      'group' => 'user_id,
-     * ]
-     * ```
-     *
-     *
-     * @param array $filters
-     * @param array $options
-     * @return array
-     * @todo return \Iterator instead of array
+     * @param DateTimeImmutable $beforeDate
+     * @return mixed
      */
-    public function search(array $filters = [], array $options = [])
+    public function removeOldLogEntries(DateTimeImmutable $beforeDate)
     {
-        $queryBuilder = $this->getQueryBuilder();
-        $queryBuilder->select('*');
-        if (isset($options['limit'])) {
-            $queryBuilder->setMaxResults(intval($options['limit']));
-        }
-        if (isset($options['offset'])) {
-            $queryBuilder->setFirstResult(intval($options['offset']));
-        }
-        if (isset($options['group']) && in_array($options['group'], self::tableColumns())) {
-            $queryBuilder->groupBy($options['group']);
-        }
+        $sql = "DELETE FROM " . $this->getTableName() . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
 
-        foreach ($filters as $filter) {
-            $this->addFilter($queryBuilder, $filter);
-        }
-
-        $sort = isset($options['sort']) ? $options['sort'] : '';
-        $order = isset($options['order']) ? strtoupper($options['order']) : ' ASC';
-
-        if (in_array($sort, self::tableColumns()) && in_array($order, ['ASC', 'DESC'])) {
-            $queryBuilder->addOrderBy($sort, $order);
-        }
-
-        if ($sort !== 'id') {
-            $queryBuilder->addOrderBy('id', 'DESC');
-        }
-
-
-        $sql = $queryBuilder->getSQL();
-        $params = $queryBuilder->getParameters();
-        $stmt = $this->getPersistence()->query($sql, $params);
-        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $data;
+        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATE_TIME_FORMAT)]);
     }
 
     /**
-     * @param array $filters
-     * @param array $options
-     * @return integer
-     */
-    public function count(array $filters = [], array $options = [])
-    {
-        $queryBuilder = $this->getQueryBuilder();
-        $queryBuilder->select(self::EVENT_LOG_USER_ID);
-
-        foreach ($filters as $filter) {
-            $this->addFilter($queryBuilder, $filter);
-        }
-        if (isset($options['group']) && in_array($options['group'], self::tableColumns())) {
-            $queryBuilder->select($options['group']);
-            $queryBuilder->groupBy($options['group']);
-        }
-
-        $stmt = $this->getPersistence()->query(
-            'SELECT count(*) as count FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
-        return intval($data['count']);
-    }
-
-    /**
-     * @param QueryBuilder $queryBuilder
-     * @param array $filter
-     */
-    private function addFilter(QueryBuilder $queryBuilder, array $filter)
-    {
-        $colName = strtolower($filter[0]);
-        $operation = strtolower($filter[1]);
-        $val = $filter[2];
-        $val2 = isset($filter[3]) ? $filter[3] : null;
-
-        if (!in_array($colName, $this->tableColumns())) {
-            return;
-        }
-
-        if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
-            return;
-        }
-        $params = [];
-        if ($operation === 'between') {
-            $condition = "r.$colName between ? AND ?";
-            $params[] = $val;
-            $params[] = $val2;
-        } else if ($operation === 'like') {
-            $condition = "lower(r.$colName) $operation ?";
-            $params[] = strtolower($val);
-        } else {
-            $condition = "r.$colName $operation ?";
-            $params[] = $val;
-        }
-
-        $queryBuilder->andWhere($condition);
-
-        $params = array_merge($queryBuilder->getParameters(), $params);
-        $queryBuilder->setParameters($params);
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Query\QueryBuilder
-     */
-    private function getQueryBuilder()
-    {
-        return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from(self::EVENT_LOG_TABLE_NAME, 'r');
-    }
-
-    /**
-     * Returns actual list of table columns with log data
-     * @return array
+     * @inheritdoc
      */
     public static function tableColumns()
     {
@@ -250,18 +109,41 @@ class RdsStorage extends ConfigurableService implements StorageInterface
     }
 
     /**
-     * @return common_persistence_SqlPersistence
+     * @inheritdoc
      */
-    public function getPersistence()
+    public static function install($persistence)
     {
-        $persistenceId = $this->getOption(self::OPTION_PERSISTENCE);
-        if (is_null($this->persistence)) {
-            $this->persistence = $this->getServiceManager()
-                ->get(common_persistence_Manager::SERVICE_ID)
-                ->getPersistenceById($persistenceId);
+        /** @var AbstractSchemaManager $schemaManager */
+        $schemaManager = $persistence->getDriver()->getSchemaManager();
+
+        /** @var Schema $schema */
+        $schema = $schemaManager->createSchema();
+        $fromSchema = clone $schema;
+
+        try {
+            $table = $schema->createTable(self::EVENT_LOG_TABLE_NAME);
+            $table->addOption('engine', 'MyISAM');
+
+            $table->addColumn(self::EVENT_LOG_ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
+            $table->addColumn(self::EVENT_LOG_EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
+            $table->addColumn(self::EVENT_LOG_ACTION, "string", ["notnull" => false, "length" => 1000, 'comment' => 'Current action']);
+            $table->addColumn(self::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
+            $table->addColumn(self::EVENT_LOG_USER_ROLES,  "text",     ["notnull" => true, 'default' => '', 'comment' => 'User roles']);
+            $table->addColumn(self::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
+            $table->addColumn(self::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
+
+            $table->setPrimaryKey([self::EVENT_LOG_ID]);
+            $table->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');
+            $table->addIndex([self::EVENT_LOG_ACTION], 'idx_action');
+            $table->addIndex([self::EVENT_LOG_USER_ID], 'idx_user_id');
+            $table->addIndex([self::EVENT_LOG_OCCURRED], 'idx_occurred');
+        } catch (SchemaException $e) {
+            \common_Logger::i('Database Schema for EventLog already up to date.');
         }
 
-        return $this->persistence;
+        $queries = $persistence->getPlatForm()->getMigrateSchemaSql($fromSchema, $schema);
+        foreach ($queries as $query) {
+            $persistence->exec($query);
+        }
     }
-
 }

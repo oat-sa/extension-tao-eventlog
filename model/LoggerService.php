@@ -25,24 +25,22 @@ use common_session_Session;
 use common_session_SessionManager;
 use common_user_User;
 use Context;
-use DateTime;
 use DateTimeImmutable;
 use JsonSerializable;
 use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
-use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\storage\RdsStorage;
+use oat\dtms\DateTime;
 
 /**
  * Class LoggerService
  * @package oat\taoEventLog\model
  */
-class LoggerService extends ConfigurableService
+class LoggerService extends AbstractLog
 {
     const SERVICE_ID = 'taoEventLog/logger';
 
-    const OPTION_STORAGE = 'storage';
     const OPTION_ROTATION_PERIOD = 'rotation_period';
     const OPTION_EXPORTABLE_PERIOD = 'exportable_period';
     const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
@@ -50,7 +48,7 @@ class LoggerService extends ConfigurableService
     /**
      * @param Event $event
      */
-    public static function logEvent(Event $event)
+    public function log(Event $event)
     {
         $action = 'cli' === php_sapi_name()
             ? $_SERVER['PHP_SELF']
@@ -64,20 +62,28 @@ class LoggerService extends ConfigurableService
 
         $data = is_subclass_of($event, JsonSerializable::class) ? $event : [];
 
+        $logEntity = new LogEntity(
+            $event,
+            $action,
+            $currentUser,
+            (new DateTime('now', new \DateTimeZone('UTC'))),
+            $data
+        );
+
         try {
-            static::getStorage()->log(
-                $event->getName(),
-                $action,
-                $currentUser->getIdentifier(),
-                join(',', $currentUser->getPropertyValues(PROPERTY_USER_ROLES)),
-                // time in the unix timestamp (like a utc)
-                (new DateTime('now', new \DateTimeZone('UTC')))->format(DateTime::ISO8601),
-                json_encode($data)
-            );
+            $this->getStorage()->log($logEntity);
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to DB ' . $e->getMessage());
         }
+    }
 
+    /**
+     * @deprecated use $this->log()
+     * @param Event $event
+     */
+    public static function logEvent(Event $event)
+    {
+        ServiceManager::getServiceManager()->get(self::SERVICE_ID)->log($event);
     }
 
     /**
@@ -94,28 +100,18 @@ class LoggerService extends ConfigurableService
     /**
      * @param array $filters
      * @param array $options
+     * @deprecated use LoggerService::search() instead
      * @return array
      */
     public function searchInstances(array $filters = [], array $options = [])
     {
-        return $this->getStorage()->search($filters, $options);
-    }
-
-    /**
-     * Count records in log which are meet the search criteria
-     * @param array $filters
-     * @param array $options
-     * @return integer
-     */
-    public function count(array $filters = [], array $options = [])
-    {
-        return $this->getStorage()->count($filters, $options);
+        return $this->search($filters, $options);
     }
 
     /**
      * @return RdsStorage|StorageInterface
      */
-    private static function getStorage()
+    protected function getStorage()
     {
         $storage = ServiceManager::getServiceManager()->get(self::SERVICE_ID)->getOption(self::OPTION_STORAGE);
         return ServiceManager::getServiceManager()->get($storage);
