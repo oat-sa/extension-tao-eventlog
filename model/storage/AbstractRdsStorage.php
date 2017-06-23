@@ -24,6 +24,7 @@ use common_persistence_Manager;
 use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
 use oat\oatbox\service\ConfigurableService;
+use oat\taoEventLog\model\RdsStorageInterface;
 use oat\taoEventLog\model\StorageInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
 use oat\taoEventLog\model\LogEntity;
@@ -33,7 +34,7 @@ use oat\taoEventLog\model\LogEntity;
  * @package oat\taoEventLog\model\storage
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-abstract class AbstractRdsStorage extends ConfigurableService implements StorageInterface
+abstract class AbstractRdsStorage extends ConfigurableService implements StorageInterface, RdsStorageInterface
 {
     const OPTION_PERSISTENCE = 'persistence';
     const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
@@ -50,17 +51,6 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
 
     /** @var array */
     protected $parameters = [];
-
-    /**
-     * @return string
-     */
-    abstract function getTableName();
-
-    /**
-     * @param LogEntity $logEntity
-     * @return bool
-     */
-    abstract public function log(LogEntity $logEntity);
 
     /**
      *
@@ -196,19 +186,6 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
     {
         return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from($this->getTableName(), 'r');
     }
-
-    /**
-     * Returns actual list of table columns
-     * @return array
-     */
-    abstract public static function tableColumns();
-
-    /**
-     * Install storage (create table).
-     * @param \common_persistence_SqlPersistence $persistence
-     * @return mixed
-     */
-    abstract public static function install($persistence);
 
     /**
      * @return common_persistence_SqlPersistence
