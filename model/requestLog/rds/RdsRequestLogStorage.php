@@ -21,8 +21,6 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
-use oat\oatbox\service\ServiceManager;
-use oat\taoEventLog\model\requestLog\RequestLogStorage;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\user\User;
@@ -35,7 +33,7 @@ use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
  * @package oat\taoEventLog\model\requestLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorage
+class RdsRequestLogStorage extends AbstractRequestLogStorage
 {
     const OPTION_PERSISTENCE = 'persistence_id';
     const TABLE_NAME = 'request_log';
@@ -202,7 +200,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
      * @param string $persistenceId
      * @return \common_report_Report
      */
-    static function install($persistenceId = 'default')
+    public static function install($persistenceId = 'default')
     {
         $persistence = \common_persistence_Manager::getPersistence($persistenceId);
 
@@ -229,10 +227,6 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
             $persistence->exec($query);
         }
 
-        ServiceManager::getServiceManager()->register(
-            self::SERVICE_ID,
-            new self([self::OPTION_PERSISTENCE => $persistenceId])
-        );
         return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
     }
 }
