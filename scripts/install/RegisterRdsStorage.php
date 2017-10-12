@@ -14,7 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016-2017  (original work) Open Assessment Technologies SA;
  *
  * @author Ivan Klimchuk <klimchuk@1pt.com>
  */
@@ -22,27 +22,36 @@
 namespace oat\taoEventLog\scripts\install;
 
 use common_exception_Error;
-use common_ext_action_InstallAction;
 use common_persistence_SqlPersistence;
 use common_report_Report;
+use oat\oatbox\extension\AbstractAction;
+use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\storage\RdsStorage;
 
 /**
  * Class RegisterRdsStorage
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterRdsStorage extends common_ext_action_InstallAction
+class RegisterRdsStorage extends AbstractAction
 {
     /**
      * @param $params
      * @return common_report_Report
+     * @throws \common_Exception
      * @throws common_exception_Error
      */
     public function __invoke($params)
     {
         $persistenceId = count($params) > 0 ? reset($params) : 'default';
-        $storageService = new RdsStorage([RdsStorage::OPTION_PERSISTENCE => $persistenceId]);
-        $this->registerService(RdsStorage::SERVICE_ID, $storageService);
+
+        try {
+            $storageService = $this->getServiceManager()->get(RdsStorage::SERVICE_ID);
+        } catch (ServiceNotFoundException $e) {
+            $storageService = new RdsStorage([RdsStorage::OPTION_PERSISTENCE => $persistenceId]);
+        }
+
+        $this->getServiceManager()->register(RdsStorage::SERVICE_ID, $storageService);
+
         $this->createTable($storageService->getPersistence());
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered and created EventLog Rds Storage'));
     }
