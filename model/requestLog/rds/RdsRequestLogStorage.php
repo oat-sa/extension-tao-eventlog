@@ -195,7 +195,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
     }
 
     /**
-     * Initialize RDS Request log storage and register serrvice.
+     * Initialize RDS Request log storage
      *
      * @param string $persistenceId
      * @return \common_report_Report
