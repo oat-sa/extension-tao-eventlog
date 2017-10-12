@@ -27,13 +27,13 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\oatbox\service\ServiceManager;
-use oat\taoEventLog\model\StorageInterface;
+use oat\taoEventLog\model\storage\RdsStorage;
 
-if (!ServiceManager::getServiceManager()->has(StorageInterface::SERVICE_ID)) {
+if (!ServiceManager::getServiceManager()->has(RdsStorage::SERVICE_ID)) {
     return;
 }
-
-$storageService = ServiceManager::getServiceManager()->get(StorageInterface::SERVICE_ID);
+/** @var RdsStorage $storageService */
+$storageService = ServiceManager::getServiceManager()->get(RdsStorage::SERVICE_ID);
 
 /** @var common_persistence_SqlPersistence $persistence */
 $persistence = $storageService->getPersistence();
@@ -46,7 +46,7 @@ $schema = $schemaManager->createSchema();
 $fromSchema = clone $schema;
 
 try {
-    $schema->dropTable(StorageInterface::EVENT_LOG_TABLE_NAME);
+    $schema->dropTable(RdsStorage::EVENT_LOG_TABLE_NAME);
 } catch (SchemaException $e) {
     common_Logger::i('Database Schema for EventLog can\'t be dropped.');
 }
