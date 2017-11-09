@@ -25,7 +25,7 @@ use common_exception_Error;
 use oat\oatbox\extension\InstallAction;
 use common_ext_ExtensionsManager;
 use common_report_Report;
-use oat\tao\model\event\ClassUpdatedEvent;
+use oat\tao\model\event\ClassFormUpdatedEvent;
 use oat\tao\model\event\LoginFailedEvent;
 use oat\tao\model\event\LoginSucceedEvent;
 use oat\tao\model\event\RoleChangedEvent;
@@ -68,7 +68,7 @@ class RegisterLoggerService extends InstallAction
         $this->registerEvent(UserCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserUpdatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(UserRemovedEvent::class, [LoggerService::class, 'logEvent']);
-        $this->registerEvent(ClassUpdatedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(ClassFormUpdatedEvent::class, [LoggerService::class, 'logEvent']);
 
         if ($extensionManager->isEnabled('taoDeliveryRdf')) {
             $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
