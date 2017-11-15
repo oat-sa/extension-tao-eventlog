@@ -22,7 +22,7 @@ return array(
     'label' => 'Test-taker Event Logging',
     'description' => 'The event logging system that catches and logs all actions of test-takers',
     'license' => 'GPL-2.0',
-    'version' => '1.2.0',
+    'version' => '1.3.0',
     'author' => 'Open Assessment Technologies SA',
     'requires' => array(
         'generis' => '>=3.25.0',
@@ -30,7 +30,6 @@ return array(
         'taoDeliveryRdf' => '*',
         'funcAcl' => '*',
         'taoTests' => '*',
-        'taoDacSimple' => '*',
         'taoTestTaker' => '*',
         'taoItems' => '*'
     ),
