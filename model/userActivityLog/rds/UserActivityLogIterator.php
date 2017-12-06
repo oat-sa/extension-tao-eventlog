@@ -19,14 +19,14 @@
  *
  */
 
-namespace oat\taoEventLog\model\requestLog\rds;
+namespace oat\taoEventLog\model\userActivityLog\rds;
 
 /**
- * Class RdsRequestLogIterator
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class UserActivityLogIterator
+ * @package oat\taoEventLog\model\userActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogIterator extends \oat\taoEventLog\model\RdsLogIterator
+class UserActivityLogIterator extends \oat\taoEventLog\model\RdsLogIterator
 {
 
 }

@@ -26,7 +26,7 @@ use oat\oatbox\user\User;
 /**
  * Interface UserActivityLog
  *
- * Service to log the last user activity.
+ * Service to log the user activity.
  * May be used to analize current load, get approximate amount of active users.
  *
  * @package oat\taoEventLog\model\userActivityLog

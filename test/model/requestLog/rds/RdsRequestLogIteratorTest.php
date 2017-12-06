@@ -26,7 +26,6 @@ use oat\oatbox\service\ServiceManager;
 use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage as RdsStorage;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogIterator;
-use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 
 /**
  * Class RdsRequestLogIteratorTest
@@ -250,9 +249,9 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
     {
         $serviceManager = ServiceManager::getServiceManager();
         try {
-            $service = $serviceManager->get(RdsRequestLogStorage::SERVICE_ID);
-            if ($service instanceof RdsRequestLogStorage) {
-                $persistenceId = $service->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE);
+            $service = $serviceManager->get(RdsStorage::SERVICE_ID);
+            if ($service instanceof RdsStorage) {
+                $persistenceId = $service->getOption(RdsStorage::OPTION_PERSISTENCE);
             } else {
                 $persistenceId = 'default';
             }

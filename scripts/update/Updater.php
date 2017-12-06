@@ -24,10 +24,11 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
-use oat\tao\model\event\ClassFormUpdatedEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\userActivityLog\rds\UserActivityLogStorage;
+use oat\oatbox\service\ServiceNotFoundException;
 
 /**
  * Class Updater
@@ -201,5 +202,21 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('1.2.0', '1.3.0');
+
+        if ($this->isVersion('1.3.0')) {
+            try {
+                $storageService = $this->getServiceManager()->get(UserActivityLogStorage::SERVICE_ID);
+            } catch (ServiceNotFoundException $e) {
+                $storageService = new UserActivityLogStorage([UserActivityLogStorage::OPTION_PERSISTENCE => 'default']);
+            }
+
+            $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
+            $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserActivityLogStorage::OPTION_PERSISTENCE));
+
+            UserActivityLogStorage::install($persistence);
+
+            $this->getServiceManager()->register(UserActivityLogStorage::SERVICE_ID, $storageService);
+            $this->setVersion('1.4.0');
+        }
     }
 }

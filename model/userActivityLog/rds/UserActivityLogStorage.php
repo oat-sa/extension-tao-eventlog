@@ -19,24 +19,23 @@
  *
  */
 
-namespace oat\taoEventLog\model\requestLog\rds;
+namespace oat\taoEventLog\model\userActivityLog\rds;
 
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
-use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
+use oat\taoEventLog\model\userActivityLog\UserActivityLog;
+use oat\oatbox\service\ConfigurableService;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class UserActivityLogStorage
+ * @package oat\taoEventLog\model\userActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage extends AbstractRequestLogStorage
+class UserActivityLogStorage extends ConfigurableService implements UserActivityLog
 {
     const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'request_log';
+    const TABLE_NAME = 'user_activity_log';
 
     const COLUMN_USER_ID = self::USER_ID;
     const COLUMN_USER_ROLES = self::USER_ROLES;
@@ -50,16 +49,8 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
     /**
      * @inheritdoc
      */
-    public function log(Request $request = null, User $user = null)
+    public function log(User $user, $action, array $details = [])
     {
-        if ($request === null) {
-            $request = ServerRequest::fromGlobals();
-        }
-
-        if ($user === null) {
-            $user = \common_session_SessionManager::getSession()->getUser();
-        }
-
         $userId = $user->getIdentifier();
         if ($userId === null) {
             $userId = get_class($user);
@@ -68,12 +59,11 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
         $data = [
             self::USER_ID => $userId,
             self::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
-            self::COLUMN_ACTION => $request->getUri(),
+            self::COLUMN_ACTION => strval($action),
             self::COLUMN_EVENT_TIME => microtime(true),
-            self::COLUMN_DETAILS => json_encode([
-                'method' => $request->getMethod(),
-            ]),
+            self::COLUMN_DETAILS => json_encode($details),
         ];
+        $this->getPersistence()->exec('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = \'' . $userId . '\'');
         $this->getPersistence()->insert(self::TABLE_NAME, $data);
     }
 
@@ -181,6 +171,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
 
     /**
      * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @throws
      */
     private function getQueryBuilder()
     {
@@ -195,15 +186,13 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
     }
 
     /**
-     * Initialize RDS Request log storage
+     * Initialize log storage
      *
-     * @param string $persistenceId
+     * @param \common_persistence_Persistence $persistence
      * @return \common_report_Report
      */
-    public static function install($persistenceId = 'default')
+    public static function install($persistence)
     {
-        $persistence = \common_persistence_Manager::getPersistence($persistenceId);
-
         $schemaManager = $persistence->getDriver()->getSchemaManager();
         $schema = $schemaManager->createSchema();
         $fromSchema = clone $schema;
