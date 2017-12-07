@@ -85,6 +85,8 @@ interface UserActivityLog
      *      'group' => 'user_id,
      * ]
      * ```
+     * Available options: 'limit', 'offset', 'group'.
+     *
      * @param array $filters filters by user id, url, role etc.
      * @param array $options
      * @return \Iterator
