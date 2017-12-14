@@ -37,9 +37,67 @@ use oat\taoEventLog\model\LogEntity;
 class RdsStorageTest extends TaoPhpUnitTestRunner
 {
 
+    public function testLog()
+    {
+        $storage = $this->getService();
+        $eventProphecy = $this->prophesize(Event::class);
+        $eventProphecy->getName()->willReturn('event name');
+
+        $userProphecy = $this->prophesize(User::class);
+        $userProphecy->getIdentifier()->willReturn('user_id');
+        $userProphecy->getRoles()->willReturn(['role_1', 'role_2']);
+
+        $logEntity = new LogEntity(
+            $eventProphecy->reveal(),
+            'action name',
+            $userProphecy->reveal(),
+            DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:00:00'),
+            ['id'=>1]
+        );
+
+        $this->assertEquals(0, $storage->count());
+
+        $storage->log($logEntity);
+
+        $result = $storage->search([
+            [RdsStorage::EVENT_LOG_USER_ID, '=', 'user_id']
+        ]);
+        $this->assertEquals(1, count($result));
+        $this->assertEquals('user_id', $result[0][RdsStorage::EVENT_LOG_USER_ID]);
+    }
+
+    public function testBulkLog()
+    {
+        $storage = $this->getService();
+        $logEntities = [];
+        for ($i = 0; $i < 5; $i++) {
+            $eventProphecy = $this->prophesize(Event::class);
+            $eventProphecy->getName()->willReturn('test_event_' . $i);
+
+            $userProphecy = $this->prophesize(User::class);
+            $userProphecy->getIdentifier()->willReturn('test_user_' . $i);
+            $userProphecy->getRoles()->willReturn(['role_' . (($i%5)+1) , 'role_2' . (($i%5)+2)]);
+
+            $logEntities[] = new LogEntity(
+                $eventProphecy->reveal(),
+                'test_action_' . $i,
+                $userProphecy->reveal(),
+                DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00'),
+                ['id'=>$i]
+            );
+        }
+
+        $this->assertEquals(0, $storage->count());
+
+        $storage->bulkLog($logEntities);
+
+        $this->assertEquals(5, $storage->count());
+    }
+
     public function testCount()
     {
         $storage = $this->getService();
+        $this->loadFixtures($storage);
         $this->assertEquals(60, $storage->count());
 
         $result = $storage->search([
@@ -51,6 +109,7 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
     public function testSearch()
     {
         $storage = $this->getService();
+        $this->loadFixtures($storage);
         $this->assertEquals(60, count($storage->search()));
 
         $result = $storage->search([
@@ -109,7 +168,6 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
         $config->set(\common_persistence_Manager::SERVICE_ID, $persistenceManager);
         $serviceManager = new ServiceManager($config);
         $storage->setServiceManager($serviceManager);
-        $this->loadFixtures($storage);
         return $storage;
     }
 

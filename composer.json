@@ -20,7 +20,8 @@
   },
   "minimum-stability": "dev",
   "require": {
-    "oat-sa/oatbox-extension-installer": "dev-master"
+    "oat-sa/oatbox-extension-installer": "dev-master",
+    "rusticisoftware/tincan": "dev-master"
   },
   "autoload": {
     "psr-4": {

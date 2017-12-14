@@ -34,6 +34,12 @@ interface StorageInterface
     public function log(LogEntity $logEntity);
 
     /**
+     * @param LogEntity[] $logEntities
+     * @return mixed
+     */
+    public function bulkLog(array $logEntities);
+
+    /**
      * Search records in log which are meet the search criteria
      * 
      * @param array $filters
