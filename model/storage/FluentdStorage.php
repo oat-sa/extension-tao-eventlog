@@ -25,21 +25,19 @@ use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\generis\model\OntologyAwareTrait;
 use oat\taoEventLog\model\LogEntity;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 
 /**
  * Class TinCanStorage
  *
  * Configuration example:
  * ```php
- * use \oat\taoEventLog\model\storage\TinCanStorage;
+ * use \oat\taoEventLog\model\storage\FluentdStorage;
  *
- * return new TinCanStorage([
- *    TinCanStorage::OPTION_VERSION => '1.0.1',
- *    TinCanStorage::OPTION_ENDPOINT => 'http://ll.com/data/xAPI/',
- *    TinCanStorage::OPTION_AUTH => [
- *        '8991ed3f721cfb5bbf57d8e0a3e448e1f56114c6',
- *        '07e6e0fe16dd07018ba327efcebe8cbfbb73d08b',
- *    ],
+ * return new FluentdStorage([
+ *    FluentdStorage::OPTION_ENDPOINT => 'http://192.168.202.192:8888',
+ *    FluentdStorage::OPTION_TAG => 'tao.frontend',
  * ]);
  *
  * ```
@@ -47,16 +45,23 @@ use oat\taoEventLog\model\LogEntity;
  * @package oat\taoEventLog\model\storage
  * @author Aleh Hutnikau <hutnikau@1pt.com>
  */
-class TinCanStorage extends ConfigurableService implements StorageInterface
+class FluentdStorage extends ConfigurableService implements StorageInterface
 {
     use OntologyAwareTrait;
 
-    const OPTION_PERSISTENCE = 'persistence';
     const OPTION_ENDPOINT = 'endpoint';
-    const OPTION_VERSION = 'version';
-    const OPTION_AUTH = 'auth';
+    const OPTION_TAG = 'tag';
 
-    const DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
+    /** @var Client */
+    private $client;
+
+    public function __construct(array $options = array())
+    {
+        parent::__construct($options);
+        $this->client = new Client([
+            'base_uri' => $this->getOption(self::OPTION_ENDPOINT)
+        ]);
+    }
 
     /**
      * @param LogEntity $logEntity
@@ -64,24 +69,28 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
     public function log(LogEntity $logEntity)
     {
         try {
-            $lrs = $this->getLrs();
+            $data = [
+                'actor' => $logEntity->getUser()->getIdentifier(),
+                'action'  => $logEntity->getAction(),
+                'data' => $logEntity->getData(),
+                'timestamp' => microtime(true),
+            ];
 
-            $statement = new \TinCan\Statement([
-                'actor' => $this->getActor($logEntity),
-                'verb'  => $this->getVerb($logEntity),
-                'object' => $this->getObject($logEntity),
-                'context' => $this->getContext($logEntity),
-                'timestamp' => $logEntity->getTime()->format('Y-m-d\TH:i:s.uP'),
-            ]);
+            $response = $this->client->post(
+                '/'.$this->getOption(self::OPTION_TAG),
+                [
+                    'form_params' => [
+                        'json' => json_encode($data)
+                    ]
+                ]
+            );
 
-            $response = $lrs->saveStatement($statement);
-
-            if (!$response->success) {
-                \common_Logger::e($response->content);
-            }
+//            if (!$response->success) {
+//                \common_Logger::e($response->content);
+//            }
 
         } catch (\Exception $e) {
-            \common_Logger::e('Error logging to LRS ' . $e->getMessage());
+            \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
         }
     }
 
@@ -249,100 +258,5 @@ class TinCanStorage extends ConfigurableService implements StorageInterface
         return $result;
     }
 
-    /**
-     * @return string
-     */
-    protected function getRootUrl()
-    {
-        return \tao_helpers_Uri::getRootUrl();
-    }
 
-    /**
-     * @return \TinCan\RemoteLRS
-     */
-    protected function getLrs()
-    {
-        $lrs = new \TinCan\RemoteLRS();
-        $lrs->setEndpoint($this->getOption(self::OPTION_ENDPOINT));
-        $lrs->setVersion($this->getOption(self::OPTION_VERSION));
-        $auth = $this->getOption(self::OPTION_AUTH);
-        if (!is_array($auth)) {
-            $auth = [$auth];
-        }
-        call_user_func_array([$lrs, 'setAuth'], $auth);
-        return $lrs;
-    }
-
-    /**
-     * @param LogEntity $logEntity
-     * @return \TinCan\Agent
-     */
-    protected function getActor(LogEntity $logEntity)
-    {
-        $actor = new \TinCan\Agent([
-            'name' => \oat\tao\helpers\UserHelper::getUserName($logEntity->getUser(), true),
-            'account' => [
-                'name' => $logEntity->getUser()->getIdentifier(),
-                'homePage' => _url('index', 'Main', 'tao', ['structure'=>'users', 'ext' => 'tao', 'section' => 'list_users']),
-            ]
-        ]);
-
-        return $actor;
-    }
-
-    /**
-     * @param LogEntity $logEntity
-     * @return mixed
-     */
-    protected function getVerb(LogEntity $logEntity)
-    {
-        $event = $logEntity->getEvent();
-        if ($event instanceof TinCanEvent) {
-            $verb = $event->getVerb();
-        } else {
-            $verb = new \TinCan\Verb(['id' => $this->getRootUrl() . 'events#' . str_replace('\\', '/', $event->getName())]);
-        }
-        return $verb;
-    }
-
-    /**
-     * @param LogEntity $logEntity
-     * @return \TinCan\Activity
-     */
-    protected function getObject(LogEntity $logEntity)
-    {
-        $event = $logEntity->getEvent();
-        if ($event instanceof TinCanEvent) {
-            $activity = $event->getActivity();
-        } else {
-            $activity = new \TinCan\Activity([
-                'id' => $this->getRootUrl() . 'activities#' . $logEntity->getAction()
-            ]);
-        }
-        return $activity;
-    }
-
-    /**
-     * @param LogEntity $logEntity
-     * @return \TinCan\Context
-     */
-    protected function getContext(LogEntity $logEntity)
-    {
-        $event = $logEntity->getEvent();
-        if ($event instanceof TinCanEvent) {
-            $context = $event->getContext();
-        } else {
-            $context = new \TinCan\Context([
-                'platform' => GENERIS_INSTANCE_NAME,
-            ]);
-        }
-
-        $extensions = $context->getExtensions();
-        $extensions->set(PROPERTY_USER_ROLES, join(',', $logEntity->getUser()->getRoles()));
-        $extensions->set(GENERIS_NS . '#eventData', json_encode($logEntity->getData()));
-
-        $context->setExtensions($extensions);
-
-        return $context;
-    }
 }
