@@ -23,8 +23,7 @@ namespace oat\taoEventLog\scripts\install;
 
 use oat\oatbox\extension\AbstractAction;
 use common_report_Report;
-use oat\tao\model\event\BeforeAction;
-use oat\oatbox\event\EventManager;
+use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 
 /**
@@ -36,14 +35,21 @@ class RegisterRequestLog extends AbstractAction
     /**
      * @param $params
      * @return common_report_Report
+     * @throws \common_Exception
      */
     public function __invoke($params)
     {
-        /** @var EventManager $eventManager */
-        $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
-        RdsRequestLogStorage::install('default');
-//        $eventManager->attach(BeforeAction::class, [RdsRequestLogStorage::SERVICE_ID, 'catchEvent']);
-//        $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+        try {
+            $storageService = $this->getServiceManager()->get(RdsRequestLogStorage::SERVICE_ID);
+        } catch (ServiceNotFoundException $e) {
+            $storageService = new RdsRequestLogStorage([RdsRequestLogStorage::OPTION_PERSISTENCE => 'default']);
+        }
+
+        RdsRequestLogStorage::install($storageService->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE));
+
+        $this->getServiceManager()->register(RdsRequestLogStorage::SERVICE_ID, $storageService);
+
+
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
     }
 }

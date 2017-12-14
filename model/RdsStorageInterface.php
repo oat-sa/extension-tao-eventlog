@@ -14,47 +14,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- * 
+ * Copyright (c) 2017  (original work) Open Assessment Technologies SA;
+ *
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
 namespace oat\taoEventLog\model;
 
-/**
- * Interface StorageInterface
- * @package oat\taoEventLog\model
- */
-interface StorageInterface
+
+interface RdsStorageInterface
 {
     /**
-     * Creates new log record
-     * @param LogEntity $logEntity
-     */
-    public function log(LogEntity $logEntity);
-
-    /**
-     * @param LogEntity[] $logEntities
-     * @return mixed
-     */
-    public function bulkLog(array $logEntities);
-
-    /**
-     * Search records in log which are meet the search criteria
-     * 
-     * @param array $filters
-     * @param array $options
+     * Returns actual list of table columns
      * @return array
      */
-    public function search(array $filters = [], array $options = []);
+    public static function tableColumns();
 
     /**
-     * Count records in log which are meet the search criteria
-     *
-     * @param array $filters
-     * @param array $options
-     * @return integer
+     * Install storage (create table).
+     * @param \common_persistence_SqlPersistence $persistence
+     * @return mixed
      */
-    public function count(array $filters = [], array $options = []);
+    public static function install($persistence);
 
+    /**
+     * @return string
+     */
+    public function getTableName();
 }

@@ -24,10 +24,10 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
+use oat\tao\model\event\ClassFormUpdatedEvent;
 use oat\taoEventLog\model\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
-use oat\tao\model\event\BeforeAction;
 
 /**
  * Class Updater
@@ -192,6 +192,14 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('1.0.1');
         }
 
-        $this->skip('1.0.1', '1.1.0');
+        $this->skip('1.0.1', '1.1.3');
+
+        if ($this->isVersion('1.1.3')) {
+            $eventManager->attach('oat\\tao\\model\\event\\ClassFormUpdatedEvent', [LoggerService::class, 'logEvent']);
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+            $this->setVersion('1.2.0');
+        }
+
+        $this->skip('1.2.0', '1.3.0');
     }
 }
