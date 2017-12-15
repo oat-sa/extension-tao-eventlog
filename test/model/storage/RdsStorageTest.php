@@ -22,7 +22,7 @@
 namespace oat\taoEventLog\test\model\requestLog\rds;
 
 use oat\tao\test\TaoPhpUnitTestRunner;
-use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\oatbox\service\ServiceManager;
 use oat\oatbox\event\Event;
 use oat\oatbox\user\User;
