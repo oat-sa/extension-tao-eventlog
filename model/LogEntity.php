@@ -32,19 +32,19 @@ use oat\dtms\DateTime;
 class LogEntity
 {
     /** @var Event  */
-    private $event;
+    protected $event;
 
     /** @var string  */
-    private $action;
+    protected $action;
 
     /** @var User  */
-    private $user;
+    protected $user;
 
     /** @var DateTime  */
-    private $time;
+    protected $time;
 
     /** @var array  */
-    private $data;
+    protected $data;
 
     /**
      * @param Event $event
