@@ -205,9 +205,11 @@ class Updater extends common_ext_ExtensionUpdater
 
         if ($this->isVersion('1.3.0')) {
             $eventLogStorage = $this->getServiceManager()->get('taoEventLog/storage');
-            $this->getServiceManager()->unregister('taoEventLog/storage');
+            $eventLogService = $this->getServiceManager()->get('taoEventLog/logger');
 
-            $eventLogService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+            $this->getServiceManager()->unregister('taoEventLog/storage');
+            $this->getServiceManager()->unregister('taoEventLog/logger');
+
             $eventLogService->setOption(LoggerService::OPTION_STORAGE, RdsStorage::SERVICE_ID);
 
             $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($eventLogService->getOptions()));

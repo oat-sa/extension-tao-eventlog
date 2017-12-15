@@ -33,7 +33,6 @@ use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\storage\RdsStorage;
 use oat\dtms\DateTime;
 use oat\taoEventLog\model\AbstractLog;
-use oat\taoEventLog\model\eventLog\EventLogEntity;
 
 /**
  * Class LoggerService
@@ -41,7 +40,7 @@ use oat\taoEventLog\model\eventLog\EventLogEntity;
  */
 class LoggerService extends AbstractLog
 {
-    const SERVICE_ID = 'taoEventLog/logger';
+    const SERVICE_ID = 'taoEventLog/eventLogger';
 
     const OPTION_ROTATION_PERIOD = 'rotation_period';
     const OPTION_EXPORTABLE_PERIOD = 'exportable_period';
