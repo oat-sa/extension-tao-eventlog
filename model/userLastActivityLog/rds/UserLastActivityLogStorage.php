@@ -27,6 +27,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use oat\taoEventLog\model\RdsLogIterator;
 use oat\taoEventLog\model\userLastActivityLog\UserLastActivityLog;
 use oat\oatbox\service\ConfigurableService;
+use GuzzleHttp\Psr7\ServerRequest;
+use oat\oatbox\event\Event;
 
 /**
  * Class UserLastActivityLogStorage
@@ -43,6 +45,11 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
     const COLUMN_ACTION = self::ACTION;
     const COLUMN_EVENT_TIME = self::EVENT_TIME;
     const COLUMN_DETAILS = self::DETAILS;
+
+    /** Threshold in seconds */
+    const OPTION_ACTIVE_USER_THRESHOLD = 'active_user_threshold';
+
+    const PHP_SESSION_LAST_ACTIVITY = 'tao_user_last_activity_timestamp';
 
     /** @var \Doctrine\DBAL\Connection */
     private $connection;
@@ -218,5 +225,29 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
         }
 
         return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
+    }
+
+    /**
+     * @param Event $event
+     * @throws \common_exception_Error
+     */
+    public function catchEvent(Event $event)
+    {
+        $phpSession = \PHPSession::singleton();
+        $lastStoredActivity = null;
+        if ($phpSession->hasAttribute(self::PHP_SESSION_LAST_ACTIVITY)) {
+            $lastStoredActivity = $phpSession->getAttribute(self::PHP_SESSION_LAST_ACTIVITY);
+        }
+
+        $threshold = $this->getOption(self::OPTION_ACTIVE_USER_THRESHOLD)?: 0;
+
+        if (!$lastStoredActivity || microtime(true) > ($lastStoredActivity + $threshold)) {
+            $user = \common_session_SessionManager::getSession()->getUser();
+            $request = ServerRequest::fromGlobals();
+            $phpSession->setAttribute(self::PHP_SESSION_LAST_ACTIVITY, microtime(true));
+            /** @var UserActivityLogStorage $userActivityLog */
+            $this->log($user, $request->getUri());
+        }
+
     }
 }

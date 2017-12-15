@@ -40,17 +40,17 @@ class RegisterUserLastActivityLog extends AbstractAction
     public function __invoke($params)
     {
         try {
-            $storageService = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
+            $service = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
-            $storageService = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
+            $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
         }
-
+        $service->setOption(UserLastActivityLogStorage::OPTION_ACTIVE_USER_THRESHOLD, 300);
         $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
-        $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
+        $persistence = $persistenceManager->getPersistenceById($service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
 
         UserLastActivityLogStorage::install($persistence);
 
-        $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $storageService);
+        $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
 
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log storage successfully created'));
