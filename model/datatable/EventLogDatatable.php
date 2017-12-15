@@ -25,7 +25,7 @@ use oat\tao\model\datatable\DatatablePayload;
 use oat\oatbox\service\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
-use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\eventLog\LoggerService;
 
 /**
  * Class DeliveriesActivityDatatable

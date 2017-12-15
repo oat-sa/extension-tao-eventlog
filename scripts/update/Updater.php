@@ -25,9 +25,10 @@ use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
 use oat\tao\model\event\ClassFormUpdatedEvent;
-use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
 
 /**
  * Class Updater
@@ -201,5 +202,22 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('1.2.0', '1.3.0');
+
+        if ($this->isVersion('1.3.0')) {
+            $eventLogStorage = $this->getServiceManager()->get('taoEventLog/storage');
+            $eventLogService = $this->getServiceManager()->get('taoEventLog/logger');
+
+            $this->getServiceManager()->unregister('taoEventLog/storage');
+            $this->getServiceManager()->unregister('taoEventLog/logger');
+
+            $eventLogService->setOption(LoggerService::OPTION_STORAGE, RdsStorage::SERVICE_ID);
+
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($eventLogService->getOptions()));
+
+            $eventLogStorage = new RdsStorage($eventLogStorage->getOptions());
+
+            $this->getServiceManager()->register(RdsStorage::SERVICE_ID, $eventLogStorage);
+            $this->setVersion('1.4.0');
+        }
     }
 }

@@ -22,128 +22,22 @@
 namespace oat\taoEventLog\model\storage;
 
 use oat\taoEventLog\model\LogEntity;
-use Doctrine\DBAL\Schema\SchemaException;
-use DateTimeImmutable;
 
 /**
  * Class RdsStorage
  * @package oat\taoEventLog\model\storage
+ * @deprecated
  */
 class RdsStorage extends AbstractRdsStorage
 {
-    const EVENT_LOG_TABLE_NAME = 'event_log';
-
     const SERVICE_ID = 'taoEventLog/storage';
-
-    const EVENT_LOG_ID = self::ID;
-    const EVENT_LOG_EVENT_NAME = 'event_name';
-    const EVENT_LOG_ACTION = 'action';
-    const EVENT_LOG_USER_ID = 'user_id';
-    const EVENT_LOG_USER_ROLES = 'user_roles';
-    const EVENT_LOG_OCCURRED = 'occurred';
-    const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
      * @return string
      */
-    public function getTableName()
-    {
-        return self::EVENT_LOG_TABLE_NAME;
-    }
+    public function getTableName(){}
 
-    /**
-     * @param LogEntity $logEntity
-     * @return bool
-     */
-    public function log(LogEntity $logEntity)
-    {
-        $result = $this->getPersistence()->insert(
-            $this->getTableName(), [
-                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
-                self::EVENT_LOG_ACTION => $logEntity->getAction(),
-                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
-                self::EVENT_LOG_USER_ROLES => join(',', $logEntity->getUser()->getRoles()),
-                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
-                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
-            ]
-        );
-
-        return $result === 1;
-    }
-
-    /**
-     * @param array $params
-     * @deprecated use $this->search() instead
-     * @return array
-     */
-    public function searchInstances(array $params = [])
-    {
-        return $this->search($params);
-    }
-
-    /**
-     * @param DateTimeImmutable $beforeDate
-     * @return mixed
-     */
-    public function removeOldLogEntries(DateTimeImmutable $beforeDate)
-    {
-        $sql = "DELETE FROM " . $this->getTableName() . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
-
-        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATE_TIME_FORMAT)]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function tableColumns()
-    {
-        return [
-            self::EVENT_LOG_ID,
-            self::EVENT_LOG_USER_ID,
-            self::EVENT_LOG_USER_ROLES,
-            self::EVENT_LOG_EVENT_NAME,
-            self::EVENT_LOG_ACTION,
-            self::EVENT_LOG_OCCURRED,
-            self::EVENT_LOG_PROPERTIES
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function install($persistence)
-    {
-        /** @var AbstractSchemaManager $schemaManager */
-        $schemaManager = $persistence->getDriver()->getSchemaManager();
-
-        /** @var Schema $schema */
-        $schema = $schemaManager->createSchema();
-        $fromSchema = clone $schema;
-
-        try {
-            $table = $schema->createTable(self::EVENT_LOG_TABLE_NAME);
-            $table->addOption('engine', 'MyISAM');
-
-            $table->addColumn(self::EVENT_LOG_ID,          "integer",  ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
-            $table->addColumn(self::EVENT_LOG_EVENT_NAME,  "string",   ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
-            $table->addColumn(self::EVENT_LOG_ACTION, "string", ["notnull" => false, "length" => 1000, 'comment' => 'Current action']);
-            $table->addColumn(self::EVENT_LOG_USER_ID,     "string",   ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
-            $table->addColumn(self::EVENT_LOG_USER_ROLES,  "text",     ["notnull" => true, 'default' => '', 'comment' => 'User roles']);
-            $table->addColumn(self::EVENT_LOG_OCCURRED,    "datetime", ["notnull" => true]);
-            $table->addColumn(self::EVENT_LOG_PROPERTIES,  "text",     ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
-
-            $table->setPrimaryKey([self::EVENT_LOG_ID]);
-            $table->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');
-            $table->addIndex([self::EVENT_LOG_ACTION], 'idx_action');
-            $table->addIndex([self::EVENT_LOG_USER_ID], 'idx_user_id');
-            $table->addIndex([self::EVENT_LOG_OCCURRED], 'idx_occurred');
-        } catch (SchemaException $e) {
-            \common_Logger::i('Database Schema for EventLog already up to date.');
-        }
-
-        $queries = $persistence->getPlatForm()->getMigrateSchemaSql($fromSchema, $schema);
-        foreach ($queries as $query) {
-            $persistence->exec($query);
-        }
-    }
+    public function log(LogEntity $logEntity){}
+    public static function tableColumns(){}
+    public static function install($persistence){}
 }
