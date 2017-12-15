@@ -36,7 +36,7 @@ use oat\oatbox\service\ConfigurableService;
 class UserLastActivityLogStorage extends ConfigurableService implements UserLastActivityLog
 {
     const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'user_activity_log';
+    const TABLE_NAME = 'user_last_activity_log';
 
     const COLUMN_USER_ID = self::USER_ID;
     const COLUMN_USER_ROLES = self::USER_ROLES;
