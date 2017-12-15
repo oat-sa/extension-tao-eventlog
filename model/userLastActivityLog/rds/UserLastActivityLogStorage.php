@@ -19,20 +19,21 @@
  *
  */
 
-namespace oat\taoEventLog\model\userActivityLog\rds;
+namespace oat\taoEventLog\model\userLastActivityLog\rds;
 
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
-use oat\taoEventLog\model\userActivityLog\UserActivityLog;
+use oat\taoEventLog\model\RdsLogIterator;
+use oat\taoEventLog\model\userLastActivityLog\UserLastActivityLog;
 use oat\oatbox\service\ConfigurableService;
 
 /**
- * Class UserActivityLogStorage
- * @package oat\taoEventLog\model\userActivityLog\rds
+ * Class UserLastActivityLogStorage
+ * @package oat\taoEventLog\model\userLastActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class UserActivityLogStorage extends ConfigurableService implements UserActivityLog
+class UserLastActivityLogStorage extends ConfigurableService implements UserLastActivityLog
 {
     const OPTION_PERSISTENCE = 'persistence_id';
     const TABLE_NAME = 'user_activity_log';
@@ -87,7 +88,7 @@ class UserActivityLogStorage extends ConfigurableService implements UserActivity
         foreach ($filters as $filter) {
             $this->addFilter($queryBuilder, $filter);
         }
-        return new UserActivityLogIterator($this->getPersistence(), $queryBuilder);
+        return new RdsLogIterator($this->getPersistence(), $queryBuilder);
     }
 
     /**

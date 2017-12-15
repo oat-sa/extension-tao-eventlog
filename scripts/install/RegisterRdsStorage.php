@@ -26,7 +26,7 @@ use common_persistence_SqlPersistence;
 use common_report_Report;
 use oat\oatbox\extension\AbstractAction;
 use oat\oatbox\service\ServiceNotFoundException;
-use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
 
 /**
  * Class RegisterRdsStorage

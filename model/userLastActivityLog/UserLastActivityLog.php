@@ -19,20 +19,20 @@
  *
  */
 
-namespace oat\taoEventLog\model\userActivityLog;
+namespace oat\taoEventLog\model\userLastActivityLog;
 
 use oat\oatbox\user\User;
 
 /**
- * Interface UserActivityLog
+ * Interface UserLastActivityLog
  *
  * Service to log the user activity.
  * May be used to analize current load, get approximate amount of active users.
  *
- * @package oat\taoEventLog\model\userActivityLog
+ * @package oat\taoEventLog\model\userLastActivityLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-interface UserActivityLog
+interface UserLastActivityLog
 {
     const USER_ID = 'user_id';
     const USER_ROLES = 'user_role';
@@ -40,7 +40,7 @@ interface UserActivityLog
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
 
-    const SERVICE_ID = 'taoEventLog/UserActivityLog';
+    const SERVICE_ID = 'taoEventLog/UserLastActivityLog';
 
     /**
      * Log user activity.

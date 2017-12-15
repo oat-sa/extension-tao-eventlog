@@ -14,19 +14,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
- *
- *
+ * Copyright (c) 2017  (original work) Open Assessment Technologies SA;
  */
 
-namespace oat\taoEventLog\model\userActivityLog\rds;
+
+namespace oat\taoEventLog\model\eventLog;
+
+use oat\taoEventLog\model\LogEntity;
 
 /**
- * Class UserActivityLogIterator
- * @package oat\taoEventLog\model\userActivityLog\rds
+ * Class LogEntity
+ * @package oat\taoEventLog\model\eventLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class UserActivityLogIterator extends \oat\taoEventLog\model\RdsLogIterator
+class EventLogEntity extends LogEntity
 {
 
 }

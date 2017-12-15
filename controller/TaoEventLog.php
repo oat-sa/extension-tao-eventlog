@@ -24,7 +24,7 @@ namespace oat\taoEventLog\controller;
 
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
-use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\eventLog\LoggerService;
 use tao_actions_CommonModule;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 

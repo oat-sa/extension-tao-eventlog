@@ -24,13 +24,13 @@ namespace oat\taoEventLog\scripts\install;
 use oat\oatbox\extension\AbstractAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
-use oat\taoEventLog\model\userActivityLog\rds\UserActivityLogStorage;
+use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
 
 /**
- * Class RegisterUserActivityLog
+ * Class RegisterUserLastActivityLog
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterUserActivityLog extends AbstractAction
+class RegisterUserLastActivityLog extends AbstractAction
 {
     /**
      * @param $params
@@ -40,17 +40,17 @@ class RegisterUserActivityLog extends AbstractAction
     public function __invoke($params)
     {
         try {
-            $storageService = $this->getServiceManager()->get(UserActivityLogStorage::SERVICE_ID);
+            $storageService = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
-            $storageService = new UserActivityLogStorage([UserActivityLogStorage::OPTION_PERSISTENCE => 'default']);
+            $storageService = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
         }
 
         $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
-        $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserActivityLogStorage::OPTION_PERSISTENCE));
+        $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
 
-        UserActivityLogStorage::install($persistence);
+        UserLastActivityLogStorage::install($persistence);
 
-        $this->getServiceManager()->register(UserActivityLogStorage::SERVICE_ID, $storageService);
+        $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $storageService);
 
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log storage successfully created'));

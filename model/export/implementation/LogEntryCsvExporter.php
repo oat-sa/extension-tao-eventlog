@@ -25,7 +25,7 @@ use DateInterval;
 use DateTimeImmutable;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\export\Exporter;
-use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\eventLog\LoggerService;
 
 /**
  * Class LogEntryCsvExporter

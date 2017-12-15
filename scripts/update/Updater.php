@@ -24,10 +24,12 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
-use oat\taoEventLog\model\LoggerService;
+use oat\tao\model\event\ClassFormUpdatedEvent;
+use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
-use oat\taoEventLog\model\userActivityLog\rds\UserActivityLogStorage;
+use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\oatbox\service\ServiceNotFoundException;
 
 /**
@@ -204,19 +206,36 @@ class Updater extends common_ext_ExtensionUpdater
         $this->skip('1.2.0', '1.3.0');
 
         if ($this->isVersion('1.3.0')) {
+            $eventLogStorage = $this->getServiceManager()->get('taoEventLog/storage');
+            $eventLogService = $this->getServiceManager()->get('taoEventLog/logger');
+
+            $this->getServiceManager()->unregister('taoEventLog/storage');
+            $this->getServiceManager()->unregister('taoEventLog/logger');
+
+            $eventLogService->setOption(LoggerService::OPTION_STORAGE, RdsStorage::SERVICE_ID);
+
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($eventLogService->getOptions()));
+
+            $eventLogStorage = new RdsStorage($eventLogStorage->getOptions());
+
+            $this->getServiceManager()->register(RdsStorage::SERVICE_ID, $eventLogStorage);
+            $this->setVersion('1.4.0');
+        }
+
+        if ($this->isVersion('1.4.0')) {
             try {
-                $storageService = $this->getServiceManager()->get(UserActivityLogStorage::SERVICE_ID);
+                $storageService = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
             } catch (ServiceNotFoundException $e) {
-                $storageService = new UserActivityLogStorage([UserActivityLogStorage::OPTION_PERSISTENCE => 'default']);
+                $storageService = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
             }
 
             $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
-            $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserActivityLogStorage::OPTION_PERSISTENCE));
+            $persistence = $persistenceManager->getPersistenceById($storageService->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
 
-            UserActivityLogStorage::install($persistence);
+            UserLastActivityLogStorage::install($persistence);
 
-            $this->getServiceManager()->register(UserActivityLogStorage::SERVICE_ID, $storageService);
-            $this->setVersion('1.4.0');
+            $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $storageService);
+            $this->setVersion('1.5.0');
         }
     }
 }

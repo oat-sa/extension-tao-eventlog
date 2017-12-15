@@ -19,18 +19,18 @@
  *
  */
 
-namespace oat\taoEventLog\test\model\usreActivityLog\rds;
+namespace oat\taoEventLog\test\model\userLastActivityLog\rds;
 
 use oat\tao\test\TaoPhpUnitTestRunner;
-use oat\taoEventLog\model\userActivityLog\rds\UserActivityLogStorage as Storage;
+use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage as Storage;
 use oat\oatbox\service\ServiceManager;
 
 /**
- * Class UserActivityLogStorageTest
+ * Class UserLastActivityLogStorageTest
  * @package oat\taoEventLog\test\model\usreActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class UserActivityLogStorageTest extends TaoPhpUnitTestRunner
+class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
 {
 
     protected $fixtures;
