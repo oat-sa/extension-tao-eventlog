@@ -35,7 +35,7 @@ use oat\tao\model\event\UserCreatedEvent;
 use oat\tao\model\event\UserRemovedEvent;
 use oat\tao\model\event\UserUpdatedEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
-use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
 
 /**
  * Class RegisterLoggerService
