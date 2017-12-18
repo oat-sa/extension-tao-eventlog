@@ -28,7 +28,7 @@ use oat\oatbox\event\Event;
 /**
  * Class RequestLogService
  * @package oat\taoEventLog\model\requestLog
- * @author Aleh Hutnikau, <hutnimau@1pt.com>
+ * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
 class RequestLogService extends ConfigurableService
 {
@@ -52,6 +52,7 @@ class RequestLogService extends ConfigurableService
      *
      * @param Request|null $request
      * @param User|null $user
+     * @return boolean
      * @throws \common_exception_Error
      * @throws RequestLogException
      */
@@ -64,13 +65,14 @@ class RequestLogService extends ConfigurableService
         if ($user === null) {
             $user = \common_session_SessionManager::getSession()->getUser();
         }
-        $this->getStorage()->log($request, $user);
+       return  $this->getStorage()->log($request, $user);
     }
 
     /**
      * @see \oat\taoEventLog\model\requestLog\RequestLogStorageReadable::find()
      * @param array $filters
      * @param array $options
+     * @return \Iterator
      * @throws RequestLogException
      */
     public function find(array $filters = [], array $options = [])
@@ -78,13 +80,14 @@ class RequestLogService extends ConfigurableService
         if (!$this->getStorage() instanceof RequestLogStorageReadable) {
             throw new RequestLogException('Request log storage is not readable');
         }
-        $this->getStorage()->find($filters, $options);
+        return  $this->getStorage()->find($filters, $options);
     }
 
     /**
      * @see \oat\taoEventLog\model\requestLog\RequestLogStorageReadable::count()
      * @param array $filters
      * @param array $options
+     * @return integer
      * @throws RequestLogException
      */
     public function count(array $filters = [], array $options = [])
@@ -92,7 +95,7 @@ class RequestLogService extends ConfigurableService
         if (!$this->getStorage() instanceof RequestLogStorageReadable) {
             throw new RequestLogException('Request log storage is not readable');
         }
-        $this->getStorage()->count($filters, $options);
+        return $this->getStorage()->count($filters, $options);
     }
 
     /**
