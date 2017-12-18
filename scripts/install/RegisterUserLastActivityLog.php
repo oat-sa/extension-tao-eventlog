@@ -25,6 +25,7 @@ use oat\oatbox\extension\AbstractAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
+use oat\oatbox\event\EventManager;
 
 /**
  * Class RegisterUserLastActivityLog
@@ -52,7 +53,13 @@ class RegisterUserLastActivityLog extends AbstractAction
 
         $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
 
+        $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+        $eventManager->attach(
+            'oat\\tao\\model\\event\\BeforeAction',
+            [UserLastActivityLogStorage::SERVICE_ID, 'catchEvent']
+        );
 
+        $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log storage successfully created'));
     }
 }

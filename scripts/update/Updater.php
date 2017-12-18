@@ -231,6 +231,16 @@ class Updater extends common_ext_ExtensionUpdater
             UserLastActivityLogStorage::install($persistence);
 
             $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
+
+            $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+
+            $eventManager->attach(
+                'oat\\tao\\model\\event\\BeforeAction',
+                [UserLastActivityLogStorage::SERVICE_ID, 'catchEvent']
+            );
+
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+
             $this->setVersion('1.5.0');
         }
     }
