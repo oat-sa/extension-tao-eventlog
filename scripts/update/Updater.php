@@ -223,11 +223,7 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('1.4.0')) {
-            try {
-                $service = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
-            } catch (ServiceNotFoundException $e) {
-                $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
-            }
+            $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
             $service->setOption(UserLastActivityLogStorage::OPTION_ACTIVE_USER_THRESHOLD, 300);
             $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
             $persistence = $persistenceManager->getPersistenceById($service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
