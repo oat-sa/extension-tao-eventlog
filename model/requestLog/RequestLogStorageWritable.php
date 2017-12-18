@@ -21,23 +21,23 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use oat\oatbox\Configurable;
-use oat\oatbox\service\ServiceManagerAwareInterface;
-use oat\oatbox\service\ServiceManagerAwareTrait;
+use GuzzleHttp\Psr7\Request;
+use oat\oatbox\user\User;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Interface RequestLogStorage
+ * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface
+interface RequestLogStorageWritable
 {
 
-    use ServiceManagerAwareTrait;
-
     /**
-     * Initialize storage
-     * @return mixed
+     * Log request data.
+     *
+     * @param Request|null $request
+     * @param User|null $user
+     * @return boolean
      */
-    abstract static function install();
+    public function log(Request $request, User $user);
 }

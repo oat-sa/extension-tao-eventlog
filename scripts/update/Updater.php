@@ -31,6 +31,7 @@ use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\oatbox\service\ServiceNotFoundException;
+use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class Updater
@@ -236,6 +237,18 @@ class Updater extends common_ext_ExtensionUpdater
 
             $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
             $this->setVersion('1.5.0');
+        }
+
+        if ($this->isVersion('1.5.0')) {
+
+            $requestLogStorage = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
+            $requestLogService = new RequestLogService([
+                RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
+                RequestLogService::OPTION_STORAGE_PARAMETERS => $requestLogStorage->getOptions()
+            ]);
+            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $requestLogService);
+
+            $this->setVersion('1.6.0');
         }
     }
 }

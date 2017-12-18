@@ -22,27 +22,28 @@
 namespace oat\taoEventLog\model\requestLog\rds;
 
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
 use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
+use oat\taoEventLog\model\requestLog\RequestLogStorageReadable;
+use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class RdsRequestLogStorage
  * @package oat\taoEventLog\model\requestLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage extends AbstractRequestLogStorage
+class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorageReadable
 {
     const OPTION_PERSISTENCE = 'persistence_id';
     const TABLE_NAME = 'request_log';
 
-    const COLUMN_USER_ID = self::USER_ID;
-    const COLUMN_USER_ROLES = self::USER_ROLES;
-    const COLUMN_ACTION = self::ACTION;
-    const COLUMN_EVENT_TIME = self::EVENT_TIME;
-    const COLUMN_DETAILS = self::DETAILS;
+    const COLUMN_USER_ID = RequestLogService::USER_ID;
+    const COLUMN_USER_ROLES = RequestLogService::USER_ROLES;
+    const COLUMN_ACTION = RequestLogService::ACTION;
+    const COLUMN_EVENT_TIME = RequestLogService::EVENT_TIME;
+    const COLUMN_DETAILS = RequestLogService::DETAILS;
 
     /** @var \Doctrine\DBAL\Connection */
     private $connection;
@@ -50,24 +51,16 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
     /**
      * @inheritdoc
      */
-    public function log(Request $request = null, User $user = null)
+    public function log(Request $request, User $user)
     {
-        if ($request === null) {
-            $request = ServerRequest::fromGlobals();
-        }
-
-        if ($user === null) {
-            $user = \common_session_SessionManager::getSession()->getUser();
-        }
-
         $userId = $user->getIdentifier();
         if ($userId === null) {
             $userId = get_class($user);
         }
 
         $data = [
-            self::USER_ID => $userId,
-            self::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
+            self::COLUMN_USER_ID => $userId,
+            self::COLUMN_USER_ROLES => ','. implode(',', $user->getRoles()). ',',
             self::COLUMN_ACTION => $request->getUri(),
             self::COLUMN_EVENT_TIME => microtime(true),
             self::COLUMN_DETAILS => json_encode([
@@ -162,8 +155,8 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage
     private function getColumnNames()
     {
         return [
-            self::USER_ID,
-            self::USER_ROLES,
+            self::COLUMN_USER_ID,
+            self::COLUMN_USER_ROLES,
             self::COLUMN_ACTION,
             self::COLUMN_EVENT_TIME,
             self::COLUMN_DETAILS,

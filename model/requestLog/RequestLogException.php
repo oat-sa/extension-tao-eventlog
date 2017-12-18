@@ -21,23 +21,12 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use oat\oatbox\Configurable;
-use oat\oatbox\service\ServiceManagerAwareInterface;
-use oat\oatbox\service\ServiceManagerAwareTrait;
-
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
- * @author Aleh Hutnikau, <hutnikau@1pt.com>
+ * Class RequestLogException
+ * @package oat\taoEventLog\model\requestLog
+ * @author Aleh Hutnikau, <hutnikau@gmail.com>
  */
-abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface
+class RequestLogException extends \Exception
 {
 
-    use ServiceManagerAwareTrait;
-
-    /**
-     * Initialize storage
-     * @return mixed
-     */
-    abstract static function install();
 }
