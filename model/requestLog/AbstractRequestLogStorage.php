@@ -26,8 +26,8 @@ use oat\oatbox\service\ServiceManagerAwareInterface;
 use oat\oatbox\service\ServiceManagerAwareTrait;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class AbstractRequestLogStorage
+ * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
 abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface

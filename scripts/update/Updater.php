@@ -24,13 +24,12 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
-use oat\tao\model\event\ClassFormUpdatedEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
 use oat\taoEventLog\model\eventLog\RdsStorage;
-use oat\oatbox\service\ServiceNotFoundException;
+use oat\tao\model\event\BeforeAction;
 use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
@@ -224,11 +223,7 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('1.4.0')) {
-            try {
-                $service = $this->getServiceManager()->get(UserLastActivityLogStorage::SERVICE_ID);
-            } catch (ServiceNotFoundException $e) {
-                $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
-            }
+            $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
             $service->setOption(UserLastActivityLogStorage::OPTION_ACTIVE_USER_THRESHOLD, 300);
             $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
             $persistence = $persistenceManager->getPersistenceById($service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
@@ -236,6 +231,16 @@ class Updater extends common_ext_ExtensionUpdater
             UserLastActivityLogStorage::install($persistence);
 
             $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
+
+            $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+
+            $eventManager->attach(
+                BeforeAction::class,
+                [UserLastActivityLogStorage::SERVICE_ID, 'catchEvent']
+            );
+
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+
             $this->setVersion('1.5.0');
         }
 
