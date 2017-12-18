@@ -21,102 +21,12 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
-use Doctrine\DBAL\Query\QueryBuilder;
-
 /**
  * Class RdsRequestLogIterator
  * @package oat\taoEventLog\model\requestLog\rds
- * @author Aleh Hutnikau, <goodnickoff@gmail.com>
+ * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogIterator implements \Iterator
+class RdsRequestLogIterator extends \oat\taoEventLog\model\RdsLogIterator
 {
 
-    /** @var QueryBuilder */
-    protected $queryBuilder;
-
-    /** @var \common_persistence_SqlPersistence */
-    protected $persistence;
-
-    /** @var array */
-    protected $current;
-
-    /** @var int */
-    protected $initialLimit;
-
-    /** @var int */
-    protected $firstResult;
-
-    /** @var int */
-    protected $currentKey;
-
-    /**
-     * RdsRequestLogIterator constructor.
-     * @param QueryBuilder $queryBuilder
-     */
-    public function __construct(\common_persistence_SqlPersistence $persistence, QueryBuilder $queryBuilder)
-    {
-        $this->queryBuilder = $queryBuilder;
-        $this->persistence = $persistence;
-        $this->initialLimit = $queryBuilder->getMaxResults();
-        if ($this->initialLimit === null) {
-            $this->initialLimit = PHP_INT_MAX;
-        }
-        $this->firstResult = $queryBuilder->getFirstResult();
-        if ($this->firstResult === null) {
-            $this->firstResult = 0;
-        }
-        $this->queryBuilder->setMaxResults(1);
-        $this->rewind();
-    }
-
-    /**
-     *
-     */
-    public function current()
-    {
-        return $this->current;
-    }
-
-    public function next()
-    {
-        if ($this->valid()) {
-            $this->queryBuilder->setFirstResult($this->currentKey);
-            $sql = $this->queryBuilder->getSQL();
-            $params = $this->queryBuilder->getParameters();
-            $stmt = $this->persistence->query($sql, $params);
-            $data = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if (empty($data)) {
-                $this->current = null;
-            } else {
-                $this->current = $data;
-            }
-            $this->currentKey++;
-        } else {
-            $this->current = null;
-        }
-    }
-
-    public function key()
-    {
-        return $this->currentKey - 1;
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid()
-    {
-        if ($this->currentKey === $this->firstResult) {
-            //initial state
-            return true;
-        }
-
-        return $this->current !== null && ($this->currentKey + $this->firstResult) < $this->initialLimit;
-    }
-
-    public function rewind()
-    {
-        $this->currentKey = $this->firstResult;
-        $this->next();
-    }
 }
