@@ -241,10 +241,11 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
 
         $threshold = $this->getOption(self::OPTION_ACTIVE_USER_THRESHOLD)?: 0;
 
-        if (!$lastStoredActivity || microtime(true) > ($lastStoredActivity + $threshold)) {
+        $currentTime = microtime(true);
+        if (!$lastStoredActivity || $currentTime > ($lastStoredActivity + $threshold)) {
             $user = \common_session_SessionManager::getSession()->getUser();
             $request = ServerRequest::fromGlobals();
-            $phpSession->setAttribute(self::PHP_SESSION_LAST_ACTIVITY, microtime(true));
+            $phpSession->setAttribute(self::PHP_SESSION_LAST_ACTIVITY, $currentTime);
             /** @var UserActivityLogStorage $userActivityLog */
             $this->log($user, $request->getUri());
         }
