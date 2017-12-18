@@ -24,13 +24,12 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
-use oat\tao\model\event\ClassFormUpdatedEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
 use oat\taoEventLog\model\eventLog\RdsStorage;
-use oat\oatbox\service\ServiceNotFoundException;
+use oat\tao\model\event\BeforeAction;
 
 /**
  * Class Updater
@@ -235,7 +234,7 @@ class Updater extends common_ext_ExtensionUpdater
             $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
 
             $eventManager->attach(
-                'oat\\tao\\model\\event\\BeforeAction',
+                BeforeAction::class,
                 [UserLastActivityLogStorage::SERVICE_ID, 'catchEvent']
             );
 
