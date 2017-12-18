@@ -24,9 +24,9 @@ namespace oat\taoEventLog\model;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Class RdsRequestLogIterator
+ * Class RdsLogIterator
  * @package oat\taoEventLog\model\requestLog\rds
- * @author Aleh Hutnikau, <goodnickoff@gmail.com>
+ * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
 class RdsLogIterator implements \Iterator
 {
@@ -51,6 +51,7 @@ class RdsLogIterator implements \Iterator
 
     /**
      * RdsRequestLogIterator constructor.
+     * @param \common_persistence_SqlPersistence $persistence
      * @param QueryBuilder $queryBuilder
      */
     public function __construct(\common_persistence_SqlPersistence $persistence, QueryBuilder $queryBuilder)

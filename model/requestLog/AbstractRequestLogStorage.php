@@ -25,8 +25,8 @@ use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\event\Event;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class AbstractRequestLogStorage
+ * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
 abstract class AbstractRequestLogStorage extends ConfigurableService implements RequestLogStorage
