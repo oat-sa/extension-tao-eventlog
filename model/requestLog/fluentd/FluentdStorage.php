@@ -25,7 +25,6 @@ use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
 use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 use GuzzleHttp\Client;
-use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class TinCanStorage
@@ -92,7 +91,7 @@ class FluentdStorage extends AbstractRequestLogStorage
     private function sendData(array $data)
     {
         try {
-            $this->client->post(
+            $request = $this->client->post(
                 '/'.$this->getOption(self::OPTION_TAG),
                 [
                     'form_params' => [

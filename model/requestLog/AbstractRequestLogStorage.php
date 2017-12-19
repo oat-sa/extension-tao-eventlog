@@ -54,10 +54,11 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
         return [
             RequestLogService::USER_ID => $userId,
             RequestLogService::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
-            RequestLogService::ACTION => $request->getUri(),
+            RequestLogService::ACTION => $request->getUri()->getPath(),
             RequestLogService::EVENT_TIME => microtime(true),
             RequestLogService::DETAILS => json_encode([
                 'method' => $request->getMethod(),
+                'query' => $request->getUri()->getQuery(),
             ]),
         ];
     }

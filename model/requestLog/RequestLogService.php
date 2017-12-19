@@ -100,7 +100,7 @@ class RequestLogService extends ConfigurableService
 
     /**
      * @return RequestLogStorageReadable|RequestLogStorageWritable
-     * @throws RequestLogException
+     * @throws
      */
     protected function getStorage()
     {
