@@ -48,7 +48,7 @@ use oat\taoEventLog\model\requestLog\RequestLogService;
  * @package oat\taoEventLog\model\storage
  * @author Aleh Hutnikau <hutnikau@1pt.com>
  */
-class FluentdStorage extends AbstractRequestLogStorage
+class ProxyStorage extends AbstractRequestLogStorage
 {
     const OPTION_ENDPOINT  = 'endpoint';
     const OPTION_TAG  = 'tag';
@@ -75,34 +75,12 @@ class FluentdStorage extends AbstractRequestLogStorage
      */
     public function log(Request $request, User $user)
     {
-        $this->sendData($this->prepareData($request, $user));
+
     }
 
-    /**
-     * @inheritdoc
-     */
     public function bulkLog(array $data)
     {
-        $this->sendData($data);
-    }
 
-    /**
-     * @param array $data
-     */
-    private function sendData(array $data)
-    {
-        try {
-            $this->client->post(
-                '/'.$this->getOption(self::OPTION_TAG),
-                [
-                    'form_params' => [
-                        'json' => json_encode($data)
-                    ]
-                ]
-            );
-        } catch (\Exception $e) {
-            \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
-        }
     }
 
     public static function install()

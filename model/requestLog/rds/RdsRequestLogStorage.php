@@ -60,6 +60,16 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     /**
      * @inheritdoc
      */
+    public function bulkLog(array $data)
+    {
+        foreach ($data as $requestData) {
+            $this->getPersistence()->insert(self::TABLE_NAME, $requestData);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function find(array $filters = [], array $options = [])
     {
         $queryBuilder = $this->getQueryBuilder();

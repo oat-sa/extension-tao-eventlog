@@ -35,9 +35,17 @@ interface RequestLogStorageWritable
     /**
      * Log request data.
      *
-     * @param Request|null $request
-     * @param User|null $user
+     * @param Request $request
+     * @param User $user
      * @return boolean
      */
     public function log(Request $request, User $user);
+
+    /**
+     * Log bunch of events at once
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function bulkLog(array $data);
 }
