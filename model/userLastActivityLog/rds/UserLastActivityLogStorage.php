@@ -233,6 +233,10 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
      */
     public function catchEvent(Event $event)
     {
+        if (\common_session_SessionManager::isAnonymous()) {
+            return;
+        }
+
         $phpSession = \PHPSession::singleton();
         $lastStoredActivity = null;
         if ($phpSession->hasAttribute(self::PHP_SESSION_LAST_ACTIVITY)) {
@@ -249,6 +253,5 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             /** @var UserActivityLogStorage $userActivityLog */
             $this->log($user, $request->getUri());
         }
-
     }
 }

@@ -21,33 +21,13 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use GuzzleHttp\Psr7\Request;
-use oat\oatbox\user\User;
-
 /**
  * Interface RequestLogStorage
  * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-interface RequestLogStorage
+interface RequestLogStorageReadable extends RequestLogStorageWritable
 {
-    const USER_ID = 'user_id';
-    const USER_ROLES = 'user_role';
-    const ACTION = 'action';
-    const EVENT_TIME = 'event_time';
-    const DETAILS = 'details';
-
-    const SERVICE_ID = 'taoEventLog/RequestLogStorage';
-
-    /**
-     * Log request data.
-     *
-     * @param Request|null $request
-     * @param User|null $user
-     * @return boolean
-     */
-    public function log(Request $request = null, User $user = null);
-
     /**
      * Find user requests.
      *
