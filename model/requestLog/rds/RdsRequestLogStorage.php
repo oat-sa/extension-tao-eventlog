@@ -53,20 +53,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
      */
     public function log(Request $request, User $user)
     {
-        $userId = $user->getIdentifier();
-        if ($userId === null) {
-            $userId = get_class($user);
-        }
-
-        $data = [
-            self::COLUMN_USER_ID => $userId,
-            self::COLUMN_USER_ROLES => ','. implode(',', $user->getRoles()). ',',
-            self::COLUMN_ACTION => $request->getUri(),
-            self::COLUMN_EVENT_TIME => microtime(true),
-            self::COLUMN_DETAILS => json_encode([
-                'method' => $request->getMethod(),
-            ]),
-        ];
+        $data = $this->prepareData($request, $user);
         $this->getPersistence()->insert(self::TABLE_NAME, $data);
     }
 
