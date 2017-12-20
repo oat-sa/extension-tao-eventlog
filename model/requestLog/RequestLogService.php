@@ -24,6 +24,7 @@ namespace oat\taoEventLog\model\requestLog;
 use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\event\Event;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Class RequestLogService
@@ -50,13 +51,13 @@ class RequestLogService extends ConfigurableService
     /**
      * @see \oat\taoEventLog\model\requestLog\RequestLogStorageWritable::log
      *
-     * @param Request|null $request
+     * @param RequestInterface|null $request
      * @param User|null $user
      * @return boolean
      * @throws \common_exception_Error
      * @throws RequestLogException
      */
-    public function log(Request $request = null, User $user = null)
+    public function log(RequestInterface $request = null, User $user = null)
     {
         if ($request === null) {
             $request = ServerRequest::fromGlobals();

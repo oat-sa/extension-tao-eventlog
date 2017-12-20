@@ -22,9 +22,9 @@
 namespace oat\taoEventLog\model\requestLog\fluentd;
 
 use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
-use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 use GuzzleHttp\Client;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Class TinCanStorage
@@ -68,11 +68,11 @@ class FluentdStorage extends AbstractRequestLogStorage
     }
 
     /**
-     * @param Request $request
+     * @param RequestInterface $request
      * @param User $user
      * @return bool|void
      */
-    public function log(Request $request, User $user)
+    public function log(RequestInterface $request, User $user)
     {
         $this->sendData($this->prepareData($request, $user));
     }
