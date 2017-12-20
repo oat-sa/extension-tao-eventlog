@@ -62,10 +62,4 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
             ]),
         ];
     }
-
-    /**
-     * Initialize storage
-     * @return mixed
-     */
-    abstract static function install();
 }

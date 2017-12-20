@@ -103,10 +103,4 @@ class FluentdStorage extends AbstractRequestLogStorage
             \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
         }
     }
-
-    public static function install()
-    {
-        // Nothing to do
-    }
-
 }
