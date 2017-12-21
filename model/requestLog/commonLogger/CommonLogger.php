@@ -19,25 +19,31 @@
  *
  */
 
-namespace oat\taoEventLog\model\requestLog;
+namespace oat\taoEventLog\model\requestLog\commonLogger;
 
-use Psr\Http\Message\RequestInterface;
+use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
 use oat\oatbox\user\User;
+use Psr\Http\Message\RequestInterface;
+use oat\oatbox\log\LoggerAwareTrait;
 
 /**
- * Interface RequestLogStorage
- * @package oat\taoEventLog\model\requestLog
- * @author Aleh Hutnikau, <hutnikau@1pt.com>
+ * Class CommonLogger
+ *
+ * @package oat\taoEventLog\model\storage
+ * @author Aleh Hutnikau <hutnikau@1pt.com>
  */
-interface RequestLogStorageWritable
+class CommonLogger extends AbstractRequestLogStorage
 {
+    use LoggerAwareTrait;
 
     /**
-     * Log request data.
-     *
      * @param RequestInterface $request
      * @param User $user
-     * @return boolean
+     * @return bool|void
      */
-    public function log(RequestInterface $request, User $user);
+    public function log(RequestInterface $request, User $user)
+    {
+        $this->logInfo('Request Log : ' . json_encode($this->prepareData($request, $user)));
+    }
+
 }
