@@ -24,10 +24,13 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
-use oat\tao\model\event\ClassFormUpdatedEvent;
-use oat\taoEventLog\model\LoggerService;
+use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
+use oat\taoEventLog\model\eventLog\RdsStorage;
+use oat\tao\model\event\BeforeAction;
+use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class Updater
@@ -201,5 +204,56 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('1.2.0', '1.3.0');
+
+        if ($this->isVersion('1.3.0')) {
+            $eventLogStorage = $this->getServiceManager()->get('taoEventLog/storage');
+            $eventLogService = $this->getServiceManager()->get('taoEventLog/logger');
+
+            $this->getServiceManager()->unregister('taoEventLog/storage');
+            $this->getServiceManager()->unregister('taoEventLog/logger');
+
+            $eventLogService->setOption(LoggerService::OPTION_STORAGE, RdsStorage::SERVICE_ID);
+
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($eventLogService->getOptions()));
+
+            $eventLogStorage = new RdsStorage($eventLogStorage->getOptions());
+
+            $this->getServiceManager()->register(RdsStorage::SERVICE_ID, $eventLogStorage);
+            $this->setVersion('1.4.0');
+        }
+
+        if ($this->isVersion('1.4.0')) {
+            $service = new UserLastActivityLogStorage([UserLastActivityLogStorage::OPTION_PERSISTENCE => 'default']);
+            $service->setOption(UserLastActivityLogStorage::OPTION_ACTIVE_USER_THRESHOLD, 300);
+            $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
+            $persistence = $persistenceManager->getPersistenceById($service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
+
+            UserLastActivityLogStorage::install($persistence);
+
+            $this->getServiceManager()->register(UserLastActivityLogStorage::SERVICE_ID, $service);
+
+            $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+
+            $eventManager->attach(
+                BeforeAction::class,
+                [UserLastActivityLogStorage::SERVICE_ID, 'catchEvent']
+            );
+
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+
+            $this->setVersion('1.5.0');
+        }
+
+        if ($this->isVersion('1.5.0')) {
+
+            $requestLogStorage = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
+            $requestLogService = new RequestLogService([
+                RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
+                RequestLogService::OPTION_STORAGE_PARAMETERS => $requestLogStorage->getOptions()
+            ]);
+            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $requestLogService);
+
+            $this->setVersion('1.6.0');
+        }
     }
 }

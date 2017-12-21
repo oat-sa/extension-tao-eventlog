@@ -19,17 +19,20 @@
  *
  */
 
-namespace oat\taoEventLog\model\requestLog;
+namespace oat\taoEventLog\model\userLastActivityLog;
 
-use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 
 /**
- * Interface RequestLogStorage
- * @package oat\taoEventLog\model\requestLog
+ * Interface UserLastActivityLog
+ *
+ * Service to log the user activity.
+ * May be used to analize current load, get approximate amount of active users.
+ *
+ * @package oat\taoEventLog\model\userLastActivityLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-interface RequestLogStorage
+interface UserLastActivityLog
 {
     const USER_ID = 'user_id';
     const USER_ROLES = 'user_role';
@@ -37,19 +40,20 @@ interface RequestLogStorage
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
 
-    const SERVICE_ID = 'taoEventLog/RequestLogStorage';
+    const SERVICE_ID = 'taoEventLog/UserLastActivityLog';
 
     /**
-     * Log request data.
+     * Log user activity.
      *
-     * @param Request|null $request
-     * @param User|null $user
+     * @param User $user
+     * @param string $action - activity name
+     * @param array $details - additional details
      * @return boolean
      */
-    public function log(Request $request = null, User $user = null);
+    public function log(User $user, $action, array $details = []);
 
     /**
-     * Find user requests.
+     * Find user activities.
      *
      * Result example:
      * ```
@@ -58,9 +62,7 @@ interface RequestLogStorage
      *     [
      *         'user_id' => 'http://sample/first.rdf#i1490617729993174',
      *         'user_role' => 'http://www.tao.lu/Ontologies/TAO.rdf#BackOfficeRole,http://www.tao.lu/Ontologies/TAOLTI.rdf#LtiDeliveryProviderManagerRole',
-     *         'action' => '/tao/Main/index?structure=settings&ext=tao&section=settings_ext_mng',
-     *         'event_time' => '1490617792.5479',
-     *         'details' => '"{\"login\":\"proctor\"}"', //json encoded additional data
+     *         'event_time' => '1490617792.5479'
      *     ],
      *     [...],
      * ]
@@ -71,7 +73,6 @@ interface RequestLogStorage
      * [
      *   ['user_id', 'in', ['http://sample/first.rdf#i1490617729993174', 'http://sample/first.rdf#i1490617729993174'],
      *   ['event_time', 'between', '1490703795.3624', '1490704796.2467'],
-     *   ['action', '=', '/tao/Main/login'],
      * ]
      * ```
      * Available operations: `<`, `>`, `<>`, `<=`, `>=`, `=`, `between`, `like`
@@ -84,6 +85,8 @@ interface RequestLogStorage
      *      'group' => 'user_id,
      * ]
      * ```
+     * Available options: 'limit', 'offset', 'group'.
+     *
      * @param array $filters filters by user id, url, role etc.
      * @param array $options
      * @return \Iterator
@@ -92,12 +95,7 @@ interface RequestLogStorage
 
     /**
      * Count number of records by given search criteria
-     * Options parameter example:
-     * ```
-     * [
-     *      'group' => 'user_id,
-     * ]
-     * ```
+     * For usage details see self::find method.
      *
      * @param array $filters @see self::find() description.
      * @param array $options

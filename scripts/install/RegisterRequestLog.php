@@ -25,6 +25,7 @@ use oat\oatbox\extension\AbstractAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class RegisterRequestLog
@@ -40,15 +41,25 @@ class RegisterRequestLog extends AbstractAction
     public function __invoke($params)
     {
         try {
-            $storageService = $this->getServiceManager()->get(RdsRequestLogStorage::SERVICE_ID);
+            $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
-            $storageService = new RdsRequestLogStorage([RdsRequestLogStorage::OPTION_PERSISTENCE => 'default']);
+            $service = new RequestLogService([
+                RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
+                RequestLogService::OPTION_STORAGE_PARAMETERS => [
+                    RdsRequestLogStorage::OPTION_PERSISTENCE => 'default'
+                ]
+            ]);
+        }
+        $options = $service->getOptions();
+        $storageClass = $options[RequestLogService::OPTION_STORAGE];
+        if (isset($options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE])) {
+            $persistence = $options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE];
+            $storageClass::install($persistence);
+        } else {
+            $storageClass::install();
         }
 
-        RdsRequestLogStorage::install($storageService->getOption(RdsRequestLogStorage::OPTION_PERSISTENCE));
-
-        $this->getServiceManager()->register(RdsRequestLogStorage::SERVICE_ID, $storageService);
-
+        $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
     }

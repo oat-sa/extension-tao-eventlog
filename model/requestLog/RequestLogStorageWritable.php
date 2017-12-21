@@ -14,16 +14,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- * 
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
+ * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
+ *
+ *
  */
 
-namespace oat\taoEventLog\model;
+namespace oat\taoEventLog\model\requestLog;
+
+use GuzzleHttp\Psr7\Request;
+use oat\oatbox\user\User;
 
 /**
- * Class LoggerService
- * @package oat\taoEventLog\model
- * @deprecated use \oat\taoEventLog\model\eventLog\LoggerService instead
+ * Interface RequestLogStorage
+ * @package oat\taoEventLog\model\requestLog
+ * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class LoggerService extends \oat\taoEventLog\model\eventLog\LoggerService{}
+interface RequestLogStorageWritable
+{
+
+    /**
+     * Log request data.
+     *
+     * @param Request|null $request
+     * @param User|null $user
+     * @return boolean
+     */
+    public function log(Request $request, User $user);
+}

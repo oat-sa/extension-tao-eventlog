@@ -27,7 +27,6 @@ use oat\oatbox\service\ConfigurableService;
 use oat\taoEventLog\model\RdsStorageInterface;
 use oat\taoEventLog\model\StorageInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
-use oat\taoEventLog\model\LogEntity;
 
 /**
  * Class AbstractRdsStorage

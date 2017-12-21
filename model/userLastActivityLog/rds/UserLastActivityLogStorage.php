@@ -19,31 +19,37 @@
  *
  */
 
-namespace oat\taoEventLog\model\requestLog\rds;
+namespace oat\taoEventLog\model\userLastActivityLog\rds;
 
-use GuzzleHttp\Psr7\Request;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
-use oat\taoEventLog\model\requestLog\AbstractRequestLogStorage;
-use oat\taoEventLog\model\requestLog\RequestLogStorageReadable;
-use oat\taoEventLog\model\requestLog\RequestLogService;
+use oat\taoEventLog\model\RdsLogIterator;
+use oat\taoEventLog\model\userLastActivityLog\UserLastActivityLog;
+use oat\oatbox\service\ConfigurableService;
+use GuzzleHttp\Psr7\ServerRequest;
+use oat\oatbox\event\Event;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class UserLastActivityLogStorage
+ * @package oat\taoEventLog\model\userLastActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorageReadable
+class UserLastActivityLogStorage extends ConfigurableService implements UserLastActivityLog
 {
     const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'request_log';
+    const TABLE_NAME = 'user_last_activity_log';
 
-    const COLUMN_USER_ID = RequestLogService::USER_ID;
-    const COLUMN_USER_ROLES = RequestLogService::USER_ROLES;
-    const COLUMN_ACTION = RequestLogService::ACTION;
-    const COLUMN_EVENT_TIME = RequestLogService::EVENT_TIME;
-    const COLUMN_DETAILS = RequestLogService::DETAILS;
+    const COLUMN_USER_ID = self::USER_ID;
+    const COLUMN_USER_ROLES = self::USER_ROLES;
+    const COLUMN_ACTION = self::ACTION;
+    const COLUMN_EVENT_TIME = self::EVENT_TIME;
+    const COLUMN_DETAILS = self::DETAILS;
+
+    /** Threshold in seconds */
+    const OPTION_ACTIVE_USER_THRESHOLD = 'active_user_threshold';
+
+    const PHP_SESSION_LAST_ACTIVITY = 'tao_user_last_activity_timestamp';
 
     /** @var \Doctrine\DBAL\Connection */
     private $connection;
@@ -51,9 +57,21 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     /**
      * @inheritdoc
      */
-    public function log(Request $request, User $user)
+    public function log(User $user, $action, array $details = [])
     {
-        $data = $this->prepareData($request, $user);
+        $userId = $user->getIdentifier();
+        if ($userId === null) {
+            $userId = get_class($user);
+        }
+
+        $data = [
+            self::USER_ID => $userId,
+            self::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
+            self::COLUMN_ACTION => strval($action),
+            self::COLUMN_EVENT_TIME => microtime(true),
+            self::COLUMN_DETAILS => json_encode($details),
+        ];
+        $this->getPersistence()->exec('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = \'' . $userId . '\'');
         $this->getPersistence()->insert(self::TABLE_NAME, $data);
     }
 
@@ -77,7 +95,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
         foreach ($filters as $filter) {
             $this->addFilter($queryBuilder, $filter);
         }
-        return new UserActivityLogIterator($this->getPersistence(), $queryBuilder);
+        return new RdsLogIterator($this->getPersistence(), $queryBuilder);
     }
 
     /**
@@ -142,8 +160,8 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     private function getColumnNames()
     {
         return [
-            self::COLUMN_USER_ID,
-            self::COLUMN_USER_ROLES,
+            self::USER_ID,
+            self::USER_ROLES,
             self::COLUMN_ACTION,
             self::COLUMN_EVENT_TIME,
             self::COLUMN_DETAILS,
@@ -161,6 +179,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
 
     /**
      * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @throws
      */
     private function getQueryBuilder()
     {
@@ -175,15 +194,13 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     }
 
     /**
-     * Initialize RDS Request log storage
+     * Initialize log storage
      *
-     * @param string $persistenceId
+     * @param \common_persistence_Persistence $persistence
      * @return \common_report_Report
      */
-    public static function install($persistenceId = 'default')
+    public static function install($persistence)
     {
-        $persistence = \common_persistence_Manager::getPersistence($persistenceId);
-
         $schemaManager = $persistence->getDriver()->getSchemaManager();
         $schema = $schemaManager->createSchema();
         $fromSchema = clone $schema;
@@ -208,5 +225,33 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
         }
 
         return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
+    }
+
+    /**
+     * @param Event $event
+     * @throws \common_exception_Error
+     */
+    public function catchEvent(Event $event)
+    {
+        if (\common_session_SessionManager::isAnonymous()) {
+            return;
+        }
+
+        $phpSession = \PHPSession::singleton();
+        $lastStoredActivity = null;
+        if ($phpSession->hasAttribute(self::PHP_SESSION_LAST_ACTIVITY)) {
+            $lastStoredActivity = $phpSession->getAttribute(self::PHP_SESSION_LAST_ACTIVITY);
+        }
+
+        $threshold = $this->getOption(self::OPTION_ACTIVE_USER_THRESHOLD)?: 0;
+
+        $currentTime = microtime(true);
+        if (!$lastStoredActivity || $currentTime > ($lastStoredActivity + $threshold)) {
+            $user = \common_session_SessionManager::getSession()->getUser();
+            $request = ServerRequest::fromGlobals();
+            $phpSession->setAttribute(self::PHP_SESSION_LAST_ACTIVITY, $currentTime);
+            /** @var UserActivityLogStorage $userActivityLog */
+            $this->log($user, $request->getUri());
+        }
     }
 }

@@ -21,22 +21,50 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use oat\oatbox\service\ConfigurableService;
-use oat\oatbox\event\Event;
+use GuzzleHttp\Psr7\Request;
+use oat\oatbox\user\User;
+use oat\oatbox\Configurable;
+use oat\oatbox\service\ServiceManagerAwareInterface;
+use oat\oatbox\service\ServiceManagerAwareTrait;
 
 /**
- * Class RdsRequestLogStorage
- * @package oat\taoEventLog\model\requestLog\rds
+ * Class AbstractRequestLogStorage
+ * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-abstract class AbstractRequestLogStorage extends ConfigurableService implements RequestLogStorage
+abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface
 {
 
+    use ServiceManagerAwareTrait;
+
     /**
-     * @param Event $event
+     * Prepare data to log
+     *
+     * @param Request $request
+     * @param User $user
+     * @return array
      */
-    public function catchEvent(Event $event)
+    protected function prepareData(Request $request, User $user)
     {
-        $this->log();
+        $userId = $user->getIdentifier();
+        if ($userId === null) {
+            $userId = get_class($user);
+        }
+
+        return [
+            RequestLogService::USER_ID => $userId,
+            RequestLogService::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
+            RequestLogService::ACTION => $request->getUri(),
+            RequestLogService::EVENT_TIME => microtime(true),
+            RequestLogService::DETAILS => json_encode([
+                'method' => $request->getMethod(),
+            ]),
+        ];
     }
+
+    /**
+     * Initialize storage
+     * @return mixed
+     */
+    abstract static function install();
 }

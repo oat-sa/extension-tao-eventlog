@@ -14,16 +14,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- * 
- * @author Alexander Zagovorichev <zagovorichev@1pt.com>
+ * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
+ *
+ *
  */
 
-namespace oat\taoEventLog\model;
+namespace oat\taoEventLog\model\requestLog;
 
 /**
- * Class LoggerService
- * @package oat\taoEventLog\model
- * @deprecated use \oat\taoEventLog\model\eventLog\LoggerService instead
+ * Class RequestLogException
+ * @package oat\taoEventLog\model\requestLog
+ * @author Aleh Hutnikau, <hutnikau@gmail.com>
  */
-class LoggerService extends \oat\taoEventLog\model\eventLog\LoggerService{}
+class RequestLogException extends \Exception
+{
+
+}
