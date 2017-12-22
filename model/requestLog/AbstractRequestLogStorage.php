@@ -26,6 +26,7 @@ use oat\oatbox\user\User;
 use oat\oatbox\Configurable;
 use oat\oatbox\service\ServiceManagerAwareInterface;
 use oat\oatbox\service\ServiceManagerAwareTrait;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Class AbstractRequestLogStorage
@@ -40,11 +41,11 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
     /**
      * Prepare data to log
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @param User $user
      * @return array
      */
-    protected function prepareData(Request $request, User $user)
+    protected function prepareData(RequestInterface $request, User $user)
     {
         $userId = $user->getIdentifier();
         if ($userId === null) {
@@ -58,13 +59,9 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
             RequestLogService::EVENT_TIME => microtime(true),
             RequestLogService::DETAILS => json_encode([
                 'method' => $request->getMethod(),
+                'query' => $request->getUri()->getQuery(),
             ]),
         ];
     }
 
-    /**
-     * Initialize storage
-     * @return mixed
-     */
-    abstract static function install();
 }
