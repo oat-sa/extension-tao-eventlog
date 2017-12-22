@@ -37,7 +37,8 @@ use Psr\Http\Message\RequestInterface;
  * return new RequestLogService([
  *   RequestLogService::OPTION_STORAGE => FluentdStorage::class,
  *   RequestLogService::OPTION_STORAGE_PARAMETERS => [
- *      FluentdStorage::OPTION_ENDPOINT => 'http://192.168.202.192:8888',
+ *      FluentdStorage::OPTION_TAG => 'tao.frontend',
+ *      FluentdStorage::OPTION_HOST => 'tao.frontend',
  *      FluentdStorage::OPTION_TAG => 'tao.frontend',
  *   ]
  * ]);
@@ -49,11 +50,14 @@ use Psr\Http\Message\RequestInterface;
  */
 class FluentdStorage extends AbstractRequestLogStorage
 {
-    const OPTION_ENDPOINT  = 'endpoint';
     const OPTION_TAG  = 'tag';
+    const OPTION_HOST  = 'host';
+    const OPTION_PORT  = 'port';
 
-    /** @var Client */
-    private $client;
+    private $resource;
+    private $host;
+    private $port;
+    private $tag;
 
     /**
      * FluentdStorage constructor.
@@ -62,9 +66,11 @@ class FluentdStorage extends AbstractRequestLogStorage
     public function __construct(array $options = [])
     {
         parent::__construct($options);
-        $this->client = new Client([
-            'base_uri' => $this->getOption(self::OPTION_ENDPOINT)
-        ]);
+        $this->resource = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        $this->host = $this->getOption(self::OPTION_HOST);
+        $this->port = $this->getOption(self::OPTION_PORT);
+        $this->tag = $this->getOption(self::OPTION_TAG);
+        socket_set_nonblock($this->resource);
     }
 
     /**
@@ -90,17 +96,24 @@ class FluentdStorage extends AbstractRequestLogStorage
      */
     private function sendData(array $data)
     {
-        try {
-            $request = $this->client->post(
-                '/'.$this->getOption(self::OPTION_TAG),
-                [
-                    'form_params' => [
-                        'json' => json_encode($data)
-                    ]
-                ]
-            );
+        $message = 'json='.json_encode($data);
+        try{
+            socket_sendto($this->resource, $message, strlen($message), 0, $this->host, $this->port);
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
         }
+
+//        try {
+//            $request = $this->client->post(
+//                '/'.$this->getOption(self::OPTION_TAG),
+//                [
+//                    'form_params' => [
+//                        'json' => json_encode($data)
+//                    ]
+//                ]
+//            );
+//        } catch (\Exception $e) {
+//            \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
+//        }
     }
 }
