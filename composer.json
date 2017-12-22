@@ -20,8 +20,7 @@
   },
   "minimum-stability": "dev",
   "require": {
-    "oat-sa/oatbox-extension-installer": "dev-master",
-    "fluent/logger": "v1.0.0"
+    "oat-sa/oatbox-extension-installer": "dev-master"
   },
   "autoload": {
     "psr-4": {
