@@ -43,6 +43,17 @@ use Psr\Http\Message\RequestInterface;
  *
  * ```
  *
+ * td agent config:
+ * ```
+ * <source>
+ *   @type udp           #required
+ *   tag tao.requestlog  #required; tag of output (used to chose output). 
+ *   format json         #required
+ *   bind 0.0.0.0        #required; IP address to listen to
+ *   port 8888           #required; Port to listen to
+ * </source>
+ * ```
+ *
  * @package oat\taoEventLog\model\storage
  * @author Aleh Hutnikau <hutnikau@1pt.com>
  */
