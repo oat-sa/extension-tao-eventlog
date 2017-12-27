@@ -35,6 +35,7 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
 {
     const OPTION_HOST  = 'host';
     const OPTION_PORT  = 'port';
+    const OPTION_DELIMITER = 'delimiter';
 
     /**
      * @var resource
@@ -70,7 +71,7 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
     public function log(RequestInterface $request, User $user)
     {
         $message = json_encode($this->prepareData($request, $user));
-        $message .= "\\n";
+        $message .= $this->hasOption(self::OPTION_DELIMITER) ? $this->getOption(self::OPTION_DELIMITER) : '';
         while (!empty($message))
         {
             $send = socket_write($this->getSocket(),$message, strlen($message));
