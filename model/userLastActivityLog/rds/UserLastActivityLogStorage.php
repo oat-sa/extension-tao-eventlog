@@ -51,9 +51,6 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
 
     const PHP_SESSION_LAST_ACTIVITY = 'tao_user_last_activity_timestamp';
 
-    /** @var \Doctrine\DBAL\Connection */
-    private $connection;
-
     /**
      * @inheritdoc
      */
@@ -170,6 +167,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
 
     /**
      * @return \common_persistence_SqlPersistence
+     * @throws
      */
     private function getPersistence()
     {
@@ -183,14 +181,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
      */
     private function getQueryBuilder()
     {
-        if ($this->connection === null) {
-            $this->connection = \Doctrine\DBAL\DriverManager::getConnection(
-                $this->getPersistence()->getDriver()->getParams(),
-                new \Doctrine\DBAL\Configuration()
-            );
-        }
-
-        return $this->connection->createQueryBuilder()->from(self::TABLE_NAME, 'r');
+        return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from(self::TABLE_NAME, 'r');
     }
 
     /**
