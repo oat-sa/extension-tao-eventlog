@@ -45,18 +45,18 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
      * Connect to the server and return the open socket
      *
      * @return resource
-     * @throws common_Exception
+     * @throws RequestLogException
      */
     public function getSocket()
     {
         if (is_null($this->resource)) {
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
             if ($socket === false) {
-                throw new \common_exception_Error('Unable to open TCP socket: '.socket_strerror(socket_last_error()));
+                throw new RequestLogException('Unable to open TCP socket: '.socket_strerror(socket_last_error()));
             }
             $success = socket_connect($socket, $this->getOption(self::OPTION_HOST), $this->getOption(self::OPTION_PORT));
             if ($success === false) {
-                throw new \common_Exception('Unable to connect to host: '.socket_strerror(socket_last_error()));
+                throw new RequestLogException('Unable to connect to host: '.socket_strerror(socket_last_error()));
             }
             $this->resource = $socket;
         }
@@ -70,11 +70,13 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
     public function log(RequestInterface $request, User $user)
     {
         $message = json_encode($this->prepareData($request, $user));
-        try{
-            socket_write($this->getSocket(),$message, strlen($message));
-            //socket_sendto($this->resource, $message, strlen($message), 0, $this->host, $this->port);
-        } catch (\Exception $e) {
-            \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
+        while (!empty($message))
+        {
+            $send = socket_write($this->getSocket(),$message, strlen($message));
+            if ($send != strlen($message)) {
+                throw new RequestLogException('Unable to send msg: '.socket_strerror(socket_last_error()));
+            }
+            $message = substr($message, $send);
         }
     }
 }
