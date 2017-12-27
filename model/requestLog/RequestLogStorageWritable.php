@@ -40,12 +40,4 @@ interface RequestLogStorageWritable
      * @return boolean
      */
     public function log(RequestInterface $request, User $user);
-
-    /**
-     * Log bunch of events at once
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function bulkLog(array $data);
 }

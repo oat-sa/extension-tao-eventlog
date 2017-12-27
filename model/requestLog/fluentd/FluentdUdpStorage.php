@@ -90,14 +90,6 @@ class FluentdUdpStorage extends AbstractRequestLogStorage
     }
 
     /**
-     * @inheritdoc
-     */
-    public function bulkLog(array $data)
-    {
-        $this->sendData($data);
-    }
-
-    /**
      * @param array $data
      */
     private function sendData(array $data)
