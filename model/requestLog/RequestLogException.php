@@ -26,7 +26,7 @@ namespace oat\taoEventLog\model\requestLog;
  * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@gmail.com>
  */
-class RequestLogException extends \Exception
+class RequestLogException extends \common_Exception
 {
 
 }

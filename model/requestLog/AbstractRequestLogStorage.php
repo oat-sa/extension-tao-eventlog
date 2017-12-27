@@ -21,7 +21,7 @@
 
 namespace oat\taoEventLog\model\requestLog;
 
-use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
 use oat\oatbox\user\User;
 use oat\oatbox\Configurable;
 use oat\oatbox\service\ServiceManagerAwareInterface;
@@ -40,11 +40,11 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
     /**
      * Prepare data to log
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @param User $user
      * @return array
      */
-    protected function prepareData(Request $request, User $user)
+    protected function prepareData(RequestInterface $request, User $user)
     {
         $userId = $user->getIdentifier();
         if ($userId === null) {
@@ -54,17 +54,12 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
         return [
             RequestLogService::USER_ID => $userId,
             RequestLogService::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
-            RequestLogService::ACTION => $request->getUri(),
+            RequestLogService::ACTION => $request->getUri()->getPath(),
             RequestLogService::EVENT_TIME => microtime(true),
             RequestLogService::DETAILS => json_encode([
                 'method' => $request->getMethod(),
+                'query' => $request->getUri()->getQuery(),
             ]),
         ];
     }
-
-    /**
-     * Initialize storage
-     * @return mixed
-     */
-    abstract static function install();
 }
