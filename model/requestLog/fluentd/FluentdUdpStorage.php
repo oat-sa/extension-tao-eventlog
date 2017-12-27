@@ -66,18 +66,6 @@ class FluentdUdpStorage extends AbstractRequestLogStorage
     private $host;
     private $port;
 
-    /**
-     * FluentdStorage constructor.
-     * @param array $options
-     */
-    public function __construct(array $options = [])
-    {
-        parent::__construct($options);
-        $this->resource = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        $this->host = $this->getOption(self::OPTION_HOST);
-        $this->port = $this->getOption(self::OPTION_PORT);
-        socket_set_nonblock($this->resource);
-    }
 
     /**
      * @param RequestInterface $request
@@ -89,6 +77,17 @@ class FluentdUdpStorage extends AbstractRequestLogStorage
         $this->sendData($this->prepareData($request, $user));
     }
 
+    private function getSocket()
+    {
+        if ($this->resource === null) {
+            $this->resource = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+            $this->host = $this->getOption(self::OPTION_HOST);
+            $this->port = $this->getOption(self::OPTION_PORT);
+            socket_set_nonblock($this->resource);
+        }
+        return $this->resource;
+    }
+
     /**
      * @param array $data
      */
@@ -96,7 +95,7 @@ class FluentdUdpStorage extends AbstractRequestLogStorage
     {
         $message = json_encode($data);
         try{
-            socket_sendto($this->resource, $message, strlen($message), 0, $this->host, $this->port);
+            socket_sendto($this->getSocket(), $message, strlen($message), 0, $this->host, $this->port);
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());
         }
