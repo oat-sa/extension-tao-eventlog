@@ -70,6 +70,7 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
     public function log(RequestInterface $request, User $user)
     {
         $message = json_encode($this->prepareData($request, $user));
+        $message .= "\\n";
         while (!empty($message))
         {
             $send = socket_write($this->getSocket(),$message, strlen($message));
