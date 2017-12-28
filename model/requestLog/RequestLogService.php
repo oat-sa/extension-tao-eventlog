@@ -45,6 +45,9 @@ class RequestLogService extends ConfigurableService
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
 
+    /** @var bool whether request has been already logged during current php process */
+    private $fulfilled = false;
+
     /** @var RequestLogStorageReadable|RequestLogStorageWritable */
     private $storage;
 
@@ -123,6 +126,10 @@ class RequestLogService extends ConfigurableService
      */
     public function catchEvent(Event $event)
     {
+        if ($event instanceof \oat\tao\model\event\BeforeAction && $this->fulfilled) {
+            return;
+        }
+        $this->fulfilled = true;
         $this->log();
     }
 }
