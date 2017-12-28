@@ -25,6 +25,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\event\Event;
 use Psr\Http\Message\RequestInterface;
+use oat\tao\model\event\BeforeAction;
 
 /**
  * Class RequestLogService
@@ -126,7 +127,7 @@ class RequestLogService extends ConfigurableService
      */
     public function catchEvent(Event $event)
     {
-        if ($event instanceof \oat\tao\model\event\BeforeAction && $this->fulfilled) {
+        if ($event instanceof BeforeAction && $this->fulfilled) {
             return;
         }
         $this->fulfilled = true;
