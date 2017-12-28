@@ -25,6 +25,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\event\Event;
 use Psr\Http\Message\RequestInterface;
+use oat\tao\model\event\BeforeAction;
 
 /**
  * Class RequestLogService
@@ -44,6 +45,9 @@ class RequestLogService extends ConfigurableService
     const ACTION = 'action';
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
+
+    /** @var bool whether request has been already logged during current php process */
+    private $fulfilled = false;
 
     /** @var RequestLogStorageReadable|RequestLogStorageWritable */
     private $storage;
@@ -123,6 +127,10 @@ class RequestLogService extends ConfigurableService
      */
     public function catchEvent(Event $event)
     {
+        if ($event instanceof BeforeAction && $this->fulfilled) {
+            return;
+        }
+        $this->fulfilled = true;
         $this->log();
     }
 }
