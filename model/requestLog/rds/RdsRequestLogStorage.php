@@ -21,7 +21,7 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
-use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -51,7 +51,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     /**
      * @inheritdoc
      */
-    public function log(Request $request, User $user)
+    public function log(RequestInterface $request, User $user)
     {
         $data = $this->prepareData($request, $user);
         $this->getPersistence()->insert(self::TABLE_NAME, $data);

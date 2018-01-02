@@ -24,6 +24,8 @@ namespace oat\taoEventLog\model\requestLog;
 use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\service\ConfigurableService;
 use oat\oatbox\event\Event;
+use Psr\Http\Message\RequestInterface;
+use oat\tao\model\event\BeforeAction;
 
 /**
  * Class RequestLogService
@@ -44,19 +46,22 @@ class RequestLogService extends ConfigurableService
     const EVENT_TIME = 'event_time';
     const DETAILS = 'details';
 
+    /** @var bool whether request has been already logged during current php process */
+    private $fulfilled = false;
+
     /** @var RequestLogStorageReadable|RequestLogStorageWritable */
     private $storage;
 
     /**
      * @see \oat\taoEventLog\model\requestLog\RequestLogStorageWritable::log
      *
-     * @param Request|null $request
+     * @param RequestInterface|null $request
      * @param User|null $user
      * @return boolean
      * @throws \common_exception_Error
      * @throws RequestLogException
      */
-    public function log(Request $request = null, User $user = null)
+    public function log(RequestInterface $request = null, User $user = null)
     {
         if ($request === null) {
             $request = ServerRequest::fromGlobals();
@@ -100,7 +105,7 @@ class RequestLogService extends ConfigurableService
 
     /**
      * @return RequestLogStorageReadable|RequestLogStorageWritable
-     * @throws RequestLogException
+     * @throws
      */
     protected function getStorage()
     {
@@ -122,6 +127,10 @@ class RequestLogService extends ConfigurableService
      */
     public function catchEvent(Event $event)
     {
+        if ($event instanceof BeforeAction && $this->fulfilled) {
+            return;
+        }
+        $this->fulfilled = true;
         $this->log();
     }
 }

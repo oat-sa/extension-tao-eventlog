@@ -24,7 +24,6 @@ namespace oat\taoEventLog\controller;
 
 use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
-use oat\taoEventLog\model\eventLog\LoggerService;
 use tao_actions_CommonModule;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 
@@ -38,17 +37,6 @@ use oat\taoEventLog\model\datatable\EventLogDatatable;
  */
 class TaoEventLog extends tao_actions_CommonModule
 {
-    /** @var LoggerService */
-    private $loggerService;
-
-    /**
-     * TaoEventLog constructor.
-     */
-    public function __construct()
-    {
-        $this->loggerService = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
-    }
-
     /**
      * A possible entry point to tao
      */
