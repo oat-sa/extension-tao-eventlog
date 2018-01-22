@@ -26,7 +26,7 @@ use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
-use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\tao\model\event\BeforeAction;
@@ -257,6 +257,16 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('1.6.0', '1.6.3');
+
+        if ($this->isVersion('1.6.3')) {
+
+            $requestLogService = new RequestLogService([
+                RequestLogService::OPTION_STORAGE => NoStorage::class
+            ]);
+            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $requestLogService);
+
+            $this->setVersion('1.7.0');
+        }
 
     }
 }

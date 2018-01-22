@@ -24,7 +24,7 @@ namespace oat\taoEventLog\scripts\install;
 use oat\oatbox\extension\AbstractAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
-use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
 use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
@@ -44,19 +44,8 @@ class RegisterRequestLog extends AbstractAction
             $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
             $service = new RequestLogService([
-                RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
-                RequestLogService::OPTION_STORAGE_PARAMETERS => [
-                    RdsRequestLogStorage::OPTION_PERSISTENCE => 'default'
-                ]
+                RequestLogService::OPTION_STORAGE => NoStorage::class,
             ]);
-        }
-        $options = $service->getOptions();
-        $storageClass = $options[RequestLogService::OPTION_STORAGE];
-        if (isset($options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE])) {
-            $persistence = $options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE];
-            $storageClass::install($persistence);
-        } else {
-            $storageClass::install();
         }
 
         $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
