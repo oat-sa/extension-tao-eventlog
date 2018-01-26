@@ -267,8 +267,5 @@ class Updater extends common_ext_ExtensionUpdater
 
             $this->setVersion('1.7.0');
         }
-
-
-        $this->setVersion('1.8.0');
     }
 }
