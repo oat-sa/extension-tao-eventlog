@@ -258,7 +258,7 @@ class Updater extends common_ext_ExtensionUpdater
 
         $this->skip('1.6.0', '1.6.4');
 
-        if ($this->isVersion('1.6.3')) {
+        if ($this->isVersion('1.6.4')) {
 
             $requestLogService = new RequestLogService([
                 RequestLogService::OPTION_STORAGE => NoStorage::class
