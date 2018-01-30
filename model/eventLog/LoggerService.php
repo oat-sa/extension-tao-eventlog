@@ -30,7 +30,7 @@ use JsonSerializable;
 use oat\dtms\DateInterval;
 use oat\oatbox\event\Event;
 use oat\oatbox\service\ServiceManager;
-use oat\taoEventLog\model\storage\RdsStorage;
+use oat\taoEventLog\model\storage\RdsStorage as DeprecatedRdsStorage;
 use oat\dtms\DateTime;
 use oat\taoEventLog\model\AbstractLog;
 
@@ -110,7 +110,7 @@ class LoggerService extends AbstractLog
     }
 
     /**
-     * @return RdsStorage|StorageInterface
+     * @return DeprecatedRdsStorage|StorageInterface
      */
     protected function getStorage()
     {
