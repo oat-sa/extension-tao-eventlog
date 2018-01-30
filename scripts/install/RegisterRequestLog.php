@@ -26,6 +26,7 @@ use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
 use oat\taoEventLog\model\requestLog\RequestLogService;
+use oat\oatbox\event\EventManager;
 
 /**
  * Class RegisterRequestLog
@@ -47,6 +48,12 @@ class RegisterRequestLog extends AbstractAction
                 RequestLogService::OPTION_STORAGE => NoStorage::class,
             ]);
         }
+        $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+
+        $eventManager->attach(
+            'oat\\tao\\model\\event\\BeforeAction',
+            ['taoEventLog/RequestLogStorage', 'catchEvent']
+        );
 
         $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
 
