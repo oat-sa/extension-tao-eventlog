@@ -51,7 +51,7 @@ class RegisterRequestLog extends InstallAction
 
         $this->registerEvent(
             'oat\\tao\\model\\event\\BeforeAction',
-            ['taoEventLog/RequestLogStorage', 'catchEvent']
+            [RequestLogService::SERVICE_ID, 'catchEvent']
         );
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
