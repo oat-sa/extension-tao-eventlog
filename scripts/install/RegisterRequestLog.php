@@ -42,20 +42,20 @@ class RegisterRequestLog extends AbstractAction
     public function __invoke($params)
     {
         try {
-            $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
+            $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
             $service = new RequestLogService([
                 RequestLogService::OPTION_STORAGE => NoStorage::class,
             ]);
+            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
         }
+
         $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
 
         $eventManager->attach(
             'oat\\tao\\model\\event\\BeforeAction',
             ['taoEventLog/RequestLogStorage', 'catchEvent']
         );
-
-        $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
     }
