@@ -21,18 +21,17 @@
 
 namespace oat\taoEventLog\scripts\install;
 
-use oat\oatbox\extension\AbstractAction;
+use oat\oatbox\extension\InstallAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
 use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
 use oat\taoEventLog\model\requestLog\RequestLogService;
-use oat\oatbox\event\EventManager;
 
 /**
  * Class RegisterRequestLog
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterRequestLog extends AbstractAction
+class RegisterRequestLog extends InstallAction
 {
     /**
      * @param $params
@@ -50,9 +49,7 @@ class RegisterRequestLog extends AbstractAction
             $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
         }
 
-        $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
-
-        $eventManager->attach(
+        $this->registerEvent(
             'oat\\tao\\model\\event\\BeforeAction',
             ['taoEventLog/RequestLogStorage', 'catchEvent']
         );
