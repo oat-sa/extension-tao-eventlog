@@ -266,6 +266,13 @@ class Updater extends common_ext_ExtensionUpdater
                 $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
             }
 
+            $eventManager = $this->getServiceManager()->get(EventManager::SERVICE_ID);
+            $eventManager->attach(
+                BeforeAction::class,
+                [RequestLogService::SERVICE_ID, 'catchEvent']
+            );
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+
             $this->setVersion('1.7.0');
         }
     }
