@@ -260,17 +260,11 @@ class Updater extends common_ext_ExtensionUpdater
         $this->skip('1.6.0', '1.6.4');
 
         if ($this->isVersion('1.6.4')) {
-            try {
-                $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
-                if (trim($service->getOption(RequestLogService::OPTION_STORAGE), '\\') === RdsRequestLogStorage::class) {
-                    $service->setOption(RequestLogService::OPTION_STORAGE, NoStorage::class);
-                }
-            } catch (ServiceNotFoundException $e) {
-                $service = new RequestLogService([
-                    RequestLogService::OPTION_STORAGE => NoStorage::class
-                ]);
+            $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
+            if (trim($service->getOption(RequestLogService::OPTION_STORAGE), '\\') === RdsRequestLogStorage::class) {
+                $service->setOption(RequestLogService::OPTION_STORAGE, NoStorage::class);
+                $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
             }
-            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
 
             $this->setVersion('1.7.0');
         }
