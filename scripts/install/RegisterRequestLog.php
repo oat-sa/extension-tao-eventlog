@@ -21,17 +21,17 @@
 
 namespace oat\taoEventLog\scripts\install;
 
-use oat\oatbox\extension\AbstractAction;
+use oat\oatbox\extension\InstallAction;
 use common_report_Report;
 use oat\oatbox\service\ServiceNotFoundException;
-use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
 use oat\taoEventLog\model\requestLog\RequestLogService;
 
 /**
  * Class RegisterRequestLog
  * @package oat\taoEventLog\scripts\install
  */
-class RegisterRequestLog extends AbstractAction
+class RegisterRequestLog extends InstallAction
 {
     /**
      * @param $params
@@ -41,25 +41,18 @@ class RegisterRequestLog extends AbstractAction
     public function __invoke($params)
     {
         try {
-            $service = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
+            $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
         } catch (ServiceNotFoundException $e) {
             $service = new RequestLogService([
-                RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
-                RequestLogService::OPTION_STORAGE_PARAMETERS => [
-                    RdsRequestLogStorage::OPTION_PERSISTENCE => 'default'
-                ]
+                RequestLogService::OPTION_STORAGE => NoStorage::class,
             ]);
-        }
-        $options = $service->getOptions();
-        $storageClass = $options[RequestLogService::OPTION_STORAGE];
-        if (isset($options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE])) {
-            $persistence = $options[RequestLogService::OPTION_STORAGE_PARAMETERS][RdsRequestLogStorage::OPTION_PERSISTENCE];
-            $storageClass::install($persistence);
-        } else {
-            $storageClass::install();
+            $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
         }
 
-        $this->getServiceManager()->register(RequestLogService::SERVICE_ID, $service);
+        $this->registerEvent(
+            'oat\\tao\\model\\event\\BeforeAction',
+            [RequestLogService::SERVICE_ID, 'catchEvent']
+        );
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
     }
