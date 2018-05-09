@@ -103,7 +103,10 @@ define([
             $exportLink.on('click', function () {
                 exporter({
                     title: __('Export Log Entries'),
-                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog')
+                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', {
+                        from: $filterRange.getStart(),
+                        to: $filterRange.getEnd()
+                    })
                 });
             });
 
