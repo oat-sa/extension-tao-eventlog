@@ -21,11 +21,13 @@
 
 namespace oat\taoEventLog\model\export\implementation;
 
-use DateInterval;
+use common_session_SessionManager;
+use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
-use oat\taoEventLog\model\export\Exporter;
 use oat\taoEventLog\model\eventLog\LoggerService;
+use oat\taoEventLog\model\export\Exporter;
 
 /**
  * Class LogEntryCsvExporter
@@ -47,16 +49,29 @@ class LogEntryCsvExporter implements Exporter
     /**
      * @param array $params
      * @return mixed
+     * @throws \Exception
      */
     public function export(array $params = [])
     {
-        $from = (new DateTimeImmutable())
-            ->sub(new DateInterval($this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_PERIOD)))
-            ->format(\DateTime::ISO8601);
         $options['limit'] = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
-        $filters[] = ['occurred', '>' , $from];
+        $filters          = [];
 
-        $data = $this->loggerService->searchInstances($filters, $options);
+        /** @var \common_session_Session $session */
+        $session  = common_session_SessionManager::getSession();
+        $timeZone = new DateTimeZone($session->getTimeZone());
+        $utc      = new DateTimeZone('UTC');
+
+        if (!empty($params['from'])) {
+            $from      = new DateTimeImmutable($params['from'], $timeZone);
+            $filters[] = ['occurred', '>', $from->setTimezone($utc)->format(DateTime::ISO8601)];
+        }
+
+        if (!empty($params['to'])) {
+            $to        = new DateTimeImmutable($params['to'], $timeZone);
+            $filters[] = ['occurred', '<=', $to->setTimezone($utc)->format(DateTime::ISO8601)];
+        }
+
+        $data = $this->loggerService->search($filters, $options);
 
         return $data;
     }
