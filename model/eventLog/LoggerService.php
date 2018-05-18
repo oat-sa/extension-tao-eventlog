@@ -43,7 +43,6 @@ class LoggerService extends AbstractLog
     const SERVICE_ID = 'taoEventLog/eventLogger';
 
     const OPTION_ROTATION_PERIOD = 'rotation_period';
-    const OPTION_EXPORTABLE_PERIOD = 'exportable_period';
     const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
 
     /**

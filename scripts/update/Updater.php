@@ -57,7 +57,7 @@ class Updater extends common_ext_ExtensionUpdater
             $currentConfig = $loggerService->getOptions();
 
             $currentConfig[LoggerService::OPTION_EXPORTABLE_QUANTITY] = 10000;
-            $currentConfig[LoggerService::OPTION_EXPORTABLE_PERIOD] = 'PT24H';
+            $currentConfig['exportable_period'] = 'PT24H';
 
             $this->getServiceManager()->register(LoggerService::SERVICE_ID, new LoggerService($currentConfig));
 
@@ -274,6 +274,17 @@ class Updater extends common_ext_ExtensionUpdater
             $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
 
             $this->setVersion('1.7.0');
+        }
+
+        if ($this->isVersion('1.7.0')) {
+            /** @var LoggerService $service */
+            $service = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+            $options = $service->getOptions();
+            unset($options['exportable_period']);
+            $service->setOptions($options);
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, $service);
+
+            $this->setVersion('1.8.0');
         }
     }
 }
