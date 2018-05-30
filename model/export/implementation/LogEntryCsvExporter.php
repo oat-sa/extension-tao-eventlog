@@ -47,32 +47,59 @@ class LogEntryCsvExporter implements Exporter
     }
 
     /**
-     * @param array $params
+     * @param array  $filters
+     *
+     * @param string $sortColumn
+     * @param string $sortOrder
+     *
      * @return mixed
+     * @throws \common_exception_Error
+     */
+    public function export(array $filters = [], $sortColumn = '', $sortOrder = 'asc')
+    {
+        $options = [
+            'limit' => $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY),
+            'sort'  => $sortColumn,
+            'order' => $sortOrder,
+        ];
+
+        return $this->loggerService->search($this->prepareFilters($filters), $options);
+    }
+
+    /**
+     * @param array $filters
+     *
+     * @return array
+     *
+     * @throws \common_exception_Error
      * @throws \Exception
      */
-    public function export(array $params = [])
+    private function prepareFilters(array $filters = [])
     {
-        $options['limit'] = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
-        $filters          = [];
-
         /** @var \common_session_Session $session */
         $session  = common_session_SessionManager::getSession();
         $timeZone = new DateTimeZone($session->getTimeZone());
         $utc      = new DateTimeZone('UTC');
 
-        if (!empty($params['from'])) {
-            $from      = new DateTimeImmutable($params['from'], $timeZone);
-            $filters[] = ['occurred', '>', $from->setTimezone($utc)->format(DateTime::ISO8601)];
+        $result = [];
+
+        foreach ($filters as $name => $value) {
+            if (!empty($value)) {
+                switch ($name) {
+                    case 'from':
+                        $from     = new DateTimeImmutable($filters['from'], $timeZone);
+                        $result[] = ['occurred', '>', $from->setTimezone($utc)->format(DateTime::ISO8601)];
+                        break;
+                    case 'to':
+                        $to       = new DateTimeImmutable($filters['to'], $timeZone);
+                        $result[] = ['occurred', '<=', $to->setTimezone($utc)->format(DateTime::ISO8601)];
+                        break;
+                    default:
+                        $result[] = [$name, 'LIKE', "%$value%"];
+                }
+            }
         }
 
-        if (!empty($params['to'])) {
-            $to        = new DateTimeImmutable($params['to'], $timeZone);
-            $filters[] = ['occurred', '<=', $to->setTimezone($utc)->format(DateTime::ISO8601)];
-        }
-
-        $data = $this->loggerService->search($filters, $options);
-
-        return $data;
+        return $result;
     }
 }

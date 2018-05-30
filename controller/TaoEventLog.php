@@ -23,9 +23,9 @@ namespace oat\taoEventLog\controller;
 
 
 use oat\tao\model\export\implementation\CsvExporter;
+use oat\taoEventLog\model\datatable\EventLogDatatable;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
 use tao_actions_CommonModule;
-use oat\taoEventLog\model\datatable\EventLogDatatable;
 
 /**
  * Sample controller
@@ -56,27 +56,46 @@ class TaoEventLog extends tao_actions_CommonModule
     /**
      * Export log entries from database to csv file
      * dates should be in UTC
+     *
+     * @throws \Exception
      */
     public function export()
     {
-        $delimiter = $this->hasRequestParameter('field_delimiter') ? html_entity_decode($this->getRequestParameter('field_delimiter')) : ',';
-        $enclosure = $this->hasRequestParameter('field_encloser') ? html_entity_decode($this->getRequestParameter('field_encloser')) : '"';
+        $delimiter   = $this->getParameter('field_delimiter', ',');
+        $enclosure   = $this->getParameter('field_encloser', '"');
+        $sortBy      = $this->getParameter('sortby', '');
+        $sortOrder   = $this->getParameter('sortorder', '');
         $columnNames = $this->hasRequestParameter('first_row_column_names');
-        $exportParameters = [];
-        if ($this->hasRequestParameter('from')) {
-            $exportParameters['from'] =  $this->getRequestParameter('from');
-        }
-        if ($this->hasRequestParameter('to')) {
-            $exportParameters['to'] =  $this->getRequestParameter('to');
-        }
-        
-        if (!$exported = (new LogEntryCsvExporter())->export($exportParameters)) {
 
+        $exportParameters = [];
+
+        if ($this->hasRequestParameter('filtercolumns')) {
+            $parameters = $this->getRequestParameter('filtercolumns');
+
+            if (is_array($parameters)) {
+                $exportParameters = $parameters;
+            }
+        }
+
+        if (!$exported = (new LogEntryCsvExporter())->export($exportParameters, $sortBy, $sortOrder)) {
             return $this->returnJson(['message' => 'Not found exportable log entries. Please, check export configuration.'], 404);
         }
 
         $csvExporter = new CsvExporter($exported);
         setcookie('fileDownload', 'true', 0, '/');
         $csvExporter->export($columnNames, true, $delimiter, $enclosure);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $defaultValue
+     *
+     * @return string
+     */
+    public function getParameter($name, $defaultValue)
+    {
+        return $this->hasRequestParameter($name)
+            ? html_entity_decode($this->getRequestParameter($name))
+            : $defaultValue;
     }
 }
