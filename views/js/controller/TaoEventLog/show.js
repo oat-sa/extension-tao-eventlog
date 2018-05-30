@@ -108,7 +108,6 @@ define([
                     to: $filterRange.getEnd()
                 });
 
-                console.log('FILTER', currentFilter);
                 exporter({
                     title: __('Export Log Entries'),
                     exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', currentFilter)
