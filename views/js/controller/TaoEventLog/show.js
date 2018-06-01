@@ -65,6 +65,9 @@ define([
                     timeFormat: 'HH:mm:ss'
                 }
             });
+            var currentFilter = {
+                filtercolumns: {}
+            };
 
             var updateEventDetails = function updateEventDetails(event) {
                 var key, json, str;
@@ -89,7 +92,6 @@ define([
             };
 
             $filterRange.on('submit', function() {
-
                 $eventList.datatable('options', {
                     params: {
                         periodStart: $filterRange.getStart(),
@@ -101,12 +103,14 @@ define([
             });
 
             $exportLink.on('click', function () {
+                currentFilter.filtercolumns = _.merge(currentFilter.filtercolumns, {
+                    from: $filterRange.getStart(),
+                    to: $filterRange.getEnd()
+                });
+
                 exporter({
                     title: __('Export Log Entries'),
-                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', {
-                        from: $filterRange.getStart(),
-                        to: $filterRange.getEnd()
-                    })
+                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', currentFilter)
                 });
             });
 
@@ -174,12 +178,17 @@ define([
                      */
                     filter: function filtered(e, options) {
                         options.page = 1;
-                    }
+                    },
 
+                    /**
+                     * Grab context of current query (filter, sort, ...)
+                     * @param e
+                     * @param ajaxConfig
+                     */
+                    query: function onQuery(e, ajaxConfig) {
+                        currentFilter = _.pick(ajaxConfig && ajaxConfig.data, ['filterquery', 'filtercolumns', 'sortby', 'sortorder', 'sorttype']);
+                    }
                 }
-            }).on('create.datatable', function () {
-                // the page is now ready
-                $layout.trigger('dispatched');
             });
         }
     };
