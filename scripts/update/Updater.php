@@ -24,6 +24,9 @@ namespace oat\taoEventLog\scripts\update;
 use common_ext_ExtensionsManager;
 use common_ext_ExtensionUpdater;
 use oat\oatbox\event\EventManager;
+use oat\tao\model\event\CsvImportEvent;
+use oat\tao\model\event\RdfExportEvent;
+use oat\tao\model\event\RdfImportEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\StorageInterface;
 use oat\taoEventLog\model\requestLog\noStorage\NoStorage;
@@ -32,6 +35,12 @@ use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\tao\model\event\BeforeAction;
 use oat\taoEventLog\model\requestLog\RequestLogService;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage;
+use oat\taoQtiItem\model\event\QtiItemExportEvent;
+use oat\taoQtiItem\model\event\QtiItemImportEvent;
+use oat\taoQtiItem\model\event\QtiItemMetadataExportEvent;
+use oat\taoQtiTest\models\event\QtiTestExportEvent;
+use oat\taoQtiTest\models\event\QtiTestImportEvent;
+use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
 
 /**
  * Class Updater
@@ -288,5 +297,45 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('1.8.0', '1.9.0');
+
+        if ($this->isVersion('1.9.0')) {
+            /** @var \common_ext_ExtensionsManager $extensionManager */
+            $extensionManager = $this->getServiceManager()->get(\common_ext_ExtensionsManager::SERVICE_ID);
+
+            $eventManager->attach(RdfImportEvent::class, [LoggerService::class, 'logEvent']);
+            $eventManager->attach(CsvImportEvent::class, [LoggerService::class, 'logEvent']);
+            $eventManager->attach(RdfExportEvent::class, [LoggerService::class, 'logEvent']);
+
+            if ($extensionManager->isEnabled('taoItems')) {
+                $eventManager->detach('oat\\taoItems\\model\\event\\ItemExportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->detach('oat\\taoItems\\model\\event\\ItemImportEvent', [LoggerService::class, 'logEvent']);
+            }
+
+            if ($extensionManager->isEnabled('taoTestTaker')) {
+                $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerExportedEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerImportedEvent', [LoggerService::class, 'logEvent']);
+            }
+
+            if ($extensionManager->isEnabled('taoQtiItem')) {
+                $eventManager->attach(QtiItemImportEvent::class, [LoggerService::class, 'logEvent']);
+                $eventManager->attach(QtiItemMetadataExportEvent::class, [LoggerService::class, 'logEvent']);
+                $eventManager->attach(QtiItemExportEvent::class, [LoggerService::class, 'logEvent']);
+            }
+
+            if ($extensionManager->isEnabled('taoTests')) {
+                $eventManager->detach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
+                $eventManager->detach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
+            }
+
+            if ($extensionManager->isEnabled('taoQtiTest')) {
+                $eventManager->attach(QtiTestImportEvent::class, [LoggerService::class, 'logEvent']);
+                $eventManager->attach(QtiTestMetadataExportEvent::class, [LoggerService::class, 'logEvent']);
+                $eventManager->attach(QtiTestExportEvent::class, [LoggerService::class, 'logEvent']);
+            }
+
+            $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
+
+            $this->setVersion('1.10.0');
+        }
     }
 }
