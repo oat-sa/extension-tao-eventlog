@@ -46,14 +46,31 @@ class LoggerService extends AbstractLog
     const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
 
     /**
+     * @var string
+     */
+    private $action = '';
+
+    public function getAction()
+    {
+        if (!$this->action) {
+            $this->action = 'cli' === php_sapi_name()
+                ? $_SERVER['PHP_SELF']
+                : Context::getInstance()->getRequest()->getRequestURI();
+        }
+        return $this->action;
+    }
+
+    public function setAction($action = '')
+    {
+        $this->action = $action;
+    }
+
+    /**
      * @param Event $event
+     * @throws \common_exception_Error
      */
     public function log(Event $event)
     {
-        $action = 'cli' === php_sapi_name()
-            ? $_SERVER['PHP_SELF']
-            : Context::getInstance()->getRequest()->getRequestURI();
-
         /** @var common_session_Session $session */
         $session = common_session_SessionManager::getSession();
 
@@ -64,7 +81,7 @@ class LoggerService extends AbstractLog
 
         $logEntity = new EventLogEntity(
             $event,
-            $action,
+            $this->getAction(),
             $currentUser,
             (new DateTime('now', new \DateTimeZone('UTC'))),
             $data
