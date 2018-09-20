@@ -338,6 +338,6 @@ class Updater extends common_ext_ExtensionUpdater
             $this->setVersion('1.10.0');
         }
 
-        $this->skip('1.10.0', '1.10.1');
+        $this->skip('1.10.0', '1.11.0');
     }
 }
