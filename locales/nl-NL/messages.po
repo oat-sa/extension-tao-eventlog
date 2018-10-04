@@ -1,0 +1,73 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 3.3.0-sprint86\n"
+"PO-Revision-Date: 2018-09-26T12:04:44\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: nl-NL\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: nl-NL\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "CSV Options"
+msgstr "CSV opties"
+
+msgid "Event"
+msgstr "Gebeurtenis"
+
+#, tao-public
+msgid "Event Log"
+msgstr "Eventlog"
+
+msgid "Event Name"
+msgstr "Eventnaam"
+
+msgid "Export"
+msgstr "Exporteren"
+
+msgid "Export Log Entries"
+msgstr "Exporteer log invoer"
+
+msgid "Export log entries"
+msgstr "Exporteer log invoer"
+
+msgid "Field delimiter"
+msgstr "Veldscheidingsteken"
+
+msgid "Field encloser"
+msgstr "Veldbehuizing"
+
+msgid "First row column names"
+msgstr "Eerste rij kolomnamen"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Log watcher"
+msgstr "Log waker"
+
+msgid "Multiple values delimiter"
+msgstr "Meerdere waarden afscheiding"
+
+msgid "Occurred"
+msgstr "Opgetreden"
+
+msgid "Properties"
+msgstr "Eigenschappen"
+
+msgid "User activity log successfully registered."
+msgstr "Gebruikersactiviteit succesvol geregistreerd. "
+
+msgid "User ID"
+msgstr "Gebruikers ID"
+
+msgid "User Roles"
+msgstr "Gebruikersrollen"
+
