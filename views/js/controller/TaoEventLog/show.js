@@ -21,16 +21,16 @@
 define([
     'jquery',
     'i18n',
-    'helpers',
+    'util/url',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
     'taoEventLog/components/export/modalExporter',
     'ui/dateRange'
-], function ($, __, helpers, datatable, layoutTpl, exporter, dateRangeFactory) {
+], function ($, __, url, datatable, layoutTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
-    var listUrl = helpers._url('search', 'TaoEventLog', 'taoEventLog');
+    var listUrl = url.route('search', 'TaoEventLog', 'taoEventLog');
 
     return {
 
@@ -110,7 +110,7 @@ define([
 
                 exporter({
                     title: __('Export Log Entries'),
-                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', currentFilter)
+                    exportUrl: url.route('export', 'TaoEventLog', 'taoEventLog', currentFilter)
                 });
             });
 
@@ -152,7 +152,25 @@ define([
                     sortable: true,
                     filterable: true,
                     transform: function (roles) {
-                        return roles.split(', ').shift();
+                        var rolesArray = roles.split(', ');
+                        var rolesCount = rolesArray.length;
+
+                        if(rolesCount > 1) {
+                            if(currentFilter.filtercolumns.user_roles) {
+                                var roleFiltered = _.find(rolesArray, function (item) {
+                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
+                                });
+                                if(roleFiltered) {
+                                    return roleFiltered + " and " + (rolesCount - 1) + " roles";
+                                } else {
+                                    return (rolesCount) + " roles";
+                                }
+                            } else {
+                                return rolesCount + " roles";
+                            }
+                        } else if(rolesCount === 1){
+                            return roles;
+                        }
                     }
                 }, {
                     id: 'occurred',
@@ -165,10 +183,14 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
+
                         updateEventDetails(event.raw);
 
                         //the 1st time it comes hidden
-                        $eventViewer.removeClass('hidden');
+                        if($eventViewer.is(".hidden")) {
+                            $layout.find(".col-12").removeClass("col-12").addClass("col-7");
+                            $eventViewer.removeClass('hidden');
+                        }
                     },
 
                     /**
