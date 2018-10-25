@@ -161,12 +161,12 @@ define([
                                     return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
                                 });
                                 if(roleFiltered) {
-                                    return roleFiltered + " and " + (rolesCount - 1) + " roles";
+                                    return __('%s and %s roles', roleFiltered, (rolesCount - 1));
                                 } else {
-                                    return (rolesCount) + " roles";
+                                    return __('%s roles', rolesCount);
                                 }
                             } else {
-                                return rolesCount + " roles";
+                                return __('%s roles', rolesCount);
                             }
                         } else if(rolesCount === 1){
                             return roles;
