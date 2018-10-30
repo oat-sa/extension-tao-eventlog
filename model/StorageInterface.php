@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- * 
+ *
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
@@ -35,7 +35,7 @@ interface StorageInterface
 
     /**
      * Search records in log which are meet the search criteria
-     * 
+     *
      * @param array $filters
      * @param array $options
      * @return array
@@ -50,5 +50,11 @@ interface StorageInterface
      * @return integer
      */
     public function count(array $filters = [], array $options = []);
+
+    /**
+     * @param array $filters
+     * @return integer
+     */
+    public function delete(array $filters);
 
 }

@@ -47,6 +47,10 @@ abstract class AbstractLog extends ConfigurableService
         return $this->getStorage()->search($filters, $options);
     }
 
+    public function delete(array $filters){
+        return $this->getStorage()->delete($filters);
+    }
+
     /**
      * Count records in log which are meet the search criteria
      * @param array $filters
