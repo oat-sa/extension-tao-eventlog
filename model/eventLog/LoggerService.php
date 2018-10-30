@@ -33,6 +33,7 @@ use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\storage\RdsStorage as DeprecatedRdsStorage;
 use oat\dtms\DateTime;
 use oat\taoEventLog\model\AbstractLog;
+use oat\taoEventLog\model\StorageInterface;
 
 /**
  * Class LoggerService
@@ -110,8 +111,8 @@ class LoggerService extends AbstractLog
     {
         $period = new DateInterval($this->getOption(self::OPTION_ROTATION_PERIOD));
         $beforeDate = (new DateTimeImmutable())->sub($period);
-        
-        return $this->getStorage()->removeOldLogEntries($beforeDate);
+
+        return $this->delete([], $beforeDate);
     }
 
     /**
