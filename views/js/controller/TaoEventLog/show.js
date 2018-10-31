@@ -154,23 +154,27 @@ define([
                     transform: function (roles) {
                         var rolesArray = roles.split(', ');
                         var rolesCount = rolesArray.length;
+                        var roleFiltered;
+                        var result;
 
                         if(rolesCount > 1) {
                             if(currentFilter.filtercolumns.user_roles) {
-                                var roleFiltered = _.find(rolesArray, function (item) {
-                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
+                                roleFiltered = _.find(rolesArray, function (item) {
+                                    result = item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
                                 });
                                 if(roleFiltered) {
-                                    return __('%s and %s roles', roleFiltered, (rolesCount - 1));
+                                    result = __('%s and %s roles', roleFiltered, (rolesCount - 1));
                                 } else {
-                                    return __('%s roles', rolesCount);
+                                    result = __('%s roles', rolesCount);
                                 }
                             } else {
-                                return __('%s roles', rolesCount);
+                                result = __('%s roles', rolesCount);
                             }
                         } else if(rolesCount === 1){
-                            return roles;
+                            result = roles;
                         }
+
+                        return result;
                     }
                 }, {
                     id: 'occurred',
