@@ -160,7 +160,7 @@ define([
                         if(rolesCount > 1) {
                             if(currentFilter.filtercolumns.user_roles) {
                                 roleFiltered = _.find(rolesArray, function (item) {
-                                    result = item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
+                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
                                 });
                                 if(roleFiltered) {
                                     result = __('%s and %s roles', roleFiltered, (rolesCount - 1));
