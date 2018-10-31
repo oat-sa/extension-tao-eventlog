@@ -1,57 +1,43 @@
+/**
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; under version 2
+ * of the License (non-upgradable).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright (c) 2014-2018 (original work) Open Assessment Technologies SA;
+ */
+
+/**
+ * configure the extension bundles
+ * @author Bertrand Chevrier <bertrand@taotesting.com>
+ */
 module.exports = function(grunt) {
     'use strict';
 
-    var requirejs   = grunt.config('requirejs') || {};
-    var clean       = grunt.config('clean') || {};
-    var copy        = grunt.config('copy') || {};
-
-    var root        = grunt.option('root');
-    var libs        = grunt.option('mainlibs');
-    var ext         = require(root + '/tao/views/build/tasks/helpers/extensions')(grunt, root);
-    var out         = 'output';
-
-    var paths = {
-        'tao' : root + '/tao/views/js',
-        'taoEventLog' : root + '/taoEventLog/views/js',
-        'taoEventLogCss' : root + '/taoEventLog/views/css'
-    };
-
-    /**
-     * Remove bundled and bundling files
-     */
-    clean.taoeventlogbundle = [out];
-
-    /**
-     * Compile tao files into a bundle
-     */
-    requirejs.taoeventlogbundle = {
-        options: {
-            baseUrl : '../js',
-            dir : out,
-            mainConfigFile : './config/requirejs.build.js',
-            paths : paths,
-            modules : [{
-                name: 'taoEventLog/controller/routes',
-                include : ext.getExtensionsControllers(['taoEventLog']),
-                exclude : ['mathJax'].concat(libs)
-            }]
+    grunt.config.merge({
+        bundle : {
+            taoeventlog : {
+                options : {
+                    extension : 'taoEventLog',
+                    outputDir : 'loader',
+                    bundles : [{
+                        name : 'taoEventLog',
+                        default : true
+                    }]
+                }
+            }
         }
-    };
-
-    /**
-     * copy the bundles to the right place
-     */
-    copy.taoeventlogbundle = {
-        files: [
-            { src: [ out + '/taoEventLog/controller/routes.js'],  dest: root + '/taoEventLog/views/js/controllers.min.js' },
-            { src: [ out + '/taoEventLog/controller/routes.js.map'],  dest: root + '/taoEventLog/views/js/controllers.min.js.map' }
-        ]
-    };
-
-    grunt.config('clean', clean);
-    grunt.config('copy', copy);
-    grunt.config('requirejs', requirejs);
+    });
 
     // bundle task
-    grunt.registerTask('taoeventlogbundle', ['clean:taoeventlogbundle', 'requirejs:taoeventlogbundle', 'copy:taoeventlogbundle']);
+    grunt.registerTask('taoeventlogbundle', ['bundle:taoeventlog']);
 };
