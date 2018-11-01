@@ -108,7 +108,7 @@ class CleanUpOldJsonLogs extends ScriptAction
             $report->add(new Report(Report::TYPE_INFO, 'Script is running in wet-run mode'));
             $x = $service->delete($filters);
             $report->add(new Report(Report::TYPE_INFO, sprintf('%s to be removed ', $x)));
-        }else{
+        } else {
             $report->add(new Report(Report::TYPE_INFO, 'Script is running in dry-run mode'));
         }
 
