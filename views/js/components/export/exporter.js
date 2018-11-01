@@ -42,44 +42,44 @@ define([
         }
 
         return component({}, { title: __('Export') })
-            .setTemplate(layoutTpl)
+        .setTemplate(layoutTpl)
 
-            // renders the component
-            .on('render', function () {
-                var self = this,
-                    $form = self.$component.find('.js-export-form');
+        // renders the component
+        .on('render', function () {
+            var self = this,
+                $form = self.$component.find('.js-export-form');
 
-                $form.on('submit', function (e) {
-                    e.preventDefault();
-                    loadingBar.start();
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                loadingBar.start();
 
-                    var params = {},
-                        exportUrl;
+                var params = {},
+                    exportUrl;
 
-                    _.each($form.serializeArray(), function(param){
-                        params[param.name] = param.value;
-                    });
-
-                    exportUrl = url.build(options.exportUrl, params);
-
-                    $.fileDownload(exportUrl, {
-                        successCallback : function () {
-                            loadingBar.stop();
-                            self.$component.modal('close');
-                        },
-                        failCallback : function (jqXHR) {
-                            loadingBar.stop();
-                            var response = $.parseJSON($(jqXHR).text());
-                            if (response) {
-                                feedback().error(new Error(response.message));
-                            } else {
-                                self.$component.modal('close');
-                                logoutEvent();
-                            }
-                        }
-                    });
+                _.each($form.serializeArray(), function(param){
+                    params[param.name] = param.value;
                 });
-            })
-            .init(options);
-    }
+
+                exportUrl = url.build(options.exportUrl, params);
+
+                $.fileDownload(exportUrl, {
+                    successCallback : function () {
+                        loadingBar.stop();
+                        self.$component.modal('close');
+                    },
+                    failCallback : function (jqXHR) {
+                        loadingBar.stop();
+                        var response = $.parseJSON($(jqXHR).text());
+                        if (response) {
+                            feedback().error(new Error(response.message));
+                        } else {
+                            self.$component.modal('close');
+                            logoutEvent();
+                        }
+                    }
+                });
+            });
+        })
+        .init(options);
+    };
 });
