@@ -112,7 +112,7 @@ class CleanUpOldJsonLogs extends ScriptAction
             $report->add(new Report(Report::TYPE_INFO, 'Script is running in dry-run mode'));
         }
 
-        $report->add(new Report(Report::TYPE_INFO, 'Script finished execution'));
+        $report->add(new Report(Report::TYPE_SUCCESS, 'Script finished execution'));
 
         return $report;
     }
