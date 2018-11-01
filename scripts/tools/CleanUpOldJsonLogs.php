@@ -95,7 +95,7 @@ class CleanUpOldJsonLogs extends ScriptAction
         $beforeDate = (new DateTimeImmutable())->sub($period);
 
         /** @var LoggerService $service */
-        $service = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+        $service = $this->getServiceLocator()->get(LoggerService::SERVICE_ID);
         $filters = [];
         $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '<=', $beforeDate->format(AbstractRdsStorage::DATE_TIME_FORMAT)];
         $filters[] = [RdsStorage::EVENT_LOG_EVENT_NAME, 'in', $events];
