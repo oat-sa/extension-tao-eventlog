@@ -89,7 +89,7 @@ class CleanUpOldJsonLogs extends ScriptAction
     {
         $report = new Report(Report::TYPE_INFO, 'Script execution started');
 
-        $isWetRun = $this->getOption('wetRun') !== null ?: false;
+        $isWetRun = $this->getOption('wetRun');
         $period = $this->hasOption('period') ? new DateInterval($this->getOption('period')) : false;
         $events = $this->hasOption('events') ? explode(',', $this->getOption('events')) : [];
         $beforeDate = (new DateTimeImmutable())->sub($period);
