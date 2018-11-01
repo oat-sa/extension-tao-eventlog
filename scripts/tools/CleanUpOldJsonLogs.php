@@ -48,7 +48,8 @@ class CleanUpOldJsonLogs extends ScriptAction
                 'longPrefix' => 'wet-run',
                 'flag' => true,
                 'description' => 'Will perform real database operations if it will be required, including removing data',
-                'required' => false
+                'required' => false,
+                'defaultValue' => false
             ],
             'period' => [
                 'prefix' => 'p',
