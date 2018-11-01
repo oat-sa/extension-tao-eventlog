@@ -1,6 +1,6 @@
 <div class="log">
     <div class="grid-row">
-        <div class="col-7">
+        <div class="col-12">
             <section class="log-browser">
                 <header>
                     <h2>{{__ 'Log watcher'}}</h2>
@@ -21,7 +21,7 @@
                 </div>
 
                 {{#each dataTypes}}
-                
+
                     <div class="grid-row">
                         <div class="col-12">
                             <strong>{{title}}</strong>

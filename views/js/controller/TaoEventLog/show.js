@@ -21,16 +21,16 @@
 define([
     'jquery',
     'i18n',
-    'helpers',
+    'util/url',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
     'taoEventLog/components/export/modalExporter',
     'ui/dateRange'
-], function ($, __, helpers, datatable, layoutTpl, exporter, dateRangeFactory) {
+], function ($, __, url, datatable, layoutTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
-    var listUrl = helpers._url('search', 'TaoEventLog', 'taoEventLog');
+    var listUrl = url.route('search', 'TaoEventLog', 'taoEventLog');
 
     return {
 
@@ -110,7 +110,7 @@ define([
 
                 exporter({
                     title: __('Export Log Entries'),
-                    exportUrl: helpers._url('export', 'TaoEventLog', 'taoEventLog', currentFilter)
+                    exportUrl: url.route('export', 'TaoEventLog', 'taoEventLog', currentFilter)
                 });
             });
 
@@ -152,7 +152,29 @@ define([
                     sortable: true,
                     filterable: true,
                     transform: function (roles) {
-                        return roles.split(', ').shift();
+                        var rolesArray = roles.split(', ');
+                        var rolesCount = rolesArray.length;
+                        var roleFiltered;
+                        var result;
+
+                        if(rolesCount > 1) {
+                            if(currentFilter.filtercolumns.user_roles) {
+                                roleFiltered = _.find(rolesArray, function (item) {
+                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
+                                });
+                                if(roleFiltered) {
+                                    result = __('%s and %s roles', roleFiltered, (rolesCount - 1));
+                                } else {
+                                    result = __('%s roles', rolesCount);
+                                }
+                            } else {
+                                result = __('%s roles', rolesCount);
+                            }
+                        } else if(rolesCount === 1){
+                            result = roles;
+                        }
+
+                        return result;
                     }
                 }, {
                     id: 'occurred',
@@ -165,10 +187,14 @@ define([
                      * When a row is selected, we update the student viewer
                      */
                     selected: function selectRow(e, event) {
+
                         updateEventDetails(event.raw);
 
                         //the 1st time it comes hidden
-                        $eventViewer.removeClass('hidden');
+                        if($eventViewer.is(".hidden")) {
+                            $layout.find(".col-12").removeClass("col-12").addClass("col-7");
+                            $eventViewer.removeClass('hidden');
+                        }
                     },
 
                     /**
