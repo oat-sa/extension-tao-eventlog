@@ -60,6 +60,7 @@ class CleanUpOldJsonLogs extends ScriptAction
             'events' => [
                 'prefix' => 'e',
                 'longPrefix' => 'events',
+                'defaultValue' => [],
                 'description' => 'Specify exact events that should be REMOVED, coma separated',
                 'required' => true
             ],
@@ -91,7 +92,7 @@ class CleanUpOldJsonLogs extends ScriptAction
 
         $isWetRun = $this->getOption('wetRun');
         $period = new DateInterval($this->getOption('period'));
-        $events = $this->hasOption('events') ? explode(',', $this->getOption('events')) : [];
+        $events = explode(',', $this->getOption('events'));
         $beforeDate = (new DateTimeImmutable())->sub($period);
 
         /** @var LoggerService $service */
