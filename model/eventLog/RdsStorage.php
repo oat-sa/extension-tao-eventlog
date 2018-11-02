@@ -23,7 +23,6 @@ namespace oat\taoEventLog\model\eventLog;
 
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
-use DateTimeImmutable;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
 /**
  * Class RdsStorage
@@ -79,17 +78,6 @@ class RdsStorage extends AbstractRdsStorage
     public function searchInstances(array $params = [])
     {
         return $this->search($params);
-    }
-
-    /**
-     * @param DateTimeImmutable $beforeDate
-     * @return mixed
-     */
-    public function removeOldLogEntries(DateTimeImmutable $beforeDate)
-    {
-        $sql = "DELETE FROM " . $this->getTableName() . " WHERE " . self::EVENT_LOG_OCCURRED . " <= ?";
-
-        return $this->getPersistence()->query($sql, [$beforeDate->format(self::DATE_TIME_FORMAT)]);
     }
 
     /**

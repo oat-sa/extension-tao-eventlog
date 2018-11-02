@@ -156,7 +156,7 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
             return;
         }
 
-        if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like'])) {
+        if (!in_array($operation, ['<', '>', '<>', '<=', '>=', '=', 'between', 'like', 'in'])) {
             return;
         }
         $params = [];
@@ -167,6 +167,9 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         } else if ($operation === 'like') {
             $condition = "lower(r.$colName) $operation ?";
             $params[] = strtolower($val);
+        } else if ($operation === 'in') {
+            $condition = "r.$colName $operation (" . implode(',',array_fill(0, count($val),'?')).")";
+            $params = array_values($val);
         } else {
             $condition = "r.$colName $operation ?";
             $params[] = $val;
@@ -178,17 +181,19 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         $queryBuilder->setParameters($params);
     }
 
-    /**
-     * @return \Doctrine\DBAL\Query\QueryBuilder
-     */
+     /**
+      * @return \Doctrine\DBAL\Query\QueryBuilder
+      * @throws \oat\oatbox\service\exception\InvalidServiceManagerException
+      */
     private function getQueryBuilder()
     {
         return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from($this->getTableName(), 'r');
     }
 
-    /**
-     * @return common_persistence_SqlPersistence
-     */
+     /**
+      * @return common_persistence_SqlPersistence
+      * @throws \oat\oatbox\service\exception\InvalidServiceManagerException
+      */
     public function getPersistence()
     {
         $persistenceId = $this->getOption(self::OPTION_PERSISTENCE);
@@ -201,4 +206,18 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         return $this->persistence;
     }
 
-}
+     /**
+      * @param array $filters
+      * @return integer
+      * @throws \oat\oatbox\service\exception\InvalidServiceManagerException
+      */
+     public function delete(array $filters )
+     {
+         $qb = $this->getPersistence()->getPlatForm()->getQueryBuilder()->delete($this->getTableName(), 'r');
+         foreach ($filters as $filter){
+             $this->addFilter($qb, $filter);
+         }
+         return $qb->execute();
+     }
+
+ }
