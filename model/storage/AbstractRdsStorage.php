@@ -161,17 +161,17 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         }
         $params = [];
         if ($operation === 'between') {
-            $condition = "r.$colName between ? AND ?";
+            $condition = "$colName between ? AND ?";
             $params[] = $val;
             $params[] = $val2;
         } else if ($operation === 'like') {
-            $condition = "lower(r.$colName) $operation ?";
+            $condition = "lower($colName) $operation ?";
             $params[] = strtolower($val);
         } else if ($operation === 'in') {
-            $condition = "r.$colName $operation (" . implode(',',array_fill(0, count($val),'?')).")";
+            $condition = "$colName $operation (" . implode(',',array_fill(0, count($val),'?')).")";
             $params = array_values($val);
         } else {
-            $condition = "r.$colName $operation ?";
+            $condition = "$colName $operation ?";
             $params[] = $val;
         }
 
@@ -187,7 +187,7 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
       */
     private function getQueryBuilder()
     {
-        return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from($this->getTableName(), 'r');
+        return $this->getPersistence()->getPlatForm()->getQueryBuilder()->from($this->getTableName());
     }
 
      /**
@@ -213,7 +213,7 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
       */
      public function delete(array $filters )
      {
-         $qb = $this->getPersistence()->getPlatForm()->getQueryBuilder()->delete($this->getTableName(), 'r');
+         $qb = $this->getPersistence()->getPlatForm()->getQueryBuilder()->delete($this->getTableName());
          foreach ($filters as $filter){
              $this->addFilter($qb, $filter);
          }

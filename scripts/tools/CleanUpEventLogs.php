@@ -29,11 +29,11 @@ use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
 
 /**
- * Class CleanUpOldJsonLogs
- * Usage: sudo -u www-data php index.php 'oat\taoEventLog\scripts\tools\CleanUpOldJsonLogs'
+ * Class CleanUpEventLogs
+ * Usage: sudo -u www-data php index.php 'oat\taoEventLog\scripts\tools\CleanUpEventLogs'
  * @package oat\taoEventLog\scripts\tools
  */
-class CleanUpOldJsonLogs extends ScriptAction
+class CleanUpEventLogs extends ScriptAction
 {
     use OntologyAwareTrait;
 
