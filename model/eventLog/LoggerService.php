@@ -45,6 +45,7 @@ class LoggerService extends AbstractLog
 
     const OPTION_ROTATION_PERIOD = 'rotation_period';
     const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
+    const OPTION_FETCH_LIMIT = 'fetch_limit';
 
     /**
      * @var string

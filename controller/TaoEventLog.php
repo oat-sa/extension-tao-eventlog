@@ -21,10 +21,9 @@
 
 namespace oat\taoEventLog\controller;
 
-
-use oat\tao\model\export\implementation\CsvExporter;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
-use oat\taoEventLog\model\export\implementation\LogEntryCsvExporter;
+use oat\taoEventLog\model\export\implementation\CsvGeneratorExporter;
+use oat\taoEventLog\model\export\implementation\LogEntryGenerator;
 use tao_actions_CommonModule;
 
 /**
@@ -77,13 +76,11 @@ class TaoEventLog extends tao_actions_CommonModule
             }
         }
 
-        if (!$exported = (new LogEntryCsvExporter())->export($exportParameters, $sortBy, $sortOrder)) {
-            return $this->returnJson(['message' => 'Not found exportable log entries. Please, check export configuration.'], 404);
-        }
+        $fetcher = new LogEntryGenerator($exportParameters, $sortBy, $sortOrder);
 
-        $csvExporter = new CsvExporter($exported);
+        $csvExporter = new CsvGeneratorExporter($fetcher, true, $delimiter, $enclosure);
         setcookie('fileDownload', 'true', 0, '/');
-        $csvExporter->export($columnNames, true, $delimiter, $enclosure);
+        $csvExporter->export();
     }
 
     /**
