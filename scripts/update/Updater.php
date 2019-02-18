@@ -339,6 +339,18 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
 
-        $this->skip('1.10.0', '2.2.0');
+        $this->skip('1.10.0', '2.1.2');
+
+        if ($this->isVersion('2.1.2')) {
+            /** @var LoggerService $service */
+            $service = $this->getServiceManager()->get(LoggerService::SERVICE_ID);
+            $options = $service->getOptions();
+            $options[LoggerService::OPTION_FETCH_LIMIT] = 500;
+
+            $service->setOptions($options);
+            $this->getServiceManager()->register(LoggerService::SERVICE_ID, $service);
+
+            $this->setVersion('2.2.0');
+        }
     }
 }

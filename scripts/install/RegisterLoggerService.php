@@ -65,7 +65,8 @@ class RegisterLoggerService extends InstallAction
         $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
             LoggerService::OPTION_STORAGE => RdsStorage::SERVICE_ID,
             LoggerService::OPTION_ROTATION_PERIOD => 'P90D',
-            LoggerService::OPTION_EXPORTABLE_QUANTITY => 10000
+            LoggerService::OPTION_EXPORTABLE_QUANTITY => 10000,
+            LoggerService::OPTION_FETCH_LIMIT => 500
         ]));
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
