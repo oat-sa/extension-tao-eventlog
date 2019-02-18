@@ -14,9 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- *
- * @author Ivan klimchuk <klimchuk@1pt.com>
+ * Copyright (c) 2019  (original work) Open Assessment Technologies SA;
  */
 
 namespace oat\taoEventLog\model\export\implementation;
@@ -27,44 +25,83 @@ use DateTimeImmutable;
 use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\eventLog\LoggerService;
-use oat\taoEventLog\model\export\Exporter;
+use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
 
-/**
- * @deprecated
- *
- * @package oat\taoEventLog\model\export\implementation
- */
-class LogEntryCsvExporter implements Exporter
+class LogEntryRepository implements LogEntryRepositoryInterface
 {
     /** @var LoggerService $loggerService */
     private $loggerService;
+    /**
+     * @var array
+     */
+    private $filters;
+    /**
+     * @var string
+     */
+    private $sortColumn;
+    /**
+     * @var string
+     */
+    private $sortOrder;
 
     /**
-     * LogEntryCsvExporter constructor.
+     * @param array $filters
+     * @param string $sortColumn
+     * @param string $sortOrder
      */
-    public function __construct()
+    public function __construct(array $filters = [], $sortColumn = null, $sortOrder = null)
     {
         $this->loggerService = ServiceManager::getServiceManager()->get(LoggerService::SERVICE_ID);
+        $this->filters = $filters;
+        $this->sortColumn = $sortColumn;
+        $this->sortOrder = $sortOrder;
     }
 
     /**
-     * @param array  $filters
+     * @return \Generator
      *
-     * @param string $sortColumn
-     * @param string $sortOrder
-     *
-     * @return mixed
      * @throws \common_exception_Error
      */
-    public function export(array $filters = [], $sortColumn = '', $sortOrder = 'asc')
+    public function fetch()
     {
+        $internalLimit = $this->loggerService->hasOption(LoggerService::OPTION_FETCH_LIMIT)
+            ? $this->loggerService->getOption(LoggerService::OPTION_FETCH_LIMIT)
+            : 500;
+
+        $limit = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
+
         $options = [
-            'limit' => $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY),
-            'sort'  => $sortColumn,
-            'order' => $sortOrder,
+            'sort'  => $this->sortColumn,
+            'order' => $this->sortOrder,
         ];
 
-        return $this->loggerService->search($this->prepareFilters($filters), $options);
+        $preparedFilters = $this->prepareFilters($this->filters);
+
+        $lastId = null;
+
+        $fetched = 0;
+
+        do {
+            $extendedPreparedFilters = (null !== $lastId)
+                ? array_merge($preparedFilters, [['id', '<', $lastId]])
+                : $preparedFilters;
+
+            $leftToFetch = $limit - $fetched;
+            $options['limit'] = $leftToFetch < $internalLimit ? $leftToFetch : $internalLimit;
+
+            $logs = $this->loggerService->search($extendedPreparedFilters, $options);
+
+            $count = count($logs);
+
+            if ($count > 0) {
+                $fetched += $count;
+                $lastId = $logs[$count - 1]['id'];
+
+                foreach ($logs as $log) {
+                    yield $log;
+                }
+            }
+        } while ($count > 0 && $fetched < $limit);
     }
 
     /**
@@ -78,9 +115,9 @@ class LogEntryCsvExporter implements Exporter
     private function prepareFilters(array $filters = [])
     {
         /** @var \common_session_Session $session */
-        $session  = common_session_SessionManager::getSession();
+        $session = common_session_SessionManager::getSession();
         $timeZone = new DateTimeZone($session->getTimeZone());
-        $utc      = new DateTimeZone('UTC');
+        $utc = new DateTimeZone('UTC');
 
         $result = [];
 
@@ -88,11 +125,11 @@ class LogEntryCsvExporter implements Exporter
             if (!empty($value)) {
                 switch ($name) {
                     case 'from':
-                        $from     = new DateTimeImmutable($filters['from'], $timeZone);
+                        $from = new DateTimeImmutable($filters['from'], $timeZone);
                         $result[] = ['occurred', '>', $from->setTimezone($utc)->format(DateTime::ISO8601)];
                         break;
                     case 'to':
-                        $to       = new DateTimeImmutable($filters['to'], $timeZone);
+                        $to = new DateTimeImmutable($filters['to'], $timeZone);
                         $result[] = ['occurred', '<=', $to->setTimezone($utc)->format(DateTime::ISO8601)];
                         break;
                     default:
