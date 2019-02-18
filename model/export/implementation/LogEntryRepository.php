@@ -64,7 +64,10 @@ class LogEntryRepository implements LogEntryRepositoryInterface
      */
     public function fetch()
     {
-        $internalLimit = $this->loggerService->getOption(LoggerService::OPTION_FETCH_LIMIT);
+        $internalLimit = $this->loggerService->hasOption(LoggerService::OPTION_FETCH_LIMIT)
+            ? $this->loggerService->getOption(LoggerService::OPTION_FETCH_LIMIT)
+            : 500;
+
         $limit = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);
 
         $options = [
