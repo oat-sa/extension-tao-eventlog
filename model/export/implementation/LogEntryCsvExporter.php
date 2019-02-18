@@ -30,7 +30,8 @@ use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\export\Exporter;
 
 /**
- * Class LogEntryCsvExporter
+ * @deprecated
+ *
  * @package oat\taoEventLog\model\export\implementation
  */
 class LogEntryCsvExporter implements Exporter

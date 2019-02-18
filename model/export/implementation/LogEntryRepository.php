@@ -14,9 +14,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- *
- * @author Ivan klimchuk <klimchuk@1pt.com>
+ * Copyright (c) 2019  (original work) Open Assessment Technologies SA;
  */
 
 namespace oat\taoEventLog\model\export\implementation;
@@ -27,13 +25,9 @@ use DateTimeImmutable;
 use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
 use oat\taoEventLog\model\eventLog\LoggerService;
-use oat\taoEventLog\model\export\GeneratorExporterInterface;
+use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
 
-/**
- * Class LogEntryCsvExporter
- * @package oat\taoEventLog\model\export\implementation
- */
-class LogEntryGenerator implements GeneratorExporterInterface
+class LogEntryRepository implements LogEntryRepositoryInterface
 {
     /** @var LoggerService $loggerService */
     private $loggerService;
@@ -68,7 +62,7 @@ class LogEntryGenerator implements GeneratorExporterInterface
      *
      * @throws \common_exception_Error
      */
-    public function export()
+    public function fetch()
     {
         $internalLimit = $this->loggerService->getOption(LoggerService::OPTION_FETCH_LIMIT);
         $limit = $this->loggerService->getOption(LoggerService::OPTION_EXPORTABLE_QUANTITY);

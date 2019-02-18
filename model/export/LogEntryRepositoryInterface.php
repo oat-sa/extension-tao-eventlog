@@ -14,21 +14,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- *
- * @author Ivan klimchuk <klimchuk@1pt.com>
+ * Copyright (c) 2019  (original work) Open Assessment Technologies SA;
  */
 
 namespace oat\taoEventLog\model\export;
 
-/**
- * Interface Exporter
- * @package oat\taoEventLog\model\export
- */
-interface GeneratorExporterInterface
+interface LogEntryRepositoryInterface
 {
     /**
      * @return \Generator
      */
-    public function export();
+    public function fetch();
 }

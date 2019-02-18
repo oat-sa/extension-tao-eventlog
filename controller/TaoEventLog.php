@@ -1,29 +1,29 @@
 <?php
-/**  
+/**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; under version 2
  * of the License (non-upgradable).
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- * 
+ *
  * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
- *               
- * 
+ *
+ *
  */
 
 namespace oat\taoEventLog\controller;
 
 use oat\taoEventLog\model\datatable\EventLogDatatable;
-use oat\taoEventLog\model\export\implementation\CsvGeneratorExporter;
-use oat\taoEventLog\model\export\implementation\LogEntryGenerator;
+use oat\taoEventLog\model\export\implementation\LogEntryCsvStdOutExporter;
+use oat\taoEventLog\model\export\implementation\LogEntryRepository;
 use tao_actions_CommonModule;
 
 /**
@@ -64,7 +64,6 @@ class TaoEventLog extends tao_actions_CommonModule
         $enclosure   = $this->getParameter('field_encloser', '"');
         $sortBy      = $this->getParameter('sortby', '');
         $sortOrder   = $this->getParameter('sortorder', '');
-        $columnNames = $this->hasRequestParameter('first_row_column_names');
 
         $exportParameters = [];
 
@@ -76,9 +75,12 @@ class TaoEventLog extends tao_actions_CommonModule
             }
         }
 
-        $fetcher = new LogEntryGenerator($exportParameters, $sortBy, $sortOrder);
+        $csvExporter = new LogEntryCsvStdOutExporter(
+            new LogEntryRepository($exportParameters, $sortBy, $sortOrder),
+            $delimiter,
+            $enclosure
+        );
 
-        $csvExporter = new CsvGeneratorExporter($fetcher, true, $delimiter, $enclosure);
         setcookie('fileDownload', 'true', 0, '/');
         $csvExporter->export();
     }

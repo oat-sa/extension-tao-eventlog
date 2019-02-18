@@ -14,25 +14,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2019 (original work) Open Assessment Technologies SA;
  *
  */
 
 namespace oat\taoEventLog\model\export\implementation;
 
-use League\Csv\Writer;
-use oat\taoEventLog\model\export\GeneratorExporterInterface;
+use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
 
-class CsvGeneratorExporter
+class LogEntryCsvStdOutExporter
 {
     /**
-     * @var GeneratorExporterInterface
+     * @var LogEntryRepositoryInterface
      */
     private $generator;
-    /**
-     * @var bool
-     */
-    private $download;
     /**
      * @var string
      */
@@ -43,36 +38,24 @@ class CsvGeneratorExporter
     private $enclosure;
 
     /**
-     * @param GeneratorExporterInterface $generator
-     * @param bool $download
+     * @param LogEntryRepositoryInterface $generator
      * @param string $delimiter
      * @param string $enclosure
      */
-    public function __construct(
-        GeneratorExporterInterface $generator,
-        $download = false,
-        $delimiter = ',',
-        $enclosure = '"'
-    ) {
+    public function __construct(LogEntryRepositoryInterface $generator, $delimiter = ',', $enclosure = '"')
+    {
         $this->generator = $generator;
-        $this->download = $download;
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
     }
 
     /**
      * @return string
-     *
-     * @throws \League\Csv\Exception
      */
     public function export()
     {
-        if ($this->download) {
-            $this->sendHeaders('export.csv');
-            $this->echoContent();
-        } else {
-            return $this->returnContent();
-        }
+        $this->sendHeaders('export.csv');
+        $this->echoContent();
     }
 
     protected function sendHeaders($fileName = null)
@@ -89,23 +72,6 @@ class CsvGeneratorExporter
         header('Content-Disposition: attachment; fileName="' . $fileName . '"');
     }
 
-    /**
-     * @return string
-     *
-     * @throws \League\Csv\Exception
-     */
-    private function returnContent()
-    {
-        $csv = Writer::createFromString();
-        $csv->setDelimiter($this->delimiter)->setEnclosure($this->enclosure);
-
-        foreach($data = $this->generator->export() as $data) {
-            $csv->insertAll(iterator_to_array($data));
-        }
-
-        return $csv->getContent();
-    }
-
     private function echoContent()
     {
         $out = fopen('php://output', 'wb');
@@ -113,7 +79,7 @@ class CsvGeneratorExporter
             throw new \RuntimeException('Can not open stdout for writing');
         }
 
-        foreach ($this->generator->export() as $row) {
+        foreach ($this->generator->fetch() as $row) {
             if (!empty($row)) {
                 $result = fputcsv($out, $row, $this->delimiter, $this->enclosure);
                 if (false === $result) {
