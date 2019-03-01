@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: TAO 3.3.0-sprint86\n"
-"PO-Revision-Date: 2018-09-26T12:04:44\n"
+"Project-Id-Version: TAO 3.3.0-sprint96\n"
+"PO-Revision-Date: 2019-03-01T12:23:48\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
 "Language: nl-NL\n"
@@ -12,6 +12,12 @@ msgstr ""
 "X-Poedit-Basepath: ../../\n"
 "X-Poedit-KeywordsList: __\n"
 "X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr ""
+
+msgid "%s roles"
+msgstr ""
 
 msgid "Action"
 msgstr "Actie"
@@ -32,10 +38,10 @@ msgstr "Eventnaam"
 msgid "Export"
 msgstr "Exporteren"
 
-msgid "Export Log Entries"
+msgid "Export log entries"
 msgstr "Exporteer log invoer"
 
-msgid "Export log entries"
+msgid "Export Log Entries"
 msgstr "Exporteer log invoer"
 
 msgid "Field delimiter"

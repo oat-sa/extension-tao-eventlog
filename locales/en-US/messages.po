@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: TAO 3.1.0-sprint29\n"
-"PO-Revision-Date: 2016-06-23T09:12:14\n"
+"Project-Id-Version: TAO 3.3.0-sprint96\n"
+"PO-Revision-Date: 2019-03-01T12:23:48\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
 "Language: en-US\n"
@@ -13,14 +13,67 @@ msgstr ""
 "X-Poedit-KeywordsList: __\n"
 "X-Poedit-SearchPath-0: .\n"
 
-msgid "Hello World"
+msgid "%s and %s roles"
+msgstr ""
+
+msgid "%s roles"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "CSV Options"
+msgstr ""
+
+msgid "Event"
 msgstr ""
 
 #, tao-public
-msgid "TAO project event log"
+msgid "Event Log"
 msgstr ""
 
-#, tao-public
-msgid "Template"
+msgid "Event Name"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Export log entries"
+msgstr ""
+
+msgid "Export Log Entries"
+msgstr ""
+
+msgid "Field delimiter"
+msgstr ""
+
+msgid "Field encloser"
+msgstr ""
+
+msgid "First row column names"
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Log watcher"
+msgstr ""
+
+msgid "Multiple values delimiter"
+msgstr ""
+
+msgid "Occurred"
+msgstr ""
+
+msgid "Properties"
+msgstr ""
+
+msgid "User activity log successfully registered."
+msgstr ""
+
+msgid "User ID"
+msgstr ""
+
+msgid "User Roles"
 msgstr ""
 
