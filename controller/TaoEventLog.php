@@ -91,7 +91,7 @@ class TaoEventLog extends tao_actions_CommonModule
      *
      * @return string
      */
-    public function getParameter($name, $defaultValue)
+    protected function getParameter($name, $defaultValue)
     {
         return $this->hasRequestParameter($name)
             ? html_entity_decode($this->getRequestParameter($name))
