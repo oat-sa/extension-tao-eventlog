@@ -20,13 +20,14 @@
 
 define([
     'jquery',
+    'lodash',
     'i18n',
     'util/url',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
     'taoEventLog/components/export/modalExporter',
-    'ui/dateRange'
-], function ($, __, url, datatable, layoutTpl, exporter, dateRangeFactory) {
+    'ui/dateRange/dateRange'
+], function ($, _, __, url, datatable, layoutTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
@@ -56,15 +57,7 @@ define([
             var $eventViewer = $('.event-viewer', $layout);
             var $exportLink = $('.js-export', $layout);
 
-            var $filterRange = dateRangeFactory({
-                pickerType: 'datetimepicker',
-                renderTo: $eventFilter,
-                pickerConfig: {
-                    // configurations from lib/jquery.timePicker.js
-                    dateFormat: 'yy-mm-dd',
-                    timeFormat: 'HH:mm:ss'
-                }
-            });
+            var filterRange = dateRangeFactory($eventFilter);
             var currentFilter = {
                 filtercolumns: {}
             };
@@ -78,7 +71,7 @@ define([
                             if (json !== null && typeof json !== 'object') {
                                 json = JSON.parse(json);
                             }
-                            str = JSON.stringify(json, undefined, 2);
+                            str = JSON.stringify(json, null, 2);
                             $('.' + key, $eventViewer).html(
                                 '<pre>' + str + '</pre>'
                             );
@@ -91,11 +84,11 @@ define([
                 }
             };
 
-            $filterRange.on('submit', function() {
+            filterRange.on('submit reset', function() {
                 $eventList.datatable('options', {
-                    params: {
-                        periodStart: $filterRange.getStart(),
-                        periodEnd: $filterRange.getEnd()
+                    params : {
+                        periodStart : this.getStart(),
+                        periodEnd : this.getEnd()
                     }
                 });
 
@@ -104,8 +97,8 @@ define([
 
             $exportLink.on('click', function () {
                 currentFilter.filtercolumns = _.merge(currentFilter.filtercolumns, {
-                    from: $filterRange.getStart(),
-                    to: $filterRange.getEnd()
+                    from : filterRange.getStart(),
+                    to : filterRange.getEnd()
                 });
 
                 exporter({
