@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 3.3.0-sprint96\n"
+"PO-Revision-Date: 2019-04-25T01:12:45\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: ru-RU\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: ru-RU\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr ""
+
+msgid "%s roles"
+msgstr ""
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "CSV Options"
+msgstr ""
+
+msgid "Event"
+msgstr "Событие"
+
+#, tao-public
+msgid "Event Log"
+msgstr "Журнал событий"
+
+msgid "Event Name"
+msgstr "Название события"
+
+msgid "Export"
+msgstr "Экспорт"
+
+msgid "Export log entries"
+msgstr "Экспортировать записи журнала"
+
+msgid "Export Log Entries"
+msgstr "Экспортировать записи журнала"
+
+msgid "Field delimiter"
+msgstr "Разделитель полей"
+
+msgid "Field encloser"
+msgstr "Ограничитель полей"
+
+msgid "First row column names"
+msgstr "Имена столбцов первой строки"
+
+msgid "ID"
+msgstr "Идентификатор (ID)"
+
+msgid "Log watcher"
+msgstr "Наблюдатель журнала"
+
+msgid "Multiple values delimiter"
+msgstr "Разделитель нескольких значений"
+
+msgid "Occurred"
+msgstr "Произошло"
+
+msgid "Properties"
+msgstr "Свойства"
+
+msgid "User activity log successfully registered."
+msgstr "Журнал активности пользователей успешно зарегистрирован."
+
+msgid "User ID"
+msgstr "Идентификатор пользователя"
+
+msgid "User Roles"
+msgstr "Роли пользователя"
+

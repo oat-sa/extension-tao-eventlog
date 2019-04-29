@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TAO 3.3.0-sprint96\n"
-"PO-Revision-Date: 2019-04-25T01:04:44\n"
+"PO-Revision-Date: 2019-04-25T01:08:52\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
-"Language: nl-NL\n"
+"Language: fr-FR\n"
 "sourceLanguage: en-US\n"
-"targetLanguage: nl-NL\n"
+"targetLanguage: fr-FR\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: ../../\n"
@@ -20,60 +20,60 @@ msgid "%s roles"
 msgstr ""
 
 msgid "Action"
-msgstr "Actie"
+msgstr "Action"
 
 msgid "CSV Options"
-msgstr "CSV opties"
+msgstr "Options CSV"
 
 msgid "Event"
-msgstr "Gebeurtenis"
+msgstr "Événement"
 
 #, tao-public
 msgid "Event Log"
-msgstr "Eventlog"
+msgstr "Journal des événements"
 
 msgid "Event Name"
-msgstr "Eventnaam"
+msgstr "Nom d’événement"
 
 msgid "Export"
-msgstr "Exporteren"
+msgstr "Exporter"
 
 msgid "Export log entries"
-msgstr "Exporteer log invoer"
+msgstr "Exporter les entrées du journal"
 
 msgid "Export Log Entries"
-msgstr "Exporteer log invoer"
+msgstr "Exporter les entrées du journal"
 
 msgid "Field delimiter"
-msgstr "Veldscheidingsteken"
+msgstr "Séparateur de champ"
 
 msgid "Field encloser"
-msgstr "Veldbehuizing"
+msgstr "Clôture de champ"
 
 msgid "First row column names"
-msgstr "Eerste rij kolomnamen"
+msgstr "Noms des colonnes sur la première ligne"
 
 msgid "ID"
 msgstr "ID"
 
 msgid "Log watcher"
-msgstr "Log waker"
+msgstr "Observateur de journal"
 
 msgid "Multiple values delimiter"
-msgstr "Meerdere waarden afscheiding"
+msgstr "Délimiteur de valeurs multiples"
 
 msgid "Occurred"
-msgstr "Opgetreden"
+msgstr "Date de l'événement"
 
 msgid "Properties"
-msgstr "Eigenschappen"
+msgstr "Propriétés"
 
 msgid "User activity log successfully registered."
-msgstr "Gebruikersactiviteit succesvol geregistreerd. "
+msgstr "Journal d'activité de l'utilisateur enregistré avec succès."
 
 msgid "User ID"
-msgstr "Gebruikers ID"
+msgstr "ID utilisateur"
 
 msgid "User Roles"
-msgstr "Gebruikersrollen"
+msgstr "Rôle(s) utilisateur"
 

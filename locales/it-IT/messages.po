@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TAO 3.3.0-sprint96\n"
-"PO-Revision-Date: 2019-04-25T01:04:44\n"
+"PO-Revision-Date: 2019-04-25T01:04:24\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
-"Language: nl-NL\n"
+"Language: it-IT\n"
 "sourceLanguage: en-US\n"
-"targetLanguage: nl-NL\n"
+"targetLanguage: it-IT\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: ../../\n"
@@ -20,60 +20,60 @@ msgid "%s roles"
 msgstr ""
 
 msgid "Action"
-msgstr "Actie"
+msgstr "Azione"
 
 msgid "CSV Options"
-msgstr "CSV opties"
+msgstr "Opzioni CSV"
 
 msgid "Event"
-msgstr "Gebeurtenis"
+msgstr "Evento"
 
 #, tao-public
 msgid "Event Log"
-msgstr "Eventlog"
+msgstr "Registro eventi"
 
 msgid "Event Name"
-msgstr "Eventnaam"
+msgstr "Nome evento"
 
 msgid "Export"
-msgstr "Exporteren"
+msgstr "Esportazione"
 
 msgid "Export log entries"
-msgstr "Exporteer log invoer"
+msgstr "Esporta voci di registro"
 
 msgid "Export Log Entries"
-msgstr "Exporteer log invoer"
+msgstr "Esporta voci di registro"
 
 msgid "Field delimiter"
-msgstr "Veldscheidingsteken"
+msgstr "Delimitatore di campo"
 
 msgid "Field encloser"
-msgstr "Veldbehuizing"
+msgstr "Contenitore di campi"
 
 msgid "First row column names"
-msgstr "Eerste rij kolomnamen"
+msgstr "Nomi di colonna della prima riga"
 
 msgid "ID"
 msgstr "ID"
 
 msgid "Log watcher"
-msgstr "Log waker"
+msgstr "Osservatore log"
 
 msgid "Multiple values delimiter"
-msgstr "Meerdere waarden afscheiding"
+msgstr "Delimitatore di valori multipli"
 
 msgid "Occurred"
-msgstr "Opgetreden"
+msgstr "Si è verificato"
 
 msgid "Properties"
-msgstr "Eigenschappen"
+msgstr "Proprietà"
 
 msgid "User activity log successfully registered."
-msgstr "Gebruikersactiviteit succesvol geregistreerd. "
+msgstr "Registro attività utente registrato correttamente."
 
 msgid "User ID"
-msgstr "Gebruikers ID"
+msgstr "ID Utente"
 
 msgid "User Roles"
-msgstr "Gebruikersrollen"
+msgstr "Ruoli utente"
 

@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TAO 3.3.0-sprint96\n"
-"PO-Revision-Date: 2019-04-25T01:04:44\n"
+"PO-Revision-Date: 2019-04-25T01:10:56\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
-"Language: nl-NL\n"
+"Language: ca-ES-valencia\n"
 "sourceLanguage: en-US\n"
-"targetLanguage: nl-NL\n"
+"targetLanguage: ca-ES-valencia\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: ../../\n"
@@ -20,60 +20,60 @@ msgid "%s roles"
 msgstr ""
 
 msgid "Action"
-msgstr "Actie"
+msgstr "Acció"
 
 msgid "CSV Options"
-msgstr "CSV opties"
+msgstr "Opcions CSV"
 
 msgid "Event"
-msgstr "Gebeurtenis"
+msgstr "Esdeveniment"
 
 #, tao-public
 msgid "Event Log"
-msgstr "Eventlog"
+msgstr "Registre d'esdeveniments"
 
 msgid "Event Name"
-msgstr "Eventnaam"
+msgstr "Nom de l'esdeveniment"
 
 msgid "Export"
-msgstr "Exporteren"
+msgstr "Exporta"
 
 msgid "Export log entries"
-msgstr "Exporteer log invoer"
+msgstr "Exporta les entrades del registre"
 
 msgid "Export Log Entries"
-msgstr "Exporteer log invoer"
+msgstr "Exporta les entrades del registre"
 
 msgid "Field delimiter"
-msgstr "Veldscheidingsteken"
+msgstr "Separador de camps"
 
 msgid "Field encloser"
-msgstr "Veldbehuizing"
+msgstr "Delimitador de camps"
 
 msgid "First row column names"
-msgstr "Eerste rij kolomnamen"
+msgstr "Noms de les columnes en la primera fila"
 
 msgid "ID"
 msgstr "ID"
 
 msgid "Log watcher"
-msgstr "Log waker"
+msgstr "Seguiment dels registres"
 
 msgid "Multiple values delimiter"
-msgstr "Meerdere waarden afscheiding"
+msgstr "Delimitador de valors múltiples"
 
 msgid "Occurred"
-msgstr "Opgetreden"
+msgstr "S'ha produït"
 
 msgid "Properties"
-msgstr "Eigenschappen"
+msgstr "Propietats"
 
 msgid "User activity log successfully registered."
-msgstr "Gebruikersactiviteit succesvol geregistreerd. "
+msgstr "El registre d'activitat de l'usuari s'ha registrat correctament."
 
 msgid "User ID"
-msgstr "Gebruikers ID"
+msgstr "ID d'usuari"
 
 msgid "User Roles"
-msgstr "Gebruikersrollen"
+msgstr "Rols d'usuari"
 
