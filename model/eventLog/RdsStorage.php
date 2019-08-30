@@ -122,7 +122,7 @@ class RdsStorage extends AbstractRdsStorage
 
             $table->setPrimaryKey([self::EVENT_LOG_ID]);
             $table->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');
-            $table->addIndex([self::EVENT_LOG_ACTION], 'idx_action');
+            $table->addIndex([self::EVENT_LOG_ACTION], 'idx_action', [], ['lengths' => [164]]);
             $table->addIndex([self::EVENT_LOG_USER_ID], 'idx_user_id');
             $table->addIndex([self::EVENT_LOG_OCCURRED], 'idx_occurred');
         } catch (SchemaException $e) {
