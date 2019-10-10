@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 3.4.0-sprint112\n"
+"PO-Revision-Date: 2019-10-09T09:03:10\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: lt-LT\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: lt-LT\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr "%s ir %s rolės"
+
+msgid "%s roles"
+msgstr "%s rolės"
+
+msgid "Action"
+msgstr "Veiksmas"
+
+msgid "CSV Options"
+msgstr "CSV Pasirinkimai"
+
+msgid "Event"
+msgstr "Įvykis"
+
+#, tao-public
+msgid "Event Log"
+msgstr "Įvykių Registras"
+
+msgid "Event Name"
+msgstr "Įvykio Pavadinimas"
+
+msgid "Export"
+msgstr "Eksportuoti"
+
+msgid "Export log entries"
+msgstr "Eksportuoti įvykių įvestis"
+
+msgid "Export Log Entries"
+msgstr "Eksportuoti Įvykių Įrašus"
+
+msgid "Field delimiter"
+msgstr "Lauko daliklis"
+
+msgid "Field encloser"
+msgstr "Lauko padėklas"
+
+msgid "First row column names"
+msgstr "Pirmos eilutės stulpelio pavadinimai"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Log watcher"
+msgstr "Įvykių stebėtojas"
+
+msgid "Multiple values delimiter"
+msgstr "Kelių reikšmių daliklis"
+
+msgid "Occurred"
+msgstr "Įvyko"
+
+msgid "Properties"
+msgstr "Savybės"
+
+msgid "User activity log successfully registered."
+msgstr "Vartotojo veiklos įvykiai sėkmingai registruoti."
+
+msgid "User ID"
+msgstr "Vartotojo ID"
+
+msgid "User Roles"
+msgstr "Vartotojo Rolės"
+
