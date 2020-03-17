@@ -40,7 +40,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
     /**
      * Check whether rds request log is installed
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $persistence = $this->getPersistence();
         $schemaManager = $persistence->getDriver()->getSchemaManager();
