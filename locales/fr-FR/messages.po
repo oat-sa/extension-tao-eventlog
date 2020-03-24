@@ -1,0 +1,79 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 3.4.0-sprint124\n"
+"PO-Revision-Date: 2020-03-23T16:05:31\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: fr-FR\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: fr-FR\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr "Rôles %s et %s"
+
+msgid "%s roles"
+msgstr "Rôles %s"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "CSV Options"
+msgstr "Options CSV"
+
+msgid "Event"
+msgstr "Événement"
+
+#, tao-public
+msgid "Event Log"
+msgstr "Journal des événements"
+
+msgid "Event Name"
+msgstr "Nom d’événement"
+
+msgid "Export"
+msgstr "Exporter"
+
+msgid "Export log entries"
+msgstr "Exporter les entrées du journal"
+
+msgid "Export Log Entries"
+msgstr "Exporter les entrées du journal"
+
+msgid "Field delimiter"
+msgstr "Séparateur de champ"
+
+msgid "Field encloser"
+msgstr "Clôture de champ"
+
+msgid "First row column names"
+msgstr "Noms des colonnes sur la première ligne"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Log watcher"
+msgstr "Observateur de journal"
+
+msgid "Multiple values delimiter"
+msgstr "Délimiteur de valeurs multiples"
+
+msgid "Occurred"
+msgstr "Date de l'événement"
+
+msgid "Properties"
+msgstr "Propriétés"
+
+msgid "User activity log successfully registered."
+msgstr "Journal d'activité de l'utilisateur enregistré avec succès."
+
+msgid "User ID"
+msgstr "ID utilisateur"
+
+msgid "User Roles"
+msgstr "Rôle(s) utilisateur"
+
