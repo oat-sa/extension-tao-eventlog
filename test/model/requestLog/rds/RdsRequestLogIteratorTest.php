@@ -48,7 +48,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
     /**
      * Check whether rds request log is installed
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $persistence = $this->getPersistence();
         $schemaManager = $persistence->getDriver()->getSchemaManager();
@@ -64,7 +64,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
     /**
      * Delete fixtures
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->deleteTestData();
     }
