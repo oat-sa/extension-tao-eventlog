@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TAO 3.4.0-sprint121\n"
-"PO-Revision-Date: 2020-08-03T12:01:26\n"
+"PO-Revision-Date: 2020-08-03T12:01:29\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
-"Language: en-US\n"
+"Language: vi-VN\n"
 "sourceLanguage: en-US\n"
-"targetLanguage: en-US\n"
+"targetLanguage: vi-VN\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: ../../\n"
@@ -20,29 +20,29 @@ msgid "%s roles"
 msgstr ""
 
 msgid "Action"
-msgstr ""
+msgstr "Hoạt động"
 
 msgid "CSV Options"
-msgstr ""
+msgstr "Tùy chọn CSV"
 
 msgid "Event"
-msgstr ""
+msgstr "Sự kiện"
 
 #, tao-public
 msgid "Event Log"
-msgstr ""
+msgstr "Nhật ký sự kiện"
 
 msgid "Event Name"
-msgstr ""
+msgstr "Tên sự kiện"
 
 msgid "Export"
-msgstr ""
+msgstr "Xuất ra"
 
 msgid "Export log entries"
-msgstr ""
+msgstr "Xuất nhật ký"
 
 msgid "Export Log Entries"
-msgstr ""
+msgstr "Xuất nhật ký"
 
 msgid "Field delimiter"
 msgstr ""
@@ -54,7 +54,7 @@ msgid "First row column names"
 msgstr ""
 
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 msgid "Log watcher"
 msgstr ""
@@ -66,14 +66,14 @@ msgid "Occurred"
 msgstr ""
 
 msgid "Properties"
-msgstr ""
+msgstr "Thuộc tính"
 
 msgid "User activity log successfully registered."
-msgstr ""
+msgstr "Nhật ký hoạt động của người dùng đã đăng ký thành công."
 
 msgid "User ID"
-msgstr ""
+msgstr "ID người dùng"
 
 msgid "User Roles"
-msgstr ""
+msgstr "Vai trò người dùng"
 
