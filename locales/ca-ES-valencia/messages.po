@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TAO 3.4.0-sprint121\n"
-"PO-Revision-Date: 2020-08-03T12:01:26\n"
+"PO-Revision-Date: 2020-08-03T12:01:25\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
 "MIME-Version: 1.0\n"
-"Language: en-US\n"
+"Language: ca-ES-valencia\n"
 "sourceLanguage: en-US\n"
-"targetLanguage: en-US\n"
+"targetLanguage: ca-ES-valencia\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: ../../\n"
@@ -20,60 +20,60 @@ msgid "%s roles"
 msgstr ""
 
 msgid "Action"
-msgstr ""
+msgstr "Acció"
 
 msgid "CSV Options"
-msgstr ""
+msgstr "Opcions CSV"
 
 msgid "Event"
-msgstr ""
+msgstr "Esdeveniment"
 
 #, tao-public
 msgid "Event Log"
-msgstr ""
+msgstr "Registre d'esdeveniments"
 
 msgid "Event Name"
-msgstr ""
+msgstr "Nom de l'esdeveniment"
 
 msgid "Export"
-msgstr ""
+msgstr "Exporta"
 
 msgid "Export log entries"
-msgstr ""
+msgstr "Exporta les entrades del registre"
 
 msgid "Export Log Entries"
-msgstr ""
+msgstr "Exporta les entrades del registre"
 
 msgid "Field delimiter"
-msgstr ""
+msgstr "Separador de camps"
 
 msgid "Field encloser"
-msgstr ""
+msgstr "Delimitador de camps"
 
 msgid "First row column names"
-msgstr ""
+msgstr "Noms de les columnes en la primera fila"
 
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 msgid "Log watcher"
-msgstr ""
+msgstr "Seguiment dels registres"
 
 msgid "Multiple values delimiter"
-msgstr ""
+msgstr "Delimitador de valors múltiples"
 
 msgid "Occurred"
-msgstr ""
+msgstr "S'ha produït"
 
 msgid "Properties"
-msgstr ""
+msgstr "Propietats"
 
 msgid "User activity log successfully registered."
-msgstr ""
+msgstr "El registre d'activitat de l'usuari s'ha registrat correctament."
 
 msgid "User ID"
-msgstr ""
+msgstr "ID d'usuari"
 
 msgid "User Roles"
-msgstr ""
+msgstr "Rols d'usuari"
 
