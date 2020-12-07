@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 3.4.0-sprint117\n"
+"PO-Revision-Date: 2020-09-22T16:02:16\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: ja-JP\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: ja-JP\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr ""
+
+msgid "%s roles"
+msgstr ""
+
+msgid "Action"
+msgstr "アクション"
+
+msgid "CSV Options"
+msgstr "CSV オプション"
+
+msgid "Event"
+msgstr "イベント"
+
+#, tao-public
+msgid "Event Log"
+msgstr "イベントログ"
+
+msgid "Event Name"
+msgstr "イベント名"
+
+msgid "Export"
+msgstr "エクスポート"
+
+msgid "Export log entries"
+msgstr "ログエントリーのエクスポート"
+
+msgid "Export Log Entries"
+msgstr "ログエントリーのエクスポート"
+
+msgid "Field delimiter"
+msgstr "フィールドの区切り記号"
+
+msgid "Field encloser"
+msgstr "フィールドの囲み"
+
+msgid "First row column names"
+msgstr "最初の行列名"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Log watcher"
+msgstr "ログウォッチャー"
+
+msgid "Multiple values delimiter"
+msgstr "複数値の区切り文字"
+
+msgid "Occurred"
+msgstr "発生"
+
+msgid "Properties"
+msgstr "プロパティ"
+
+msgid "Registered and created EventLog Rds Storage"
+msgstr ""
+
+msgid "Registered EventLog Logger Service"
+msgstr ""
+
+msgid "Request log storage successfully created"
+msgstr ""
+
+msgid "User activity log storage successfully created"
+msgstr ""
+
+msgid "User activity log successfully registered."
+msgstr "ユーザー・アクティビティ・ログが正常に登録されました。"
+
+msgid "User ID"
+msgstr "ユーザーID"
+
+msgid "User Roles"
+msgstr "ユーザーロール"
+
