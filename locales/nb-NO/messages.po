@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TAO 2021.10\n"
+"PO-Revision-Date: 2021-10-22T12:26:25\n"
+"Last-Translator: TAO Translation Team <translation@tao.lu>\n"
+"MIME-Version: 1.0\n"
+"Language: nb-NO\n"
+"sourceLanguage: en-US\n"
+"targetLanguage: nb-NO\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ../../\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "%s and %s roles"
+msgstr "%s og %s roller"
+
+msgid "%s roles"
+msgstr "%s roller"
+
+msgid "Action"
+msgstr "Handling"
+
+msgid "CSV Options"
+msgstr "CSV-alternativer"
+
+msgid "Event"
+msgstr "Arrangement"
+
+#, tao-public
+msgid "Event Log"
+msgstr "Arrangementslogg"
+
+msgid "Event Name"
+msgstr "Arrangementsnavn"
+
+msgid "Export"
+msgstr "Eksporter"
+
+msgid "Export log entries"
+msgstr "Eksporter loggoppføringer"
+
+msgid "Export Log Entries"
+msgstr "Eksporter loggoppføringer"
+
+msgid "Field delimiter"
+msgstr "Områdeavgrensning"
+
+msgid "Field encloser"
+msgstr "Områdekapsling"
+
+msgid "First row column names"
+msgstr "Kolonnenavn på første rad"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Log watcher"
+msgstr "Loggvakt"
+
+msgid "Multiple values delimiter"
+msgstr "Avgrensning av flere verdier"
+
+msgid "Occurred"
+msgstr "Forekom"
+
+msgid "Properties"
+msgstr "Egenskaper"
+
+msgid "Registered and created EventLog Rds Storage"
+msgstr "Registrert og opprettet EventLog Rds Storage"
+
+msgid "Registered EventLog Logger Service"
+msgstr "Registrert EventLog Logger Service"
+
+msgid "Request log storage successfully created"
+msgstr "Forespørsel om lagring av logg er opprettet"
+
+msgid "User activity log storage successfully created"
+msgstr "Lagring av brukeraktivitetslogg er opprettet"
+
+msgid "User activity log successfully registered."
+msgstr "Brukeraktivitetslogg ble registrert."
+
+msgid "User ID"
+msgstr "Bruker-ID"
+
+msgid "User Roles"
+msgstr "Brukerroller"
+
