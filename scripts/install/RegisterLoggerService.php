@@ -15,7 +15,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
- * 
+ *
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
 
@@ -39,8 +39,10 @@ use oat\tao\model\event\UserRemovedEvent;
 use oat\tao\model\event\UserUpdatedEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\eventLog\RdsStorage;
+use oat\generis\model\data\event\ResourceDeleted;
 use oat\taoQtiItem\model\event\QtiItemExportEvent;
 use oat\taoQtiItem\model\event\QtiItemImportEvent;
+use oat\generis\model\data\event\ClassDeletedEvent;
 use oat\taoQtiItem\model\event\QtiItemMetadataExportEvent;
 use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
@@ -81,6 +83,8 @@ class RegisterLoggerService extends InstallAction
         $this->registerEvent(RdfImportEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(CsvImportEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RdfExportEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(ResourceDeleted::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(ClassDeletedEvent::class, [LoggerService::class, 'logEvent']);
 
         if ($extensionManager->isEnabled('taoDeliveryRdf')) {
             $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
