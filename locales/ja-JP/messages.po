@@ -45,13 +45,13 @@ msgid "Export Log Entries"
 msgstr "ログエントリーのエクスポート"
 
 msgid "Field delimiter"
-msgstr "フィールドの区切り文字"
+msgstr "フィールド区切記号"
 
 msgid "Field encloser"
-msgstr "フィールドの囲み"
+msgstr "フィールド囲み記号"
 
 msgid "First row column names"
-msgstr "最初の行列名"
+msgstr "先頭行は項目名"
 
 msgid "ID"
 msgstr "ID"
