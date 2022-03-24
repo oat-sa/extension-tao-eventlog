@@ -46,25 +46,29 @@ final class Version202112151309292752_taoEventLog extends AbstractMigration
 
     public function up(Schema $schema): void
     {
+        $serviceLocator = $this->getServiceLocator();
+
         /** @var EventManager $eventManager */
-        $eventManager = $this->getServiceLocator()->getContainer()->get(EventManager::SERVICE_ID);
+        $eventManager = $serviceLocator->get(EventManager::SERVICE_ID);
 
         foreach (self::EVENTS as $event) {
             $eventManager->attach($event, [LoggerService::class, 'logEvent']);
         }
 
-        $this->getServiceLocator()->register(EventManager::SERVICE_ID, $eventManager);
+        $serviceLocator->register(EventManager::SERVICE_ID, $eventManager);
     }
 
     public function down(Schema $schema): void
     {
+        $serviceLocator = $this->getServiceLocator();
+
         /** @var EventManager $eventManager */
-        $eventManager = $this->getServiceLocator()->getContainer()->get(EventManager::SERVICE_ID);
+        $eventManager = $serviceLocator->get(EventManager::SERVICE_ID);
 
         foreach (self::EVENTS as $event) {
             $eventManager->detach($event, [LoggerService::class, 'logEvent']);
         }
 
-        $this->getServiceLocator()->register(EventManager::SERVICE_ID, $eventManager);
+        $serviceLocator->register(EventManager::SERVICE_ID, $eventManager);
     }
 }
