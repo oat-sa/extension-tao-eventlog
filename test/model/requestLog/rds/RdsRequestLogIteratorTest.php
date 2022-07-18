@@ -249,14 +249,14 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
     {
         $serviceManager = ServiceManager::getServiceManager();
         try {
-            $service = $serviceManager->get(RdsStorage::SERVICE_ID);
+            $service = $serviceManager->get(\common_persistence_Manager::SERVICE_ID);
             if ($service instanceof RdsStorage) {
                 $persistenceId = $service->getOption(RdsStorage::OPTION_PERSISTENCE);
             } else {
                 $persistenceId = 'default';
             }
-        } catch (ServiceNotFoundException $e) {
-            $persistenceId = 'default';
+        } catch (ServiceNotFoundException $exception) {
+            $this->markTestSkipped('No persistence configured');
         }
 
         $persistenceManager = $serviceManager->get(\common_persistence_Manager::SERVICE_ID);
