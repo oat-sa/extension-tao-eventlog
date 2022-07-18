@@ -254,7 +254,11 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
     protected function getPersistence()
     {
         $serviceManager = ServiceManager::getServiceManager();
-        $persistenceManager = $serviceManager->get(\common_persistence_Manager::SERVICE_ID);
+        try {
+            $persistenceManager = $serviceManager->get(\common_persistence_Manager::SERVICE_ID);
+        } catch (ServiceNotFoundException $exception) {
+            $this->markTestSkipped('No persistence configured');
+        }
         return $persistenceManager->getPersistenceById($this->getPersistenceId());
     }
 
