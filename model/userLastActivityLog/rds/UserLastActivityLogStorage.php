@@ -20,14 +20,19 @@
 
 namespace oat\taoEventLog\model\userLastActivityLog\rds;
 
+use common_exception_Error;
+use common_persistence_Persistence;
+use common_persistence_SqlPersistence;
+use common_report_Report;
+use common_session_SessionManager;
 use oat\oatbox\user\User;
-use Doctrine\DBAL\Schema\SchemaException;
-use Doctrine\DBAL\Query\QueryBuilder;
 use oat\taoEventLog\model\RdsLogIterator;
 use oat\taoEventLog\model\userLastActivityLog\UserLastActivityLog;
 use oat\oatbox\service\ConfigurableService;
-use GuzzleHttp\Psr7\ServerRequest;
 use oat\oatbox\event\Event;
+use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\DBAL\Query\QueryBuilder;
+use GuzzleHttp\Psr7\ServerRequest;
 
 /**
  * Class UserLastActivityLogStorage
@@ -169,7 +174,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
     }
 
     /**
-     * @return \common_persistence_SqlPersistence
+     * @return common_persistence_SqlPersistence
      * @throws
      */
     private function getPersistence()
@@ -190,8 +195,8 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
     /**
      * Initialize log storage
      *
-     * @param \common_persistence_Persistence $persistence
-     * @return \common_report_Report
+     * @param common_persistence_Persistence $persistence
+     * @return common_report_Report
      */
     public static function install($persistence)
     {
@@ -205,10 +210,18 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
             $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true, "length" => 4096]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
-            $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale' => 4, "notnull" => true]);
+            $table->addColumn(
+                static::COLUMN_EVENT_TIME,
+                'decimal',
+                ['precision' => 14, 'scale' => 4, "notnull" => true]
+            );
             $table->addColumn(static::COLUMN_DETAILS, "text", ["notnull" => false]);
+
             $table->addIndex([static::COLUMN_USER_ID], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_USER_ID);
-            $table->addIndex([static::COLUMN_EVENT_TIME], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME);
+            $table->addIndex(
+                [static::COLUMN_EVENT_TIME],
+                'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME
+            );
         } catch (SchemaException $e) {
             \common_Logger::i('Database Schema already up to date.');
         }
@@ -218,16 +231,16 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             $persistence->exec($query);
         }
 
-        return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
+        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
     }
 
     /**
      * @param Event $event
-     * @throws \common_exception_Error
+     * @throws common_exception_Error
      */
     public function catchEvent(Event $event)
     {
-        if (\common_session_SessionManager::isAnonymous()) {
+        if (common_session_SessionManager::isAnonymous()) {
             return;
         }
 
@@ -241,7 +254,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
 
         $currentTime = microtime(true);
         if (!$lastStoredActivity || $currentTime > ($lastStoredActivity + $threshold)) {
-            $user = \common_session_SessionManager::getSession()->getUser();
+            $user = common_session_SessionManager::getSession()->getUser();
             $request = ServerRequest::fromGlobals();
             $phpSession->setAttribute(self::PHP_SESSION_LAST_ACTIVITY, $currentTime);
             /** @var UserActivityLogStorage $userActivityLog */

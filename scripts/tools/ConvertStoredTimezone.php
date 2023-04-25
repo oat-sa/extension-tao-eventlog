@@ -78,7 +78,8 @@ class ConvertStoredTimezone implements Action
                     $this->report->add(
                         new common_report_Report(
                             common_report_Report::TYPE_SUCCESS,
-                            'Would be changed date "' . $row['occurred'] . '" to "' . $this->convertToUtcDate($row['occurred']) . '"'
+                            'Would be changed date "' . $row['occurred']
+                            . '" to "' . $this->convertToUtcDate($row['occurred']) . '"'
                         )
                     );
                 } else {
