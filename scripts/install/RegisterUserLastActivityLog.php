@@ -62,6 +62,9 @@ class RegisterUserLastActivityLog extends AbstractAction
         );
 
         $this->getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);
-        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log storage successfully created'));
+        return new common_report_Report(
+            common_report_Report::TYPE_SUCCESS,
+            __('User activity log storage successfully created')
+        );
     }
 }

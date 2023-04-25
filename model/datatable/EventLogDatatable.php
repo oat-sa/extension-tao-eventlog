@@ -21,12 +21,15 @@
 
 namespace oat\taoEventLog\model\datatable;
 
+use DateTimeInterface;
+use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\tao\model\datatable\implementation\DatatableRequest;
 use oat\tao\model\datatable\DatatablePayload;
 use oat\oatbox\service\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
-use oat\taoEventLog\model\eventLog\LoggerService;
+use DateTime;
+use DateTimeZone;
 
 /**
  * Class DeliveriesActivityDatatable
@@ -84,7 +87,7 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
         // prettify data
         array_walk($results['data'], function (&$row) {
 
-            $date = new \DateTime($row['occurred'], new \DateTimeZone('UTC'));
+            $date = new DateTime($row['occurred'], new DateTimeZone('UTC'));
             $row['occurred'] = \tao_helpers_Date::displayeDate($date->getTimestamp());
 
             $row['raw'] = array_map(null, $row);
@@ -129,14 +132,24 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
         $session = \common_session_SessionManager::getSession();
 
         $timeZone = $session->getTimeZone();
-        $utc = new \DateTimeZone('UTC');
+        $utc = new DateTimeZone('UTC');
 
         if (isset($params['periodStart']) && !empty($params['periodStart'])) {
-            $params['periodStart'] = (new \DateTime($params['periodStart'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(\DateTime::ISO8601);
+            $params['periodStart'] = (
+                new DateTime(
+                    $params['periodStart'],
+                    new DateTimeZone($timeZone)
+                )
+            )->setTimezone($utc)->format(DateTimeInterface::ISO8601);
         }
 
         if (isset($params['periodEnd']) && !empty($params['periodEnd'])) {
-            $params['periodEnd'] = (new \DateTime($params['periodEnd'], new \DateTimeZone($timeZone)))->setTimezone($utc)->format(\DateTime::ISO8601);
+            $params['periodEnd'] = (
+                new DateTime(
+                    $params['periodEnd'],
+                    new DateTimeZone($timeZone)
+                )
+            )->setTimezone($utc)->format(DateTimeInterface::ISO8601);
         }
 
         if (isset($params['periodStart']) && isset($params['periodEnd'])) {

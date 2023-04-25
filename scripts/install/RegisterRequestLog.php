@@ -55,6 +55,9 @@ class RegisterRequestLog extends InstallAction
             [RequestLogService::SERVICE_ID, 'catchEvent']
         );
 
-        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Request log storage successfully created'));
+        return new common_report_Report(
+            common_report_Report::TYPE_SUCCESS,
+            __('Request log storage successfully created')
+        );
     }
 }

@@ -48,7 +48,7 @@ class CleanUpEventLogs extends ScriptAction
                 'prefix' => 'w',
                 'longPrefix' => 'wet-run',
                 'flag' => true,
-                'description' => 'Will perform real database operations if it will be required, including removing data',
+                'description' => 'Will perform real database operations if it will be required, including data removal',
                 'required' => false,
                 'defaultValue' => false
             ],

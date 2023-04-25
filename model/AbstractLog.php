@@ -31,7 +31,7 @@ use oat\oatbox\service\ConfigurableService;
  */
 abstract class AbstractLog extends ConfigurableService
 {
-    const OPTION_STORAGE = 'storage';
+    public const OPTION_STORAGE = 'storage';
 
     /**
      * @param Event $event

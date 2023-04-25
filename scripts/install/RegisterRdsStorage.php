@@ -54,7 +54,11 @@ class RegisterRdsStorage extends AbstractAction
         $this->getServiceManager()->register(RdsStorage::SERVICE_ID, $storageService);
 
         $this->createTable($storageService->getPersistence());
-        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered and created EventLog Rds Storage'));
+
+        return new common_report_Report(
+            common_report_Report::TYPE_SUCCESS,
+            __('Registered and created EventLog Rds Storage')
+        );
     }
 
     /**

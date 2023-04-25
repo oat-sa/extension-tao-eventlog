@@ -22,6 +22,8 @@
 
 namespace oat\taoEventLog\scripts\tools;
 
+use common_persistence_SqlPersistence;
+use common_report_Report;
 use oat\dtms\DateTime;
 use oat\oatbox\action\Action;
 use oat\oatbox\service\ServiceManager;
@@ -30,7 +32,7 @@ use oat\taoEventLog\model\StorageInterface;
 
 class ConvertStoredTimezone implements Action
 {
-    /** @var  \common_report_Report */
+    /** @var common_report_Report */
     private $report;
 
     /**
@@ -40,7 +42,6 @@ class ConvertStoredTimezone implements Action
 
     public function __invoke($params)
     {
-
         $this->dryrun = in_array('dryrun', $params) || in_array('--dryrun', $params);
 
         /** @var StorageInterface $storageService */
@@ -49,7 +50,10 @@ class ConvertStoredTimezone implements Action
         $page = 1;
         $rows = 500;
 
-        $this->report = new \common_report_Report(\common_report_Report::TYPE_INFO, 'Converting of dates for the event log');
+        $this->report = new common_report_Report(
+            common_report_Report::TYPE_INFO,
+            'Converting of dates for the event log'
+        );
 
         while (true) {
             $slice = $storageService->searchInstances(['page' => $page, 'rows' => $rows ]);
@@ -60,33 +64,49 @@ class ConvertStoredTimezone implements Action
 
             foreach ($slice['data'] as $row) {
                 if (empty($row['occurred']) || $row['occurred'] == '0000-00-00 00:00:00') {
-                    $this->report->add(new \common_report_Report(\common_report_Report::TYPE_WARNING, 'Would not be converted date in id="' . $row['id'] . '" date is "' . $row['occurred'] . '"'));
+                    $this->report->add(
+                        new common_report_Report(
+                            common_report_Report::TYPE_WARNING,
+                            'Would not be converted date in id="' . $row['id'] . '" date is "' . $row['occurred'] . '"'
+                        )
+                    );
+
                     continue;
                 }
 
                 if ($this->dryrun) {
-                    $this->report->add(new \common_report_Report(\common_report_Report::TYPE_SUCCESS, 'Would be changed date "' . $row['occurred'] . '" to "' . $this->convertToUtcDate($row['occurred']) . '"'));
+                    $this->report->add(
+                        new common_report_Report(
+                            common_report_Report::TYPE_SUCCESS,
+                            'Would be changed date "' . $row['occurred'] . '" to "' . $this->convertToUtcDate($row['occurred']) . '"'
+                        )
+                    );
                 } else {
                     $this->setOccurred($storageService, $row['id'], $this->convertToUtcDate($row['occurred']));
                 }
             }
 
             if ($this->dryrun) {
-                $this->report->add(new \common_report_Report(\common_report_Report::TYPE_SUCCESS, 'In the same way would be changed "' . $slice['records'] . '" records'));
+                $this->report->add(
+                    new common_report_Report(
+                        common_report_Report::TYPE_SUCCESS,
+                        'In the same way would be changed "' . $slice['records'] . '" records'
+                    )
+                );
+
                 break;
             }
 
             $page++;
         }
 
-        $this->report->add(new \common_report_Report(\common_report_Report::TYPE_SUCCESS, 'Done'));
+        $this->report->add(new common_report_Report(common_report_Report::TYPE_SUCCESS, 'Done'));
 
         return $this->report;
     }
 
     private function convertToUtcDate($date = '')
     {
-
         // will be in current TIME_ZONE
         $dateTime = new DateTime($date);
         $dateTime->setTimezone(new \DateTimeZone('UTC'));
@@ -95,7 +115,7 @@ class ConvertStoredTimezone implements Action
 
     private function setOccurred($storageService, $id, $occurred)
     {
-        /** @var \common_persistence_SqlPersistence $persistence */
+        /** @var common_persistence_SqlPersistence $persistence */
         $persistence = $storageService->getPersistence();
         $sql = "UPDATE " . RdsStorage::EVENT_LOG_TABLE_NAME . " SET `occurred` = ? WHERE id = ?";
         $r = $persistence->exec($sql, [$occurred, $id]);
