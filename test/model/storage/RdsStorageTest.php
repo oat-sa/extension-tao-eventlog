@@ -29,6 +29,7 @@ use oat\oatbox\event\Event;
 use oat\oatbox\user\User;
 use oat\dtms\DateTime;
 use oat\taoEventLog\model\LogEntity;
+use oat\taoEventLog\scripts\install\RegisterRdsStorage;
 
 /**
  * Class RdsStorageTest
@@ -101,7 +102,7 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
     protected function getService()
     {
         $persistenceManager = $this->getSqlMock('test_eventlog');
-        (new \oat\taoEventLog\scripts\install\RegisterRdsStorage())->createTable($persistenceManager->getPersistenceById('test_eventlog'));
+        (new RegisterRdsStorage())->createTable($persistenceManager->getPersistenceById('test_eventlog'));
         $storage = new RdsStorage([
             RdsStorage::OPTION_PERSISTENCE => 'test_eventlog'
         ]);

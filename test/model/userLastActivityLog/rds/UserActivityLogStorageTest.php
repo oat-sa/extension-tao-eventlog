@@ -16,8 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
- *
- *
  */
 
 namespace oat\taoEventLog\test\model\userLastActivityLog\rds;
@@ -59,7 +57,8 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
         $service->log($user, 'testAction2', $details);
 
         $stmt = $this->persistence->query(
-            'select * from ' . Storage::TABLE_NAME . ' WHERE ' . Storage::COLUMN_USER_ID . ' = \'' . $user->getIdentifier() . '\''
+            'select * from ' . Storage::TABLE_NAME .
+            ' WHERE ' . Storage::COLUMN_USER_ID . ' = \'' . $user->getIdentifier() . '\''
         );
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->assertEquals(1, count($data));
@@ -99,16 +98,18 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
         $iterator->next();
         $this->assertFalse($iterator->valid());
 
-
         $iterator = $service->find([
             [Storage::USER_ID, 'like', '%_test_record'],
             [Storage::COLUMN_USER_ROLES, 'like', '%manager%'],
         ]);
-        $this->assertEquals('http://sample/first.rdf#i00000000000000002_test_record', $iterator->current()[Storage::COLUMN_USER_ID]);
+        $this->assertEquals(
+            'http://sample/first.rdf#i00000000000000002_test_record',
+            $iterator->current()[Storage::COLUMN_USER_ID]
+        );
+
         $iterator->next();
         $this->assertFalse($iterator->valid());
     }
-
 
     public function testCount()
     {
@@ -118,7 +119,6 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
             [Storage::USER_ID, '=', 'http://sample/first.rdf#i00000000000000003_test_record']
         ]);
         $this->assertEquals(1, $result);
-
 
         $result = $service->count([
             [Storage::USER_ID, 'like', '%_test_record'],
@@ -158,8 +158,16 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
     protected function loadFixtures($persistence)
     {
         $query = 'INSERT INTO ' . Storage::TABLE_NAME . ' ('
-            . Storage::COLUMN_USER_ID . ', ' . Storage::COLUMN_USER_ROLES . ', ' . Storage::COLUMN_ACTION . ', ' . Storage::COLUMN_EVENT_TIME . ', ' . Storage::COLUMN_DETAILS . ') '
-            . 'VALUES  (?, ?, ?, ?, ?)';
+            . implode(
+                ', ',
+                [
+                    Storage::COLUMN_USER_ID,
+                    Storage::COLUMN_USER_ROLES,
+                    Storage::COLUMN_ACTION,
+                    Storage::COLUMN_EVENT_TIME,
+                    Storage::COLUMN_DETAILS
+                ]
+            ) . ') VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [
@@ -204,8 +212,8 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
     }
 
     /**
-     * @throws
      * @return Storage
+     * @throws
      */
     protected function getService()
     {

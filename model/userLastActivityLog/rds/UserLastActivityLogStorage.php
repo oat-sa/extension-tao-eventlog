@@ -16,8 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
- *
- *
  */
 
 namespace oat\taoEventLog\model\userLastActivityLog\rds;
@@ -38,19 +36,19 @@ use oat\oatbox\event\Event;
  */
 class UserLastActivityLogStorage extends ConfigurableService implements UserLastActivityLog
 {
-    const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'user_last_activity_log';
+    public const OPTION_PERSISTENCE = 'persistence_id';
+    public const TABLE_NAME = 'user_last_activity_log';
 
-    const COLUMN_USER_ID = self::USER_ID;
-    const COLUMN_USER_ROLES = self::USER_ROLES;
-    const COLUMN_ACTION = self::ACTION;
-    const COLUMN_EVENT_TIME = self::EVENT_TIME;
-    const COLUMN_DETAILS = self::DETAILS;
+    public const COLUMN_USER_ID = self::USER_ID;
+    public const COLUMN_USER_ROLES = self::USER_ROLES;
+    public const COLUMN_ACTION = self::ACTION;
+    public const COLUMN_EVENT_TIME = self::EVENT_TIME;
+    public const COLUMN_DETAILS = self::DETAILS;
 
     /** Threshold in seconds */
-    const OPTION_ACTIVE_USER_THRESHOLD = 'active_user_threshold';
+    public const OPTION_ACTIVE_USER_THRESHOLD = 'active_user_threshold';
 
-    const PHP_SESSION_LAST_ACTIVITY = 'tao_user_last_activity_timestamp';
+    public const PHP_SESSION_LAST_ACTIVITY = 'tao_user_last_activity_timestamp';
 
     /**
      * @inheritdoc
@@ -69,7 +67,9 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             self::COLUMN_EVENT_TIME => microtime(true),
             self::COLUMN_DETAILS => json_encode($details),
         ];
-        $this->getPersistence()->exec('DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = \'' . $userId . '\'');
+        $this->getPersistence()->exec(
+            'DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = \'' . $userId . '\''
+        );
         $this->getPersistence()->insert(self::TABLE_NAME, $data);
     }
 
