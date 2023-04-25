@@ -35,16 +35,16 @@ use oat\tao\model\event\BeforeAction;
  */
 class RequestLogService extends ConfigurableService
 {
-    const SERVICE_ID = 'taoEventLog/RequestLogStorage';
+    public const SERVICE_ID = 'taoEventLog/RequestLogStorage';
 
-    const OPTION_STORAGE = 'storage';
-    const OPTION_STORAGE_PARAMETERS = 'storage_parameters';
+    public const OPTION_STORAGE = 'storage';
+    public const OPTION_STORAGE_PARAMETERS = 'storage_parameters';
 
-    const USER_ID = 'user_id';
-    const USER_ROLES = 'user_role';
-    const ACTION = 'action';
-    const EVENT_TIME = 'event_time';
-    const DETAILS = 'details';
+    public const USER_ID = 'user_id';
+    public const USER_ROLES = 'user_role';
+    public const ACTION = 'action';
+    public const EVENT_TIME = 'event_time';
+    public const DETAILS = 'details';
 
     /** @var bool whether request has been already logged during current php process */
     private $fulfilled = false;

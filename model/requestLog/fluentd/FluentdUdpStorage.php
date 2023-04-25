@@ -60,8 +60,8 @@ use Psr\Http\Message\RequestInterface;
  */
 class FluentdUdpStorage extends AbstractRequestLogStorage
 {
-    const OPTION_HOST  = 'host';
-    const OPTION_PORT  = 'port';
+    public const OPTION_HOST  = 'host';
+    public const OPTION_PORT  = 'port';
 
     private $resource;
     private $host;

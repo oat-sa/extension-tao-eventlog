@@ -33,7 +33,9 @@ use oat\oatbox\service\ServiceManagerAwareTrait;
  * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface
+abstract class AbstractRequestLogStorage
+    extends Configurable
+    implements RequestLogStorageWritable, ServiceManagerAwareInterface
 {
     use ServiceManagerAwareTrait;
 

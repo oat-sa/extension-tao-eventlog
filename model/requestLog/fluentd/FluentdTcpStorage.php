@@ -34,9 +34,9 @@ use Psr\Http\Message\RequestInterface;
  */
 class FluentdTcpStorage extends AbstractRequestLogStorage
 {
-    const OPTION_HOST  = 'host';
-    const OPTION_PORT  = 'port';
-    const OPTION_DELIMITER = 'delimiter';
+    public const OPTION_HOST  = 'host';
+    public const OPTION_PORT  = 'port';
+    public const OPTION_DELIMITER = 'delimiter';
 
     /**
      * @var resource
@@ -56,7 +56,12 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
             if ($socket === false) {
                 throw new RequestLogException('Unable to open TCP socket: ' . socket_strerror(socket_last_error()));
             }
-            $success = socket_connect($socket, $this->getOption(self::OPTION_HOST), $this->getOption(self::OPTION_PORT));
+
+            $success = socket_connect(
+                $socket,
+                $this->getOption(self::OPTION_HOST),
+                $this->getOption(self::OPTION_PORT)
+            );
             if ($success === false) {
                 throw new RequestLogException('Unable to connect to host: ' . socket_strerror(socket_last_error()));
             }
