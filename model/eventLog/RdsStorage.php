@@ -32,17 +32,17 @@ use oat\taoEventLog\model\storage\AbstractRdsStorage;
  */
 class RdsStorage extends AbstractRdsStorage
 {
-    const EVENT_LOG_TABLE_NAME = 'event_log';
+    public const EVENT_LOG_TABLE_NAME = 'event_log';
 
-    const SERVICE_ID = 'taoEventLog/eventLogStorage';
+    public const SERVICE_ID = 'taoEventLog/eventLogStorage';
 
-    const EVENT_LOG_ID = self::ID;
-    const EVENT_LOG_EVENT_NAME = 'event_name';
-    const EVENT_LOG_ACTION = 'action';
-    const EVENT_LOG_USER_ID = 'user_id';
-    const EVENT_LOG_USER_ROLES = 'user_roles';
-    const EVENT_LOG_OCCURRED = 'occurred';
-    const EVENT_LOG_PROPERTIES = 'properties';
+    public const EVENT_LOG_ID = self::ID;
+    public const EVENT_LOG_EVENT_NAME = 'event_name';
+    public const EVENT_LOG_ACTION = 'action';
+    public const EVENT_LOG_USER_ID = 'user_id';
+    public const EVENT_LOG_USER_ROLES = 'user_roles';
+    public const EVENT_LOG_OCCURRED = 'occurred';
+    public const EVENT_LOG_PROPERTIES = 'properties';
 
     /**
      * @return string
@@ -115,13 +115,37 @@ class RdsStorage extends AbstractRdsStorage
             $table = $schema->createTable(self::EVENT_LOG_TABLE_NAME);
             $table->addOption('engine', 'MyISAM');
 
-            $table->addColumn(self::EVENT_LOG_ID, "integer", ["notnull" => true, "autoincrement" => true, 'unsigned' => true]);
-            $table->addColumn(self::EVENT_LOG_EVENT_NAME, "string", ["notnull" => true, "length" => 255, 'comment' => 'Event name']);
-            $table->addColumn(self::EVENT_LOG_ACTION, "string", ["notnull" => false, "length" => 1000, 'comment' => 'Current action']);
-            $table->addColumn(self::EVENT_LOG_USER_ID, "string", ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']);
-            $table->addColumn(self::EVENT_LOG_USER_ROLES, "text", ["notnull" => true, 'default' => '', 'comment' => 'User roles']);
+            $table->addColumn(
+                self::EVENT_LOG_ID,
+                "integer",
+                ["notnull" => true, "autoincrement" => true, 'unsigned' => true]
+            );
+            $table->addColumn(
+                self::EVENT_LOG_EVENT_NAME,
+                "string",
+                ["notnull" => true, "length" => 255, 'comment' => 'Event name']
+            );
+            $table->addColumn(
+                self::EVENT_LOG_ACTION,
+                "string",
+                ["notnull" => false, "length" => 1000, 'comment' => 'Current action']
+            );
+            $table->addColumn(
+                self::EVENT_LOG_USER_ID,
+                "string",
+                ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']
+            );
+            $table->addColumn(
+                self::EVENT_LOG_USER_ROLES,
+                "text",
+                ["notnull" => true, 'default' => '', 'comment' => 'User roles']
+            );
             $table->addColumn(self::EVENT_LOG_OCCURRED, "datetime", ["notnull" => true]);
-            $table->addColumn(self::EVENT_LOG_PROPERTIES, "text", ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']);
+            $table->addColumn(
+                self::EVENT_LOG_PROPERTIES,
+                "text",
+                ["notnull" => false, 'default' => '', 'comment' => 'Event properties in json']
+            );
 
             $table->setPrimaryKey([self::EVENT_LOG_ID]);
             $table->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');

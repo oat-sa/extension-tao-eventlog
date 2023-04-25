@@ -22,6 +22,7 @@
 
 namespace oat\taoEventLog\model\eventLog;
 
+use common_exception_Error;
 use common_session_Session;
 use common_session_SessionManager;
 use common_user_User;
@@ -42,11 +43,11 @@ use oat\taoEventLog\model\StorageInterface;
  */
 class LoggerService extends AbstractLog
 {
-    const SERVICE_ID = 'taoEventLog/eventLogger';
+    public const SERVICE_ID = 'taoEventLog/eventLogger';
 
-    const OPTION_ROTATION_PERIOD = 'rotation_period';
-    const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
-    const OPTION_FETCH_LIMIT = 'fetch_limit';
+    public const OPTION_ROTATION_PERIOD = 'rotation_period';
+    public const OPTION_EXPORTABLE_QUANTITY = 'exportable_quantity';
+    public const OPTION_FETCH_LIMIT = 'fetch_limit';
 
     /**
      * @var string
@@ -70,7 +71,7 @@ class LoggerService extends AbstractLog
 
     /**
      * @param Event $event
-     * @throws \common_exception_Error
+     * @throws common_exception_Error
      */
     public function log(Event $event)
     {

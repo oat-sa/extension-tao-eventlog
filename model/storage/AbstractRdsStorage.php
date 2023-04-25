@@ -36,9 +36,9 @@ use Doctrine\DBAL\Query\QueryBuilder;
  */
 abstract class AbstractRdsStorage extends ConfigurableService implements StorageInterface, RdsStorageInterface
 {
-    const OPTION_PERSISTENCE = 'persistence';
-    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
-    const ID = 'id';
+    public const OPTION_PERSISTENCE = 'persistence';
+    public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+    public const ID = 'id';
 
     /**
      * Persistence for DB

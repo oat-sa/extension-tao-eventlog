@@ -22,6 +22,9 @@
 
 namespace oat\taoEventLog\model\requestLog\rds;
 
+use common_Logger;
+use common_persistence_SqlPersistence;
+use common_report_Report;
 use Psr\Http\Message\RequestInterface;
 use oat\oatbox\user\User;
 use Doctrine\DBAL\Schema\SchemaException;
@@ -37,14 +40,14 @@ use oat\taoEventLog\model\requestLog\RequestLogService;
  */
 class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorageReadable
 {
-    const OPTION_PERSISTENCE = 'persistence_id';
-    const TABLE_NAME = 'request_log';
+    public const OPTION_PERSISTENCE = 'persistence_id';
+    public const TABLE_NAME = 'request_log';
 
-    const COLUMN_USER_ID = RequestLogService::USER_ID;
-    const COLUMN_USER_ROLES = RequestLogService::USER_ROLES;
-    const COLUMN_ACTION = RequestLogService::ACTION;
-    const COLUMN_EVENT_TIME = RequestLogService::EVENT_TIME;
-    const COLUMN_DETAILS = RequestLogService::DETAILS;
+    public const COLUMN_USER_ID = RequestLogService::USER_ID;
+    public const COLUMN_USER_ROLES = RequestLogService::USER_ROLES;
+    public const COLUMN_ACTION = RequestLogService::ACTION;
+    public const COLUMN_EVENT_TIME = RequestLogService::EVENT_TIME;
+    public const COLUMN_DETAILS = RequestLogService::DETAILS;
 
     /** @var \Doctrine\DBAL\Connection */
     private $connection;
@@ -154,7 +157,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
     }
 
     /**
-     * @return \common_persistence_SqlPersistence
+     * @return common_persistence_SqlPersistence
      */
     private function getPersistence()
     {
@@ -181,7 +184,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
      * Initialize RDS Request log storage
      *
      * @param string $persistenceId
-     * @return \common_report_Report
+     * @return common_report_Report
      */
     public static function install($persistenceId = 'default')
     {
@@ -197,12 +200,23 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
             $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true, "length" => 4096]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
-            $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale' => 4, "notnull" => true]);
+            $table->addColumn(
+                static::COLUMN_EVENT_TIME,
+                'decimal',
+                ['precision' => 14, 'scale' => 4, "notnull" => true]
+            );
             $table->addColumn(static::COLUMN_DETAILS, "text", ["notnull" => false]);
-            $table->addIndex([static::COLUMN_USER_ID], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_USER_ID);
-            $table->addIndex([static::COLUMN_EVENT_TIME], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME);
+
+            $table->addIndex(
+                [static::COLUMN_USER_ID],
+                'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_USER_ID
+            );
+            $table->addIndex(
+                [static::COLUMN_EVENT_TIME],
+                'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME
+            );
         } catch (SchemaException $e) {
-            \common_Logger::i('Database Schema already up to date.');
+            common_Logger::i('Database Schema already up to date.');
         }
 
         $queries = $persistence->getPlatform()->getMigrateSchemaSql($fromSchema, $schema);
@@ -210,6 +224,9 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
             $persistence->exec($query);
         }
 
-        return new \common_report_Report(\common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
+        return new common_report_Report(
+            common_report_Report::TYPE_SUCCESS,
+            __('User activity log successfully registered.')
+        );
     }
 }
