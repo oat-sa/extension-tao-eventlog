@@ -49,7 +49,9 @@ class RegisterUserLastActivityLog extends AbstractAction
         }
         $service->setOption(UserLastActivityLogStorage::OPTION_ACTIVE_USER_THRESHOLD, 300);
         $persistenceManager = $this->getServiceManager()->get(\common_persistence_Manager::SERVICE_ID);
-        $persistence = $persistenceManager->getPersistenceById($service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE));
+        $persistence = $persistenceManager->getPersistenceById(
+            $service->getOption(UserLastActivityLogStorage::OPTION_PERSISTENCE)
+        );
 
         UserLastActivityLogStorage::install($persistence);
 
