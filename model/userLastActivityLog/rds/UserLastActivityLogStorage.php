@@ -231,7 +231,10 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             $persistence->exec($query);
         }
 
-        return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('User activity log successfully registered.'));
+        return new common_report_Report(
+            common_report_Report::TYPE_SUCCESS,
+            __('User activity log successfully registered.')
+        );
     }
 
     /**

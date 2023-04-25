@@ -31,7 +31,7 @@ use oat\taoEventLog\model\LogEntity;
  */
 class RdsStorage extends AbstractRdsStorage
 {
-    const SERVICE_ID = 'taoEventLog/storage';
+    public const SERVICE_ID = 'taoEventLog/storage';
 
     /**
      * @return string
@@ -43,9 +43,11 @@ class RdsStorage extends AbstractRdsStorage
     public function log(LogEntity $logEntity)
     {
     }
+
     public static function tableColumns()
     {
     }
+
     public static function install($persistence)
     {
     }

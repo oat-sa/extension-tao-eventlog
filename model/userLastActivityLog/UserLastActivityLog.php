@@ -35,13 +35,13 @@ use oat\oatbox\user\User;
  */
 interface UserLastActivityLog
 {
-    const USER_ID = 'user_id';
-    const USER_ROLES = 'user_role';
-    const ACTION = 'action';
-    const EVENT_TIME = 'event_time';
-    const DETAILS = 'details';
+    public const USER_ID = 'user_id';
+    public const USER_ROLES = 'user_role';
+    public const ACTION = 'action';
+    public const EVENT_TIME = 'event_time';
+    public const DETAILS = 'details';
 
-    const SERVICE_ID = 'taoEventLog/UserLastActivityLog';
+    public const SERVICE_ID = 'taoEventLog/UserLastActivityLog';
 
     /**
      * Log user activity.
