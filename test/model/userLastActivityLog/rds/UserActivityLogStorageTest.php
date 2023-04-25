@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +33,6 @@ use oat\oatbox\service\ServiceManager;
  */
 class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
 {
-
     protected $fixtures;
     protected $persistence;
     protected $service;
@@ -47,7 +47,7 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
         $service->log($user, 'testAction', $details);
 
         $stmt = $this->persistence->query(
-            'select * from ' .Storage::TABLE_NAME . ' order by ' . Storage::COLUMN_EVENT_TIME .' DESC limit 1'
+            'select * from ' . Storage::TABLE_NAME . ' order by ' . Storage::COLUMN_EVENT_TIME . ' DESC limit 1'
         );
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($user->getIdentifier(), $data[Storage::COLUMN_USER_ID]);
@@ -59,7 +59,7 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
         $service->log($user, 'testAction2', $details);
 
         $stmt = $this->persistence->query(
-            'select * from ' . Storage::TABLE_NAME . ' WHERE ' . Storage::COLUMN_USER_ID .' = \''.$user->getIdentifier() .'\''
+            'select * from ' . Storage::TABLE_NAME . ' WHERE ' . Storage::COLUMN_USER_ID . ' = \'' . $user->getIdentifier() . '\''
         );
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->assertEquals(1, count($data));
@@ -157,9 +157,9 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
      */
     protected function loadFixtures($persistence)
     {
-        $query = 'INSERT INTO '.Storage::TABLE_NAME.' ('
-            .Storage::COLUMN_USER_ID.', '.Storage::COLUMN_USER_ROLES.', '.Storage::COLUMN_ACTION.', '.Storage::COLUMN_EVENT_TIME.', '.Storage::COLUMN_DETAILS.') '
-            .'VALUES  (?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO ' . Storage::TABLE_NAME . ' ('
+            . Storage::COLUMN_USER_ID . ', ' . Storage::COLUMN_USER_ROLES . ', ' . Storage::COLUMN_ACTION . ', ' . Storage::COLUMN_EVENT_TIME . ', ' . Storage::COLUMN_DETAILS . ') '
+            . 'VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [
@@ -224,7 +224,6 @@ class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
         }
         return $this->service;
     }
-
 }
 
 class TestUser extends \common_test_TestUser

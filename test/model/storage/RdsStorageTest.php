@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,7 +37,6 @@ use oat\taoEventLog\model\LogEntity;
  */
 class RdsStorageTest extends TaoPhpUnitTestRunner
 {
-
     public function testCount()
     {
         $storage = $this->getService();
@@ -58,8 +58,8 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
         ], [
             'limit' => 5,
             'offset' => 2,
-            'sort'=>RdsStorage::EVENT_LOG_OCCURRED,
-            'order'=>'ASC'
+            'sort' => RdsStorage::EVENT_LOG_OCCURRED,
+            'order' => 'ASC'
         ]);
         $this->assertEquals(5, count($result));
         $this->assertEquals('test_user_21', $result[0][RdsStorage::EVENT_LOG_USER_ID]);
@@ -74,7 +74,7 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
 
         $result = $storage->search([
             [RdsStorage::EVENT_LOG_OCCURRED, 'between', '2017-04-19 12:00:00', '2017-04-19 12:01:00']
-        ], ['sort'=>RdsStorage::EVENT_LOG_OCCURRED, 'order'=>'ASC']);
+        ], ['sort' => RdsStorage::EVENT_LOG_OCCURRED, 'order' => 'ASC']);
         $this->assertEquals('2017-04-19 12:00:00', $result[0][RdsStorage::EVENT_LOG_OCCURRED]);
         $this->assertEquals('2017-04-19 12:01:00', $result[1][RdsStorage::EVENT_LOG_OCCURRED]);
         $this->assertEquals(2, count($result));
@@ -101,7 +101,7 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
     protected function getService()
     {
         $persistenceManager = $this->getSqlMock('test_eventlog');
-        (new \oat\taoEventLog\scripts\install\RegisterRdsStorage)->createTable($persistenceManager->getPersistenceById('test_eventlog'));
+        (new \oat\taoEventLog\scripts\install\RegisterRdsStorage())->createTable($persistenceManager->getPersistenceById('test_eventlog'));
         $storage = new RdsStorage([
             RdsStorage::OPTION_PERSISTENCE => 'test_eventlog'
         ]);
@@ -121,14 +121,14 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
 
             $userProphecy = $this->prophesize(User::class);
             $userProphecy->getIdentifier()->willReturn('test_user_' . $i);
-            $userProphecy->getRoles()->willReturn(['role_' . (($i%5)+1) , 'role_2' . (($i%5)+2)]);
+            $userProphecy->getRoles()->willReturn(['role_' . (($i % 5) + 1) , 'role_2' . (($i % 5) + 2)]);
 
             $logEntity = new LogEntity(
                 $eventProphecy->reveal(),
                 'test_action_' . $i,
                 $userProphecy->reveal(),
-                DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:'.str_pad($i, 2, '0', STR_PAD_LEFT).':00'),
-                ['id'=>$i]
+                DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:' . str_pad($i, 2, '0', STR_PAD_LEFT) . ':00'),
+                ['id' => $i]
             );
 
             $storage->log($logEntity);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,11 +54,11 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
         if (is_null($this->resource)) {
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
             if ($socket === false) {
-                throw new RequestLogException('Unable to open TCP socket: '.socket_strerror(socket_last_error()));
+                throw new RequestLogException('Unable to open TCP socket: ' . socket_strerror(socket_last_error()));
             }
             $success = socket_connect($socket, $this->getOption(self::OPTION_HOST), $this->getOption(self::OPTION_PORT));
             if ($success === false) {
-                throw new RequestLogException('Unable to connect to host: '.socket_strerror(socket_last_error()));
+                throw new RequestLogException('Unable to connect to host: ' . socket_strerror(socket_last_error()));
             }
             $this->resource = $socket;
         }
@@ -72,11 +73,10 @@ class FluentdTcpStorage extends AbstractRequestLogStorage
     {
         $message = json_encode($this->prepareData($request, $user));
         $message .= $this->hasOption(self::OPTION_DELIMITER) ? $this->getOption(self::OPTION_DELIMITER) : '';
-        while (!empty($message))
-        {
-            $send = socket_write($this->getSocket(),$message, strlen($message));
+        while (!empty($message)) {
+            $send = socket_write($this->getSocket(), $message, strlen($message));
             if ($send != strlen($message)) {
-                throw new RequestLogException('Unable to send msg: '.socket_strerror(socket_last_error()));
+                throw new RequestLogException('Unable to send msg: ' . socket_strerror(socket_last_error()));
             }
             $message = substr($message, $send);
         }

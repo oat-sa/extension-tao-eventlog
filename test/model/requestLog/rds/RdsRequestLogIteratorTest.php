@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +35,6 @@ use oat\taoEventLog\model\requestLog\rds\RdsRequestLogIterator;
  */
 class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
 {
-
     /**
      * @var array
      */
@@ -108,7 +108,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
         //test in loop
         $queryBuilder = $this->getQueryBuilder();
         $iterator = new RdsRequestLogIterator($this->getPersistence(), $queryBuilder);
-        foreach ($iterator as $key=>$value) {
+        foreach ($iterator as $key => $value) {
             $this->assertEquals($this->fixtures[$key], $value);
         }
     }
@@ -174,7 +174,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
 
         return $this->connection->createQueryBuilder()->select('*')
             ->from(RdsStorage::TABLE_NAME, 'r')
-            ->where(RdsStorage::USER_ID.' like ?')->setParameters(['%_test_record']);
+            ->where(RdsStorage::USER_ID . ' like ?')->setParameters(['%_test_record']);
     }
 
     /**
@@ -182,9 +182,9 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
      */
     protected function loadFixture()
     {
-        $query = 'INSERT INTO '.RdsStorage::TABLE_NAME.' ('
-            .RdsStorage::COLUMN_USER_ID.', '.RdsStorage::COLUMN_USER_ROLES.', '.RdsStorage::COLUMN_ACTION.', '.RdsStorage::COLUMN_EVENT_TIME.', '.RdsStorage::COLUMN_DETAILS.') '
-            .'VALUES  (?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO ' . RdsStorage::TABLE_NAME . ' ('
+            . RdsStorage::COLUMN_USER_ID . ', ' . RdsStorage::COLUMN_USER_ROLES . ', ' . RdsStorage::COLUMN_ACTION . ', ' . RdsStorage::COLUMN_EVENT_TIME . ', ' . RdsStorage::COLUMN_DETAILS . ') '
+            . 'VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [

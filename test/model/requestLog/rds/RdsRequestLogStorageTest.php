@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +35,6 @@ use GuzzleHttp\Psr7\Request;
  */
 class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 {
-
     protected $fixtures;
 
     /**
@@ -66,7 +66,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $service->log($request, $user);
 
         $stmt = $this->getPersistence()->query(
-            'select * from ' .RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME .' DESC limit 1'
+            'select * from ' . RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME . ' DESC limit 1'
         );
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($user->getIdentifier(), $data[RdsStorage::COLUMN_USER_ID]);
@@ -168,9 +168,9 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
      */
     protected function loadFixture()
     {
-        $query = 'INSERT INTO '.RdsStorage::TABLE_NAME.' ('
-            .RdsStorage::COLUMN_USER_ID.', '.RdsStorage::COLUMN_USER_ROLES.', '.RdsStorage::COLUMN_ACTION.', '.RdsStorage::COLUMN_EVENT_TIME.', '.RdsStorage::COLUMN_DETAILS.') '
-            .'VALUES  (?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO ' . RdsStorage::TABLE_NAME . ' ('
+            . RdsStorage::COLUMN_USER_ID . ', ' . RdsStorage::COLUMN_USER_ROLES . ', ' . RdsStorage::COLUMN_ACTION . ', ' . RdsStorage::COLUMN_EVENT_TIME . ', ' . RdsStorage::COLUMN_DETAILS . ') '
+            . 'VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [

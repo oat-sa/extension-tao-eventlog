@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,7 +73,7 @@ class RegisterLoggerService extends InstallAction
         ]));
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
-        $this->registerEvent(LoginSucceedEvent::class,[LoggerService::class, 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleChangedEvent::class, [LoggerService::class, 'logEvent']);

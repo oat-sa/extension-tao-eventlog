@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,9 +36,17 @@ class RdsStorage extends AbstractRdsStorage
     /**
      * @return string
      */
-    public function getTableName(){}
+    public function getTableName()
+    {
+    }
 
-    public function log(LogEntity $logEntity){}
-    public static function tableColumns(){}
-    public static function install($persistence){}
+    public function log(LogEntity $logEntity)
+    {
+    }
+    public static function tableColumns()
+    {
+    }
+    public static function install($persistence)
+    {
+    }
 }

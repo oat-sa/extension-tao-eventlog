@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -103,8 +104,8 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
 
         $payload = [
             'data' => $results['data'],
-            'page' => (integer) $this->request->getPage(),
-            'records' => (integer) count($results['data']),
+            'page' => (int) $this->request->getPage(),
+            'records' => (int) count($results['data']),
             'total' => ceil($results['records'] / $this->request->getRows()),
         ];
         return $payload;
@@ -140,9 +141,9 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
 
         if (isset($params['periodStart']) && isset($params['periodEnd'])) {
             $filters[] = ['occurred', 'between', $params['periodStart'], $params['periodEnd']];
-        } else if (isset($params['periodStart'])) {
+        } elseif (isset($params['periodStart'])) {
             $filters[] = ['occurred', '>', $params['periodStart']];
-        } else if (isset($params['periodEnd'])) {
+        } elseif (isset($params['periodEnd'])) {
             $filters[] = ['occurred', '<', $params['periodEnd']];
         }
 

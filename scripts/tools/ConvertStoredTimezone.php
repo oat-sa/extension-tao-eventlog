@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +22,6 @@
 
 namespace oat\taoEventLog\scripts\tools;
 
-
 use oat\dtms\DateTime;
 use oat\oatbox\action\Action;
 use oat\oatbox\service\ServiceManager;
@@ -30,7 +30,6 @@ use oat\taoEventLog\model\StorageInterface;
 
 class ConvertStoredTimezone implements Action
 {
-
     /** @var  \common_report_Report */
     private $report;
 
@@ -39,7 +38,7 @@ class ConvertStoredTimezone implements Action
      */
     private $dryrun = false;
 
-    public function __invoke( $params )
+    public function __invoke($params)
     {
 
         $this->dryrun = in_array('dryrun', $params) || in_array('--dryrun', $params);
@@ -52,8 +51,7 @@ class ConvertStoredTimezone implements Action
 
         $this->report = new \common_report_Report(\common_report_Report::TYPE_INFO, 'Converting of dates for the event log');
 
-        while ( true ) {
-
+        while (true) {
             $slice = $storageService->searchInstances(['page' => $page, 'rows' => $rows ]);
 
             if (!count($slice['data'])) {
@@ -61,7 +59,6 @@ class ConvertStoredTimezone implements Action
             }
 
             foreach ($slice['data'] as $row) {
-
                 if (empty($row['occurred']) || $row['occurred'] == '0000-00-00 00:00:00') {
                     $this->report->add(new \common_report_Report(\common_report_Report::TYPE_WARNING, 'Would not be converted date in id="' . $row['id'] . '" date is "' . $row['occurred'] . '"'));
                     continue;
@@ -72,7 +69,6 @@ class ConvertStoredTimezone implements Action
                 } else {
                     $this->setOccurred($storageService, $row['id'], $this->convertToUtcDate($row['occurred']));
                 }
-
             }
 
             if ($this->dryrun) {

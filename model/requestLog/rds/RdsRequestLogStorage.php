@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -97,7 +98,9 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
         }
 
         $stmt = $this->getPersistence()->query(
-            'SELECT count(*) as count FROM (' .$queryBuilder->getSQL() . ') as group_q', $queryBuilder->getParameters());
+            'SELECT count(*) as count FROM (' . $queryBuilder->getSQL() . ') as group_q',
+            $queryBuilder->getParameters()
+        );
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         return intval($data['count']);
     }
@@ -112,7 +115,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
         $operation = strtolower($filter[1]);
         $val = $filter[2];
         $val2 = isset($filter[3]) ? $filter[3] : null;
-        
+
         if (!in_array($colName, $this->getColumnNames())) {
             return;
         }
@@ -194,11 +197,11 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
             $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true, "length" => 4096]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
-            $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale'=>4, "notnull" => true]);
+            $table->addColumn(static::COLUMN_EVENT_TIME, 'decimal', ['precision' => 14, 'scale' => 4, "notnull" => true]);
             $table->addColumn(static::COLUMN_DETAILS, "text", ["notnull" => false]);
             $table->addIndex([static::COLUMN_USER_ID], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_USER_ID);
             $table->addIndex([static::COLUMN_EVENT_TIME], 'IDX_' . static::TABLE_NAME . '_' . static::COLUMN_EVENT_TIME);
-        } catch(SchemaException $e) {
+        } catch (SchemaException $e) {
             \common_Logger::i('Database Schema already up to date.');
         }
 

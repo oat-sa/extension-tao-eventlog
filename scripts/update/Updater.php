@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,8 +78,8 @@ class Updater extends common_ext_ExtensionUpdater
         $this->skip('0.2.0', '0.3.0');
 
         if ($this->isVersion('0.3.0')) {
-
-            if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
+            if (
+                common_ext_ExtensionsManager::singleton()->getExtensionById('taoDeliveryRdf')
             ) {
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
@@ -90,22 +91,17 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('0.3.1')) {
-
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('funcAcl')) {
-
                 $eventManager->attach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
-
             }
 
             $this->setVersion('0.3.2');
         }
 
         if ($this->isVersion('0.3.2')) {
-
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTests')) {
-
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestImportEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
@@ -114,15 +110,12 @@ class Updater extends common_ext_ExtensionUpdater
                 $eventManager->attach('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
 
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
-
             }
 
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoDacSimple')) {
-
                 $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
                 $this->getServiceManager()->register(EventManager::CONFIG_ID, $eventManager);
-
             }
 
             $storageService = $this->getServiceManager()->get(StorageInterface::SERVICE_ID);
@@ -149,9 +142,7 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('0.3.3')) {
-
             if (common_ext_ExtensionsManager::singleton()->getExtensionById('taoTestTaker')) {
-
                 $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
                 $eventManager->attach('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
@@ -256,7 +247,6 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         if ($this->isVersion('1.5.0')) {
-
             $requestLogStorage = $this->getServiceManager()->get(RequestLogService::SERVICE_ID);
             $requestLogService = new RequestLogService([
                 RequestLogService::OPTION_STORAGE => RdsRequestLogStorage::class,
@@ -355,7 +345,7 @@ class Updater extends common_ext_ExtensionUpdater
         }
 
         $this->skip('2.2.0', '2.9.1');
-        
+
         //Updater files are deprecated. Please use migrations.
         //See: https://github.com/oat-sa/generis/wiki/Tao-Update-Process
 

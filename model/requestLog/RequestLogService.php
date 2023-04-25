@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,7 +35,6 @@ use oat\tao\model\event\BeforeAction;
  */
 class RequestLogService extends ConfigurableService
 {
-
     const SERVICE_ID = 'taoEventLog/RequestLogStorage';
 
     const OPTION_STORAGE = 'storage';
@@ -70,7 +70,7 @@ class RequestLogService extends ConfigurableService
         if ($user === null) {
             $user = \common_session_SessionManager::getSession()->getUser();
         }
-       return  $this->getStorage()->log($request, $user);
+        return  $this->getStorage()->log($request, $user);
     }
 
     /**
@@ -114,7 +114,7 @@ class RequestLogService extends ConfigurableService
             if (!class_exists($storageClass)) {
                 throw new RequestLogException('Storage class does not exist');
             }
-            $storageParams = $this->getOption(self::OPTION_STORAGE_PARAMETERS)?:[];
+            $storageParams = $this->getOption(self::OPTION_STORAGE_PARAMETERS) ?: [];
             $this->storage = new $storageClass($storageParams);
             $this->getServiceManager()->propagate($this->storage);
         }
@@ -123,7 +123,7 @@ class RequestLogService extends ConfigurableService
 
     /**
      * @param Event $event
-     * @throws 
+     * @throws
      */
     public function catchEvent(Event $event)
     {
