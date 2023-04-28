@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,7 +63,9 @@ class RegisterLoggerService extends InstallAction
     public function __invoke($params)
     {
         /** @var common_ext_ExtensionsManager $extensionManager */
-        $extensionManager = $this->getServiceManager()->get(common_ext_ExtensionsManager::SERVICE_ID);
+        $extensionManager = $this->getServiceManager()->get(
+            common_ext_ExtensionsManager::SERVICE_ID
+        );
 
         $this->registerService(LoggerService::SERVICE_ID, new LoggerService([
             LoggerService::OPTION_STORAGE => RdsStorage::SERVICE_ID,
@@ -72,7 +75,7 @@ class RegisterLoggerService extends InstallAction
         ]));
 
         $this->registerEvent(LoginFailedEvent::class, [LoggerService::class, 'logEvent']);
-        $this->registerEvent(LoginSucceedEvent::class,[LoggerService::class, 'logEvent']);
+        $this->registerEvent(LoginSucceedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleRemovedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleCreatedEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(RoleChangedEvent::class, [LoggerService::class, 'logEvent']);
@@ -87,42 +90,105 @@ class RegisterLoggerService extends InstallAction
         $this->registerEvent(ClassDeletedEvent::class, [LoggerService::class, 'logEvent']);
 
         if ($extensionManager->isEnabled('taoDeliveryRdf')) {
-            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('funcAcl')) {
-            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\funcAcl\\model\\event\\AccessRightAddedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\funcAcl\\model\\event\\AccessRightRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('taoTests')) {
-            $this->registerEvent('oat\\taoTests\\models\\event\\TestExportEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\taoTests\\models\\event\\TestExportEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTests\\models\\event\\TestCreatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTests\\models\\event\\TestUpdatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTests\\models\\event\\TestRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTests\\models\\event\\TestDuplicatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('taoDacSimple')) {
-            $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\taoDacSimple\\model\\event\\DacAddedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoDacSimple\\model\\event\\DacRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('taoTestTaker')) {
-            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('taoItems')) {
-            $this->registerEvent('oat\\taoItems\\model\\event\\ItemCreatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoItems\\model\\event\\ItemUpdatedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoItems\\model\\event\\ItemRemovedEvent', [LoggerService::class, 'logEvent']);
-            $this->registerEvent('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
+            $this->registerEvent(
+                'oat\\taoItems\\model\\event\\ItemCreatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoItems\\model\\event\\ItemUpdatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoItems\\model\\event\\ItemRemovedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                'oat\\taoItems\\model\\event\\ItemDuplicatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
         }
 
         if ($extensionManager->isEnabled('taoQtiItem')) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,9 +33,10 @@ use oat\oatbox\service\ServiceManagerAwareTrait;
  * @package oat\taoEventLog\model\requestLog
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-abstract class AbstractRequestLogStorage extends Configurable implements RequestLogStorageWritable, ServiceManagerAwareInterface
+abstract class AbstractRequestLogStorage extends Configurable implements
+    RequestLogStorageWritable,
+    ServiceManagerAwareInterface
 {
-
     use ServiceManagerAwareTrait;
 
     /**
@@ -53,7 +55,7 @@ abstract class AbstractRequestLogStorage extends Configurable implements Request
 
         return [
             RequestLogService::USER_ID => $userId,
-            RequestLogService::USER_ROLES => ','. implode(',', $user->getRoles()). ',',
+            RequestLogService::USER_ROLES => ',' . implode(',', $user->getRoles()) . ',',
             RequestLogService::ACTION => $request->getUri()->getPath(),
             RequestLogService::EVENT_TIME => microtime(true),
             RequestLogService::DETAILS => json_encode([

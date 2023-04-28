@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +40,8 @@ class TaoEventLog extends tao_actions_CommonModule
     /**
      * A possible entry point to tao
      */
-    public function index() {
+    public function index()
+    {
         $this->setView('TaoEventLog/log.tpl');
     }
 

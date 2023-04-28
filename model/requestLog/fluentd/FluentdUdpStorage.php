@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +48,7 @@ use Psr\Http\Message\RequestInterface;
  * ```
  * <source>
  *   @type udp           #required
- *   tag tao.requestlog  #required; tag of output (used to chose output). 
+ *   tag tao.requestlog  #required; tag of output (used to chose output).
  *   format json         #required
  *   bind 0.0.0.0        #required; IP address to listen to
  *   port 8888           #required; Port to listen to
@@ -59,8 +60,8 @@ use Psr\Http\Message\RequestInterface;
  */
 class FluentdUdpStorage extends AbstractRequestLogStorage
 {
-    const OPTION_HOST  = 'host';
-    const OPTION_PORT  = 'port';
+    public const OPTION_HOST  = 'host';
+    public const OPTION_PORT  = 'port';
 
     private $resource;
     private $host;
@@ -94,7 +95,7 @@ class FluentdUdpStorage extends AbstractRequestLogStorage
     private function sendData(array $data)
     {
         $message = json_encode($data);
-        try{
+        try {
             socket_sendto($this->getSocket(), $message, strlen($message), 0, $this->host, $this->port);
         } catch (\Exception $e) {
             \common_Logger::e('Error logging to Fluentd ' . $e->getMessage());

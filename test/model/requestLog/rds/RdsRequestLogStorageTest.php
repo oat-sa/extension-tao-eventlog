@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +22,7 @@
 
 namespace oat\taoEventLog\test\model\requestLog\rds;
 
+use common_persistence_SqlPersistence;
 use oat\tao\test\TaoPhpUnitTestRunner;
 use oat\taoEventLog\model\requestLog\rds\RdsRequestLogStorage as RdsStorage;
 use oat\oatbox\service\ServiceManager;
@@ -34,7 +36,6 @@ use GuzzleHttp\Psr7\Request;
  */
 class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
 {
-
     protected $fixtures;
 
     /**
@@ -66,7 +67,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $service->log($request, $user);
 
         $stmt = $this->getPersistence()->query(
-            'select * from ' .RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME .' DESC limit 1'
+            'select * from ' . RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME . ' DESC limit 1'
         );
         $data = $stmt->fetch(\PDO::FETCH_ASSOC);
         $this->assertEquals($user->getIdentifier(), $data[RdsStorage::COLUMN_USER_ID]);
@@ -96,7 +97,10 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $data = $iterator->current();
         $iterator->next();
         $this->assertFalse($iterator->valid());
-        $this->assertEquals('http://sample/first.rdf#i00000000000000003_test_record', $data[RdsStorage::COLUMN_USER_ID]);
+        $this->assertEquals(
+            'http://sample/first.rdf#i00000000000000003_test_record',
+            $data[RdsStorage::COLUMN_USER_ID]
+        );
 
 
         $iterator = $service->find([
@@ -114,7 +118,11 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
             [RdsStorage::USER_ID, 'like', '%_test_record'],
             [RdsStorage::COLUMN_USER_ROLES, 'like', '%manager%'],
         ]);
-        $this->assertEquals('http://sample/first.rdf#i00000000000000002_test_record', $iterator->current()[RdsStorage::COLUMN_USER_ID]);
+        $this->assertEquals(
+            'http://sample/first.rdf#i00000000000000002_test_record',
+            $iterator->current()[RdsStorage::COLUMN_USER_ID]
+        );
+
         $iterator->next();
         $this->assertFalse($iterator->valid());
     }
@@ -168,9 +176,14 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
      */
     protected function loadFixture()
     {
-        $query = 'INSERT INTO '.RdsStorage::TABLE_NAME.' ('
-            .RdsStorage::COLUMN_USER_ID.', '.RdsStorage::COLUMN_USER_ROLES.', '.RdsStorage::COLUMN_ACTION.', '.RdsStorage::COLUMN_EVENT_TIME.', '.RdsStorage::COLUMN_DETAILS.') '
-            .'VALUES  (?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO ' . RdsStorage::TABLE_NAME . ' ('
+            . RdsStorage::COLUMN_USER_ID . ', '
+            . RdsStorage::COLUMN_USER_ROLES . ', '
+            . RdsStorage::COLUMN_ACTION . ', '
+            . RdsStorage::COLUMN_EVENT_TIME . ', '
+            . RdsStorage::COLUMN_DETAILS
+            . ') '
+            . 'VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [
@@ -249,7 +262,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
     }
 
     /**
-     * @return \common_persistence_SqlPersistence
+     * @return common_persistence_SqlPersistence
      */
     protected function getPersistence()
     {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,14 +31,24 @@ use oat\taoEventLog\model\LogEntity;
  */
 class RdsStorage extends AbstractRdsStorage
 {
-    const SERVICE_ID = 'taoEventLog/storage';
+    public const SERVICE_ID = 'taoEventLog/storage';
 
     /**
      * @return string
      */
-    public function getTableName(){}
+    public function getTableName()
+    {
+    }
 
-    public function log(LogEntity $logEntity){}
-    public static function tableColumns(){}
-    public static function install($persistence){}
+    public function log(LogEntity $logEntity)
+    {
+    }
+
+    public static function tableColumns()
+    {
+    }
+
+    public static function install($persistence)
+    {
+    }
 }

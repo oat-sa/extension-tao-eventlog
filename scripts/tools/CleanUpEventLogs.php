@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +24,7 @@ use DateInterval;
 use DateTimeImmutable;
 use oat\generis\model\OntologyAwareTrait;
 use oat\oatbox\extension\script\ScriptAction;
-use \common_report_Report as Report;
+use common_report_Report as Report;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
@@ -47,7 +48,7 @@ class CleanUpEventLogs extends ScriptAction
                 'prefix' => 'w',
                 'longPrefix' => 'wet-run',
                 'flag' => true,
-                'description' => 'Will perform real database operations if it will be required, including removing data',
+                'description' => 'Will perform real database operations if it will be required, including data removal',
                 'required' => false,
                 'defaultValue' => false
             ],
