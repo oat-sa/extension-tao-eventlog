@@ -22,14 +22,14 @@
   "require": {
     "oat-sa/oatbox-extension-installer": "~1.1||dev-master",
     "oat-sa/generis" : ">=15.22",
-    "oat-sa/tao-core" : ">=50.24.6",
-    "oat-sa/extension-tao-funcacl" : ">=7.0.0",
+    "oat-sa/tao-core" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-funcacl" : "dev-feature/AUT-2995",
     "oat-sa/extension-tao-delivery-rdf" : "dev-feature/AUT-2995",
-    "oat-sa/extension-tao-item" : ">=11.0.0",
-    "oat-sa/extension-tao-testqti" : ">=41.0.0",
-    "oat-sa/extension-tao-itemqti" : ">=27.0.0",
-    "oat-sa/extension-tao-test" : ">=15.11.0",
-    "oat-sa/extension-tao-testtaker" : ">=8.0.0",
+    "oat-sa/extension-tao-item" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-testqti" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-itemqti" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-test" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-testtaker" : "dev-feature/AUT-2995",
     "oat-sa/lib-tao-dtms" : "^1.0.1"
   },
   "autoload": {
