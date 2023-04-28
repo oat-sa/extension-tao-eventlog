@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,8 +16,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * Copyright (c) 2017 (original work) Open Assessment Technologies SA;
- *
- *
  */
 
 namespace oat\taoEventLog\test\model\requestLog\rds;
@@ -34,7 +33,6 @@ use oat\taoEventLog\model\requestLog\rds\RdsRequestLogIterator;
  */
 class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
 {
-
     /**
      * @var array
      */
@@ -108,7 +106,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
         //test in loop
         $queryBuilder = $this->getQueryBuilder();
         $iterator = new RdsRequestLogIterator($this->getPersistence(), $queryBuilder);
-        foreach ($iterator as $key=>$value) {
+        foreach ($iterator as $key => $value) {
             $this->assertEquals($this->fixtures[$key], $value);
         }
     }
@@ -174,7 +172,7 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
 
         return $this->connection->createQueryBuilder()->select('*')
             ->from(RdsStorage::TABLE_NAME, 'r')
-            ->where(RdsStorage::USER_ID.' like ?')->setParameters(['%_test_record']);
+            ->where(RdsStorage::USER_ID . ' like ?')->setParameters(['%_test_record']);
     }
 
     /**
@@ -182,9 +180,17 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
      */
     protected function loadFixture()
     {
-        $query = 'INSERT INTO '.RdsStorage::TABLE_NAME.' ('
-            .RdsStorage::COLUMN_USER_ID.', '.RdsStorage::COLUMN_USER_ROLES.', '.RdsStorage::COLUMN_ACTION.', '.RdsStorage::COLUMN_EVENT_TIME.', '.RdsStorage::COLUMN_DETAILS.') '
-            .'VALUES  (?, ?, ?, ?, ?)';
+        $query = 'INSERT INTO ' . RdsStorage::TABLE_NAME . ' ('
+            . implode(
+                ', ',
+                [
+                    RdsStorage::COLUMN_USER_ID,
+                    RdsStorage::COLUMN_USER_ROLES,
+                    RdsStorage::COLUMN_ACTION,
+                    RdsStorage::COLUMN_EVENT_TIME ,
+                    RdsStorage::COLUMN_DETAILS
+                ]
+            ) . ') VALUES  (?, ?, ?, ?, ?)';
 
         $this->fixtures = [
             [
@@ -197,7 +203,8 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
             [
                 RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000001_test_record',
                 RdsStorage::COLUMN_USER_ROLES => 'admin,proctor',
-                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/index?structure=items&ext=taoItems&section=manage_items',
+                RdsStorage::COLUMN_ACTION =>
+                    'http://package-tao/tao/Main/index?structure=items&ext=taoItems&section=manage_items',
                 RdsStorage::COLUMN_EVENT_TIME => 1490703795.3623,
                 RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 1]),
             ],
@@ -211,7 +218,8 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
             [
                 RdsStorage::COLUMN_USER_ID => 'http://sample/first.rdf#i00000000000000002_test_record',
                 RdsStorage::COLUMN_USER_ROLES => 'admin,proctor',
-                RdsStorage::COLUMN_ACTION => 'http://package-tao/tao/Main/index?structure=items&ext=taoItems&section=manage_items',
+                RdsStorage::COLUMN_ACTION =>
+                    'http://package-tao/tao/Main/index?structure=items&ext=taoItems&section=manage_items',
                 RdsStorage::COLUMN_EVENT_TIME => 1490703795.3625,
                 RdsStorage::COLUMN_DETAILS => json_encode(['method' => 'GET', 'id' => 3]),
             ],

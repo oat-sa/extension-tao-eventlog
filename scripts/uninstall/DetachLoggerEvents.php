@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,41 +66,101 @@ $eventManager->detach(CsvImportEvent::class, [LoggerService::class, 'logEvent'])
 $eventManager->detach(RdfExportEvent::class, [LoggerService::class, 'logEvent']);
 
 if ($extensionManager->getExtensionById('funcAcl')) {
-    $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightAddedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\funcAcl\\model\\event\\AccessRightRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\funcAcl\\model\\event\\AccessRightAddedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\funcAcl\\model\\event\\AccessRightRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoDeliveryRdf')) {
-    $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\taoDeliveryRdf\\model\\event\\DeliveryCreatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoDeliveryRdf\\model\\event\\DeliveryRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoDeliveryRdf\\model\\event\\DeliveryUpdatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoTests')) {
-    $eventManager->detach('oat\\taoTests\\models\\event\\TestCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTests\\models\\event\\TestUpdatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTests\\models\\event\\TestRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTests\\models\\event\\TestDuplicatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\taoTests\\models\\event\\TestCreatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTests\\models\\event\\TestUpdatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTests\\models\\event\\TestRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTests\\models\\event\\TestDuplicatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoDacSimple')) {
-    $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacAddedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoDacSimple\\model\\event\\DacRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\taoDacSimple\\model\\event\\DacAddedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoDacSimple\\model\\event\\DacRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoTestTaker')) {
-    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\taoTestTaker\\models\\events\\TestTakerClassCreatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTestTaker\\models\\events\\TestTakerClassRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTestTaker\\models\\events\\TestTakerCreatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTestTaker\\models\\events\\TestTakerUpdatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoTestTaker\\models\\events\\TestTakerRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoItems')) {
-    $eventManager->detach('oat\\taoItems\\model\\event\\ItemCreatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoItems\\model\\event\\ItemUpdatedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoItems\\model\\event\\ItemRemovedEvent', [LoggerService::class, 'logEvent']);
-    $eventManager->detach('oat\\taoItems\\model\\event\\ItemDuplicatedEvent', [LoggerService::class, 'logEvent']);
+    $eventManager->detach(
+        'oat\\taoItems\\model\\event\\ItemCreatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoItems\\model\\event\\ItemUpdatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoItems\\model\\event\\ItemRemovedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        'oat\\taoItems\\model\\event\\ItemDuplicatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
 }
 
 if ($extensionManager->isEnabled('taoQtiItem')) {
