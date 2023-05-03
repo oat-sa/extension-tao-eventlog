@@ -43,7 +43,7 @@ msgid "Event Name"
 msgstr "Nome do Evento"
 
 msgid "Export"
-msgstr "Exportação"
+msgstr "Exportar"
 
 msgid "Export log entries"
 msgstr "Exportar entradas de log"
