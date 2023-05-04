@@ -24,7 +24,7 @@
     "oat-sa/generis" : ">=15.22",
     "oat-sa/tao-core" : ">=50.24.6",
     "oat-sa/extension-tao-funcacl" : ">=7.0.0",
-    "oat-sa/extension-tao-delivery-rdf" : "dev-feature/AUT-2995",
+    "oat-sa/extension-tao-delivery-rdf" : ">=14.0.0",
     "oat-sa/extension-tao-item" : ">=11.0.0",
     "oat-sa/extension-tao-testqti" : ">=41.0.0",
     "oat-sa/extension-tao-itemqti" : ">=27.0.0",
