@@ -25,6 +25,7 @@ namespace oat\taoEventLog\model\eventLog;
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
+use Throwable;
 
 /**
  * Class RdsStorage
@@ -36,6 +37,8 @@ class RdsStorage extends AbstractRdsStorage
 
     public const SERVICE_ID = 'taoEventLog/eventLogStorage';
 
+    public const OPTION_INSERT_CHUNK_SIZE = 'insertChunkSize';
+
     public const EVENT_LOG_ID = self::ID;
     public const EVENT_LOG_EVENT_NAME = 'event_name';
     public const EVENT_LOG_ACTION = 'action';
@@ -43,6 +46,8 @@ class RdsStorage extends AbstractRdsStorage
     public const EVENT_LOG_USER_ROLES = 'user_roles';
     public const EVENT_LOG_OCCURRED = 'occurred';
     public const EVENT_LOG_PROPERTIES = 'properties';
+
+    private const DEFAULT_INSERT_CHUNK_SIZE = 1000;
 
     /**
      * @return string
@@ -71,6 +76,52 @@ class RdsStorage extends AbstractRdsStorage
         );
 
         return $result === 1;
+    }
+
+    /**
+     * @param LogEntity[] $logEntities
+     */
+    public function logMultiple(array $logEntities): bool
+    {
+        $inserts = array_map(
+            static fn (LogEntity $logEntity): array => [
+                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
+                self::EVENT_LOG_ACTION => $logEntity->getAction(),
+                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
+                self::EVENT_LOG_USER_ROLES => implode(',', $logEntity->getUser()->getRoles()),
+                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
+                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
+            ],
+            $logEntities
+        );
+
+        try {
+            $persistence = $this->getPersistence();
+
+            $persistence->transactional(function () use ($inserts, $persistence) {
+                $insertCount = count($inserts);
+                $insertChunkSize = $this->getInsertChunkSize();
+
+                foreach (array_chunk($inserts, $insertChunkSize) as $index => $chunk) {
+                    $this->logDebug(
+                        sprintf(
+                            'Processing chunk %d/%d with %d log entries',
+                            $index + 1,
+                            ceil($insertCount / $insertChunkSize),
+                            count($chunk)
+                        )
+                    );
+
+                    $persistence->insertMultiple($this->getTableName(), $chunk);
+                }
+            });
+
+            return true;
+        } catch (Throwable $exception) {
+            $this->logError('Error when inserting log entries: ' . $exception->getMessage());
+
+            return false;
+        }
     }
 
     /**
@@ -160,5 +211,10 @@ class RdsStorage extends AbstractRdsStorage
         foreach ($queries as $query) {
             $persistence->exec($query);
         }
+    }
+
+    private function getInsertChunkSize(): int
+    {
+        return $this->getOption(self::OPTION_INSERT_CHUNK_SIZE, self::DEFAULT_INSERT_CHUNK_SIZE);
     }
 }
