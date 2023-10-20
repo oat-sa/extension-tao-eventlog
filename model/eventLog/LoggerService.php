@@ -81,7 +81,7 @@ class LoggerService extends AbstractLog
         try {
             if ($event instanceof BulkEvent) {
                 $this->getStorage()->logMultiple(
-                    array_map(
+                    ...array_map(
                         fn (array $eventData): EventLogEntity => $this->createEventLogEntity(
                             $event,
                             $currentUser,

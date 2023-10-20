@@ -34,10 +34,7 @@ interface StorageInterface
      */
     public function log(LogEntity $logEntity);
 
-    /**
-     * @param LogEntity[] $logEntities
-     */
-    public function logMultiple(array $logEntities): bool;
+    public function logMultiple(LogEntity ...$logEntities): bool;
 
     /**
      * Search records in log which are meet the search criteria

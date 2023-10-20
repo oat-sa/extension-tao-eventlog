@@ -44,7 +44,7 @@ class RdsStorage extends AbstractRdsStorage
     {
     }
 
-    public function logMultiple(array $logEntities): bool
+    public function logMultiple(LogEntity ...$logEntities): bool
     {
         return true;
     }

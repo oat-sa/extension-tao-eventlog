@@ -47,7 +47,7 @@ class RdsStorage extends AbstractRdsStorage
     public const EVENT_LOG_OCCURRED = 'occurred';
     public const EVENT_LOG_PROPERTIES = 'properties';
 
-    private const DEFAULT_INSERT_CHUNK_SIZE = 1000;
+    private const DEFAULT_INSERT_CHUNK_SIZE = 100;
 
     /**
      * @return string
@@ -78,10 +78,7 @@ class RdsStorage extends AbstractRdsStorage
         return $result === 1;
     }
 
-    /**
-     * @param LogEntity[] $logEntities
-     */
-    public function logMultiple(array $logEntities): bool
+    public function logMultiple(LogEntity ...$logEntities): bool
     {
         $inserts = array_map(
             static fn (LogEntity $logEntity): array => [
