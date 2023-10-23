@@ -149,7 +149,10 @@ class LoggerService extends AbstractLog
         return $session->getUser();
     }
 
-    private function createEventLogEntity(Event $event, User $user, array $data): EventLogEntity
+    /**
+     * @param array|Event $data
+     */
+    private function createEventLogEntity(Event $event, User $user, $data): EventLogEntity
     {
         return new EventLogEntity(
             $event,
