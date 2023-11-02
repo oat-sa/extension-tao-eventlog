@@ -34,6 +34,8 @@ interface StorageInterface
      */
     public function log(LogEntity $logEntity);
 
+    public function logMultiple(LogEntity ...$logEntities): bool;
+
     /**
      * Search records in log which are meet the search criteria
      *
