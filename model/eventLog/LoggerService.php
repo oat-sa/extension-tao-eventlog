@@ -27,6 +27,7 @@ use common_session_Session;
 use common_session_SessionManager;
 use Context;
 use DateTimeImmutable;
+use DateTimeZone;
 use JsonSerializable;
 use oat\dtms\DateInterval;
 use oat\oatbox\event\BulkEvent;
@@ -149,16 +150,13 @@ class LoggerService extends AbstractLog
         return $session->getUser();
     }
 
-    /**
-     * @param array|Event $data
-     */
     private function createEventLogEntity(Event $event, User $user, $data): EventLogEntity
     {
         return new EventLogEntity(
             $event,
             $this->getAction(),
             $user,
-            (new DateTime('now', new \DateTimeZone('UTC'))),
+            (new DateTime('now', new DateTimeZone('UTC'))),
             $data
         );
     }
