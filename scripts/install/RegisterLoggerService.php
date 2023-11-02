@@ -147,6 +147,10 @@ class RegisterLoggerService extends InstallAction
                 'oat\\taoDacSimple\\model\\event\\DacRemovedEvent',
                 [LoggerService::class, 'logEvent']
             );
+            $this->registerEvent(
+                'oat\taoDacSimple\model\event\DacChangedEvent',
+                [LoggerService::class, 'log']
+            );
         }
 
         if ($extensionManager->isEnabled('taoTestTaker')) {
