@@ -205,7 +205,7 @@ define([
                      * @param ajaxConfig
                      */
                     query: function onQuery(e, ajaxConfig) {
-                        currentFilter = _.pickBy(ajaxConfig && ajaxConfig.data, ['filterquery', 'filtercolumns', 'sortby', 'sortorder', 'sorttype']);
+                        currentFilter = _.pick(ajaxConfig && ajaxConfig.data, ['filterquery', 'filtercolumns', 'sortby', 'sortorder', 'sorttype']);
                     }
                 }
             });
