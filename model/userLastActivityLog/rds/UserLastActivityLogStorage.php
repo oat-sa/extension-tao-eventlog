@@ -208,7 +208,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             $table = $schema->createTable(self::TABLE_NAME);
             $table->addOption('engine', 'InnoDB');
             $table->addColumn(static::COLUMN_USER_ID, "string", ["length" => 255]);
-            $table->addColumn(static::COLUMN_USER_ROLES, "string", ["notnull" => true, "length" => 4096]);
+            $table->addColumn(static::COLUMN_USER_ROLES, "text", ["notnull" => true]);
             $table->addColumn(static::COLUMN_ACTION, "string", ["notnull" => false, "length" => 4096]);
             $table->addColumn(
                 static::COLUMN_EVENT_TIME,
