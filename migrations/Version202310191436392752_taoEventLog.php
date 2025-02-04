@@ -20,19 +20,23 @@ final class Version202310191436392752_taoEventLog extends AbstractMigration
     public function up(Schema $schema): void
     {
         if ($this->getExtensionsManager()->isEnabled('taoDacSimple')) {
-            $this->getEventManager()->attach(
+            $eventManager = $this->getEventManager();
+            $eventManager->attach(
                 'oat\taoDacSimple\model\event\DacChangedEvent',
                 [LoggerService::class, 'log']
             );
+            $this->getServiceLocator()->register(EventManager::SERVICE_ID, $eventManager);
         }
     }
 
     public function down(Schema $schema): void
     {
-        $this->getEventManager()->detach(
+        $eventManager = $this->getEventManager();
+        $eventManager->detach(
             'oat\taoDacSimple\model\event\DacChangedEvent',
             [LoggerService::class, 'log']
         );
+        $this->getServiceLocator()->register(EventManager::SERVICE_ID, $eventManager);
     }
 
     private function getExtensionsManager(): common_ext_ExtensionsManager

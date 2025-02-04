@@ -22,6 +22,8 @@
 
 namespace oat\taoEventLog\model\eventLog;
 
+use oat\generis\model\user\UserRdf;
+use oat\oatbox\user\User;
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
@@ -43,6 +45,7 @@ class RdsStorage extends AbstractRdsStorage
     public const EVENT_LOG_EVENT_NAME = 'event_name';
     public const EVENT_LOG_ACTION = 'action';
     public const EVENT_LOG_USER_ID = 'user_id';
+    public const EVENT_LOG_USER_LOGIN = 'user_login';
     public const EVENT_LOG_USER_ROLES = 'user_roles';
     public const EVENT_LOG_OCCURRED = 'occurred';
     public const EVENT_LOG_PROPERTIES = 'properties';
@@ -63,17 +66,7 @@ class RdsStorage extends AbstractRdsStorage
      */
     public function log(LogEntity $logEntity)
     {
-        $result = $this->getPersistence()->insert(
-            $this->getTableName(),
-            [
-                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
-                self::EVENT_LOG_ACTION => $logEntity->getAction(),
-                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
-                self::EVENT_LOG_USER_ROLES => join(',', $logEntity->getUser()->getRoles()),
-                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
-                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
-            ]
-        );
+        $result = $this->getPersistence()->insert($this->getTableName(), $this->createInsert($logEntity));
 
         return $result === 1;
     }
@@ -81,14 +74,7 @@ class RdsStorage extends AbstractRdsStorage
     public function logMultiple(LogEntity ...$logEntities): bool
     {
         $inserts = array_map(
-            static fn (LogEntity $logEntity): array => [
-                self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
-                self::EVENT_LOG_ACTION => $logEntity->getAction(),
-                self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
-                self::EVENT_LOG_USER_ROLES => implode(',', $logEntity->getUser()->getRoles()),
-                self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
-                self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
-            ],
+            fn (LogEntity $logEntity): array => $this->createInsert($logEntity),
             $logEntities
         );
 
@@ -139,6 +125,7 @@ class RdsStorage extends AbstractRdsStorage
         return [
             self::EVENT_LOG_ID,
             self::EVENT_LOG_USER_ID,
+            self::EVENT_LOG_USER_LOGIN,
             self::EVENT_LOG_USER_ROLES,
             self::EVENT_LOG_EVENT_NAME,
             self::EVENT_LOG_ACTION,
@@ -184,6 +171,11 @@ class RdsStorage extends AbstractRdsStorage
                 ["notnull" => false, "length" => 255, 'default' => '', 'comment' => 'User identifier']
             );
             $table->addColumn(
+                self::EVENT_LOG_USER_LOGIN,
+                'string',
+                ['notnull' => false, 'length' => 255, 'default' => null, 'comment' => 'User login']
+            );
+            $table->addColumn(
                 self::EVENT_LOG_USER_ROLES,
                 "text",
                 ["notnull" => true, 'default' => '', 'comment' => 'User roles']
@@ -199,6 +191,7 @@ class RdsStorage extends AbstractRdsStorage
             $table->addIndex([self::EVENT_LOG_EVENT_NAME], 'idx_event_name');
             $table->addIndex([self::EVENT_LOG_ACTION], 'idx_action', [], ['lengths' => [164]]);
             $table->addIndex([self::EVENT_LOG_USER_ID], 'idx_user_id');
+            $table->addIndex([self::EVENT_LOG_USER_LOGIN], 'idx_user_login');
             $table->addIndex([self::EVENT_LOG_OCCURRED], 'idx_occurred');
         } catch (SchemaException $e) {
             \common_Logger::i('Database Schema for EventLog already up to date.');
@@ -213,5 +206,23 @@ class RdsStorage extends AbstractRdsStorage
     private function getInsertChunkSize(): int
     {
         return $this->getOption(self::OPTION_INSERT_CHUNK_SIZE, self::DEFAULT_INSERT_CHUNK_SIZE);
+    }
+
+    private function createInsert(LogEntity $logEntity): array
+    {
+        return [
+            self::EVENT_LOG_EVENT_NAME => $logEntity->getEvent()->getName(),
+            self::EVENT_LOG_ACTION => $logEntity->getAction(),
+            self::EVENT_LOG_USER_ID => $logEntity->getUser()->getIdentifier(),
+            self::EVENT_LOG_USER_LOGIN => $this->getUserLogin($logEntity->getUser()),
+            self::EVENT_LOG_USER_ROLES => implode(',', $logEntity->getUser()->getRoles()),
+            self::EVENT_LOG_OCCURRED => $logEntity->getTime()->format(self::DATE_TIME_FORMAT),
+            self::EVENT_LOG_PROPERTIES => json_encode($logEntity->getData()),
+        ];
+    }
+
+    private function getUserLogin(User $user): ?string
+    {
+        return current($user->getPropertyValues(UserRdf::PROPERTY_LOGIN)) ?: null;
     }
 }
