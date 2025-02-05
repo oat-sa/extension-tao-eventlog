@@ -24,6 +24,7 @@ namespace oat\taoEventLog\model\eventLog;
 
 use oat\generis\model\user\UserRdf;
 use oat\oatbox\user\User;
+use oat\oatbox\user\UserService;
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
@@ -51,6 +52,8 @@ class RdsStorage extends AbstractRdsStorage
     public const EVENT_LOG_PROPERTIES = 'properties';
 
     private const DEFAULT_INSERT_CHUNK_SIZE = 100;
+
+    private UserService $userService;
 
     /**
      * @return string
@@ -223,6 +226,23 @@ class RdsStorage extends AbstractRdsStorage
 
     private function getUserLogin(User $user): ?string
     {
-        return current($user->getPropertyValues(UserRdf::PROPERTY_LOGIN)) ?: null;
+        $login = current($user->getPropertyValues(UserRdf::PROPERTY_LOGIN));
+
+        if (!$login) {
+            $generisUser = $this->getUserService()->getUser($user->getIdentifier());
+
+            $login = current($generisUser->getPropertyValues(UserRdf::PROPERTY_LOGIN));
+        }
+
+        return  $login ?: null;
+    }
+
+    private function getUserService(): UserService
+    {
+        if (!isset($this->userService)) {
+            $this->userService = $this->getServiceManager()->get(UserService::SERVICE_ID);
+        }
+
+        return $this->userService;
     }
 }
