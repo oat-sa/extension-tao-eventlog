@@ -38,6 +38,7 @@ use oat\tao\model\event\RoleRemovedEvent;
 use oat\tao\model\event\UserCreatedEvent;
 use oat\tao\model\event\UserRemovedEvent;
 use oat\tao\model\event\UserUpdatedEvent;
+use oat\tao\model\Translation\Event\TranslationActionEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\generis\model\data\event\ResourceDeleted;
@@ -88,6 +89,7 @@ class RegisterLoggerService extends InstallAction
         $this->registerEvent(RdfExportEvent::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(ResourceDeleted::class, [LoggerService::class, 'logEvent']);
         $this->registerEvent(ClassDeletedEvent::class, [LoggerService::class, 'logEvent']);
+        $this->registerEvent(TranslationActionEvent::class, [LoggerService::class, 'log']);
 
         if ($extensionManager->isEnabled('taoDeliveryRdf')) {
             $this->registerEvent(
