@@ -45,6 +45,7 @@ define([
                     {key: 'event_name', title: __('Event Name')},
                     {key: 'action', title: __('Action')},
                     {key: 'user_id', title: __('User ID')},
+                    {key: 'user_login', title: __('User Login')},
                     {key: 'user_roles', title: __('User Roles')},
                     {key: 'occurred', title: __('Occurred')},
                     {key: 'properties', title: __('Properties')}
@@ -137,6 +138,11 @@ define([
                 }, {
                     id: 'user_id',
                     label: __('User ID'),
+                    sortable: true,
+                    filterable: true
+                }, {
+                    id: 'user_login',
+                    label: __('User Login'),
                     sortable: true,
                     filterable: true
                 }, {
