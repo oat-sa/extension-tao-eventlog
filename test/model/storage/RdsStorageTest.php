@@ -106,6 +106,8 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
         $user->expects($this->any())
             ->method('getRoles')
             ->willReturn([]);
+        $user->method('getPropertyValues')
+            ->willReturn(['login']);
 
         $entities = [
             new LogEntity(
@@ -160,14 +162,18 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
             $eventProphecy = $this->prophesize(Event::class);
             $eventProphecy->getName()->willReturn('test_event_' . $i);
 
-            $userProphecy = $this->prophesize(User::class);
-            $userProphecy->getIdentifier()->willReturn('test_user_' . $i);
-            $userProphecy->getRoles()->willReturn(['role_' . (($i % 5) + 1), 'role_2' . (($i % 5) + 2)]);
+            $user = $this->createMock(User::class);
+            $user->method('getIdentifier')
+                ->willReturn('test_user_' . $i);
+            $user->method('getRoles')
+                ->willReturn(['role_' . (($i % 5) + 1), 'role_2' . (($i % 5) + 2)]);
+            $user->method('getPropertyValues')
+                ->willReturn(['login']);
 
             $logEntity = new LogEntity(
                 $eventProphecy->reveal(),
                 'test_action_' . $i,
-                $userProphecy->reveal(),
+                $user,
                 DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:' . str_pad($i, 2, '0', STR_PAD_LEFT) . ':00'),
                 ['id' => $i]
             );
