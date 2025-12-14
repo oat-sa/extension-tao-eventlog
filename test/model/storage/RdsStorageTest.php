@@ -20,6 +20,8 @@
 
 namespace oat\taoEventLog\test\model\requestLog\rds;
 
+use oat\generis\test\PersistenceManagerMockTrait;
+use oat\generis\test\SqlMockTrait;
 use oat\oatbox\log\LoggerService;
 use oat\tao\test\TaoPhpUnitTestRunner;
 use oat\taoEventLog\model\eventLog\RdsStorage;
@@ -29,12 +31,15 @@ use oat\oatbox\user\User;
 use oat\dtms\DateTime;
 use oat\taoEventLog\model\LogEntity;
 use oat\taoEventLog\scripts\install\RegisterRdsStorage;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class RdsStorageTest extends TaoPhpUnitTestRunner
+class RdsStorageTest extends TestCase
 {
+    use SqlMockTrait;
+
     public function testCount(): void
     {
         $storage = $this->getService();
@@ -159,8 +164,8 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
     private function loadFixtures(RdsStorage $storage): void
     {
         for ($i = 0; $i < 60; $i++) {
-            $eventProphecy = $this->prophesize(Event::class);
-            $eventProphecy->getName()->willReturn('test_event_' . $i);
+            $event = $this->createMock(Event::class);
+            $event->method('getName')->willReturn('test_event_' . $i);
 
             $user = $this->createMock(User::class);
             $user->method('getIdentifier')
@@ -171,7 +176,7 @@ class RdsStorageTest extends TaoPhpUnitTestRunner
                 ->willReturn(['login']);
 
             $logEntity = new LogEntity(
-                $eventProphecy->reveal(),
+                $event,
                 'test_action_' . $i,
                 $user,
                 DateTime::createFromFormat('Y-m-d H:i:s', '2017-04-19 12:' . str_pad($i, 2, '0', STR_PAD_LEFT) . ':00'),
