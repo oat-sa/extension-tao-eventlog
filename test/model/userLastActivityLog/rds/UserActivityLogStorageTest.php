@@ -27,11 +27,9 @@ use oat\oatbox\service\ServiceManager;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class UserLastActivityLogStorageTest
- * @package oat\taoEventLog\test\model\usreActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class UserLastActivityLogStorageTest extends TestCase
+class UserActivityLogStorageTest extends TestCase
 {
     use SqlMockTrait;
 
