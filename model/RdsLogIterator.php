@@ -23,6 +23,7 @@
 namespace oat\taoEventLog\model;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use ReturnTypeWillChange;
 
 /**
  * Class RdsLogIterator
@@ -73,11 +74,13 @@ class RdsLogIterator implements \Iterator
     /**
      *
      */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
     }
 
+    #[ReturnTypeWillChange]
     public function next()
     {
         if ($this->valid()) {
@@ -97,6 +100,7 @@ class RdsLogIterator implements \Iterator
         }
     }
 
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->currentKey - 1;
@@ -105,6 +109,7 @@ class RdsLogIterator implements \Iterator
     /**
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function valid()
     {
         if ($this->currentKey === $this->firstResult) {
@@ -115,6 +120,7 @@ class RdsLogIterator implements \Iterator
         return $this->current !== null && ($this->currentKey + $this->firstResult) < $this->initialLimit;
     }
 
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         $this->currentKey = $this->firstResult;

@@ -20,17 +20,19 @@
 
 namespace oat\taoEventLog\test\model\userLastActivityLog\rds;
 
+use oat\generis\test\SqlMockTrait;
 use oat\tao\test\TaoPhpUnitTestRunner;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage as Storage;
 use oat\oatbox\service\ServiceManager;
+use PHPUnit\Framework\TestCase;
 
 /**
- * Class UserLastActivityLogStorageTest
- * @package oat\taoEventLog\test\model\usreActivityLog\rds
  * @author Aleh Hutnikau, <hutnikau@1pt.com>
  */
-class UserLastActivityLogStorageTest extends TaoPhpUnitTestRunner
+class UserActivityLogStorageTest extends TestCase
 {
+    use SqlMockTrait;
+
     protected $fixtures;
     protected $persistence;
     protected $service;
