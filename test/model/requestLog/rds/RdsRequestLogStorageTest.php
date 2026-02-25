@@ -69,7 +69,7 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
         $stmt = $this->getPersistence()->query(
             'select * from ' . RdsStorage::TABLE_NAME . ' order by ' . RdsStorage::COLUMN_EVENT_TIME . ' DESC limit 1'
         );
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAssociative();
         $this->assertEquals($user->getIdentifier(), $data[RdsStorage::COLUMN_USER_ID]);
         $this->assertEquals(',' . implode(',', $user->getRoles()) . ',', $data[RdsStorage::COLUMN_USER_ROLES]);
         $this->assertEquals('/taoDeliveryRdf/RestDelivery/generate', $data[RdsStorage::COLUMN_ACTION]);
@@ -282,6 +282,15 @@ class RdsRequestLogStorageTest extends TaoPhpUnitTestRunner
      */
     protected function deleteTestData()
     {
+        try {
+            $persistence = $this->getPersistence();
+            $schema = $persistence->getDriver()->getSchemaManager()->createSchema();
+            if (!$schema->hasTable(RdsStorage::TABLE_NAME)) {
+                return;
+            }
+        } catch (\Throwable $e) {
+            return;
+        }
         $sql = 'DELETE FROM ' . RdsStorage::TABLE_NAME .
             ' WHERE ' . RdsStorage::COLUMN_USER_ID . " LIKE '%_test_record'";
 

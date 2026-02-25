@@ -49,7 +49,7 @@ class UserActivityLogStorageTest extends TestCase
         $stmt = $this->persistence->query(
             'select * from ' . Storage::TABLE_NAME . ' order by ' . Storage::COLUMN_EVENT_TIME . ' DESC limit 1'
         );
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAssociative();
         $this->assertEquals($user->getIdentifier(), $data[Storage::COLUMN_USER_ID]);
         $this->assertEquals(',' . implode(',', $user->getRoles()) . ',', $data[Storage::COLUMN_USER_ROLES]);
         $this->assertEquals('testAction', $data[Storage::COLUMN_ACTION]);
@@ -62,7 +62,7 @@ class UserActivityLogStorageTest extends TestCase
             'select * from ' . Storage::TABLE_NAME .
             ' WHERE ' . Storage::COLUMN_USER_ID . ' = \'' . $user->getIdentifier() . '\''
         );
-        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAllAssociative();
         $this->assertEquals(1, count($data));
     }
 
@@ -226,7 +226,7 @@ class UserActivityLogStorageTest extends TestCase
             $this->service = new Storage([
                 Storage::OPTION_PERSISTENCE => 'test_user_activity_log'
             ]);
-            $config = new \common_persistence_KeyValuePersistence([], new \common_persistence_InMemoryKvDriver());
+            $config = new \common_persistence_KeyValuePersistence(new \common_persistence_InMemoryKvDriver(), []);
             $config->set(\common_persistence_Manager::SERVICE_ID, $persistenceManager);
             $serviceManager = new ServiceManager($config);
             $this->service->setServiceManager($serviceManager);

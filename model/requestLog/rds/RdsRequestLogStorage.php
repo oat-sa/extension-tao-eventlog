@@ -40,6 +40,7 @@ use oat\taoEventLog\model\requestLog\RequestLogService;
  */
 class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestLogStorageReadable
 {
+    public const SERVICE_ID = 'taoEventLog/requestLogStorage';
     public const OPTION_PERSISTENCE = 'persistence_id';
     public const TABLE_NAME = 'request_log';
 
@@ -104,7 +105,7 @@ class RdsRequestLogStorage extends AbstractRequestLogStorage implements RequestL
             'SELECT count(*) as count FROM (' . $queryBuilder->getSQL() . ') as group_q',
             $queryBuilder->getParameters()
         );
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAssociative();
         return intval($data['count']);
     }
 
