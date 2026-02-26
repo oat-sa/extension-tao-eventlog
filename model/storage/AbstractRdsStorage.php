@@ -114,7 +114,7 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         $sql = $queryBuilder->getSQL();
         $params = $queryBuilder->getParameters();
         $stmt = $this->getPersistence()->query($sql, $params);
-        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAllAssociative();
         return $data;
     }
 
@@ -140,7 +140,7 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
             'SELECT count(*) as count FROM (' . $queryBuilder->getSQL() . ') as group_q',
             $queryBuilder->getParameters()
         );
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAssociative();
         return intval($data['count']);
     }
 
@@ -220,6 +220,6 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
         foreach ($filters as $filter) {
             $this->addFilter($qb, $filter);
         }
-        return $qb->execute();
+        return $qb->executeStatement();
     }
 }

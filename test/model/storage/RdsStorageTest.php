@@ -152,7 +152,7 @@ class RdsStorageTest extends TestCase
         $storage = new RdsStorage([
             RdsStorage::OPTION_PERSISTENCE => 'test_eventlog'
         ]);
-        $config = new \common_persistence_KeyValuePersistence([], new \common_persistence_InMemoryKvDriver());
+        $config = new \common_persistence_KeyValuePersistence(new \common_persistence_InMemoryKvDriver(), []);
         $config->set(\common_persistence_Manager::SERVICE_ID, $persistenceManager);
         $serviceManager = new ServiceManager($config);
         $serviceManager->register(LoggerService::SERVICE_ID, $this->createMock(LoggerService::class));

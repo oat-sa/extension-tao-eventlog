@@ -88,7 +88,7 @@ class RdsLogIterator implements \Iterator
             $sql = $this->queryBuilder->getSQL();
             $params = $this->queryBuilder->getParameters();
             $stmt = $this->persistence->query($sql, $params);
-            $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAssociative();
             if (empty($data)) {
                 $this->current = null;
             } else {
