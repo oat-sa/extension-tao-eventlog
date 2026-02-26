@@ -121,7 +121,7 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             'SELECT count(*) as count FROM (' . $queryBuilder->getSQL() . ') as group_q',
             $queryBuilder->getParameters()
         );
-        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $data = $stmt->fetchAssociative();
         return intval($data['count']);
     }
 

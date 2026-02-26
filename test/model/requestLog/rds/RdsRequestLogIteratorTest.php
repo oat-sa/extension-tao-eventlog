@@ -244,6 +244,15 @@ class RdsRequestLogIteratorTest extends TaoPhpUnitTestRunner
      */
     protected function deleteTestData()
     {
+        try {
+            $persistence = $this->getPersistence();
+            $schema = $persistence->getDriver()->getSchemaManager()->createSchema();
+            if (!$schema->hasTable(RdsStorage::TABLE_NAME)) {
+                return;
+            }
+        } catch (\Throwable $e) {
+            return;
+        }
         $sql = 'DELETE FROM ' . RdsStorage::TABLE_NAME .
             ' WHERE ' . RdsStorage::COLUMN_USER_ID . " LIKE '%_test_record'";
 
