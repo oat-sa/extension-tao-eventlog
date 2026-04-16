@@ -18,6 +18,8 @@
  * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
  */
 
+use oat\taoEventLog\model\UserData\UserDataPolicyServiceProvider;
+
 return array(
     'name' => 'taoEventLog',
     'label' => 'Test-taker Event Logging',
@@ -55,5 +57,8 @@ return array(
     ),
     'extra' => array(
         'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
-    )
+    ),
+    'containerServiceProviders' => [
+        UserDataPolicyServiceProvider::class,
+    ],
 );
