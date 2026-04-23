@@ -20,25 +20,28 @@
 
 declare(strict_types=1);
 
-namespace oat\taoEventLog\model\UserData;
+namespace oat\taoEventLog\model\DataPolicyOrchestrator;
 
 use oat\generis\model\DependencyInjection\ContainerServiceProviderInterface;
 use oat\oatbox\log\LoggerService;
-use oat\tao\model\Observer\GCP\UserDataRemoval\UserDataRemovalCheckHandler as TaoUserDataRemovalCheckHandler;
-use oat\tao\model\Observer\GCP\UserDataRemoval\UserDataRemovalHandler as TaoUserDataRemovalHandler;
+use oat\tao\model\DataPolicyOrchestrator\Handler\DataRemovalHandlerProxy;
+use oat\tao\model\DataPolicyOrchestrator\Handler\FullDataRemovalHandlerProxy;
+use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\DataRemovalHandler;
+use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\FullDataRemovalHandler;
+use oat\taoEventLog\model\DataPolicyOrchestrator\Repository\EventLogRepository;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
-class UserDataPolicyServiceProvider implements ContainerServiceProviderInterface
+class DataPolicyServiceProvider implements ContainerServiceProviderInterface
 {
     public function __invoke(ContainerConfigurator $configurator): void
     {
         $services = $configurator->services();
 
         $services
-            ->set(UserDataEventLogCleanupService::class, UserDataEventLogCleanupService::class)
+            ->set(EventLogRepository::class, EventLogRepository::class)
             ->args(
                 [
                     service(RdsStorage::SERVICE_ID),
@@ -46,38 +49,36 @@ class UserDataPolicyServiceProvider implements ContainerServiceProviderInterface
             );
 
         $services
-            ->set(UserDataRemovalHandler::class, UserDataRemovalHandler::class)
+            ->set(DataRemovalHandler::class, DataRemovalHandler::class)
             ->args(
                 [
-                    service(UserDataEventLogCleanupService::class),
+                    service(EventLogRepository::class),
                     service(LoggerService::SERVICE_ID),
                 ]
             );
 
         $services
-            ->set(UserDataRemovalCheckHandler::class, UserDataRemovalCheckHandler::class)
+            ->set(FullDataRemovalHandler::class, FullDataRemovalHandler::class)
             ->args(
                 [
-                    service(UserDataEventLogCleanupService::class),
-                    service(LoggerService::SERVICE_ID),
+                    service(EventLogRepository::class),
                 ]
             );
 
         $services
-            ->get(TaoUserDataRemovalHandler::class)
+            ->get(DataRemovalHandlerProxy::class)
             ->call(
-                'addChildHandler',
-                [
-                    service(UserDataRemovalHandler::class),
-                ]
+                'addHandler',
+                ['remove-deactivated-administrative-user-peripheral-data', service(DataRemovalHandler::class)]
             );
 
         $services
-            ->get(TaoUserDataRemovalCheckHandler::class)
+            ->get(FullDataRemovalHandlerProxy::class)
             ->call(
-                'addChildHandler',
+                'addHandler',
                 [
-                    service(UserDataRemovalCheckHandler::class),
+                    'remove-deactivated-administrative-user-peripheral-data',
+                    service(FullDataRemovalHandler::class)
                 ]
             );
     }

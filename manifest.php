@@ -18,7 +18,7 @@
  * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
  */
 
-use oat\taoEventLog\model\UserData\UserDataPolicyServiceProvider;
+use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
 
 return array(
     'name' => 'taoEventLog',
@@ -59,6 +59,6 @@ return array(
         'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
     ),
     'containerServiceProviders' => [
-        UserDataPolicyServiceProvider::class,
+        DataPolicyServiceProvider::class,
     ],
 );

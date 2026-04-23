@@ -20,11 +20,11 @@
 
 declare(strict_types=1);
 
-namespace oat\taoEventLog\model\UserData;
+namespace oat\taoEventLog\model\DataPolicyOrchestrator\Repository;
 
 use oat\taoEventLog\model\eventLog\RdsStorage;
 
-class UserDataEventLogCleanupService
+class EventLogRepository
 {
     public function __construct(private readonly RdsStorage $storage)
     {
@@ -32,19 +32,11 @@ class UserDataEventLogCleanupService
 
     public function deleteByLogin(string $login): int
     {
-        return $this->storage->delete(
-            [
-                [RdsStorage::EVENT_LOG_USER_LOGIN, '=', $login],
-            ]
-        );
+        return $this->storage->delete([[RdsStorage::EVENT_LOG_USER_LOGIN, '=', $login]]);
     }
 
-    public function hasData(string $login): bool
+    public function existsByLogin(string $login): bool
     {
-        return $this->storage->count(
-            [
-                [RdsStorage::EVENT_LOG_USER_LOGIN, '=', $login],
-            ]
-        ) > 0;
+        return (bool) $this->storage->count([[RdsStorage::EVENT_LOG_USER_LOGIN, '=', $login]]);
     }
 }
