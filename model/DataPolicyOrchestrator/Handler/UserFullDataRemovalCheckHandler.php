@@ -24,21 +24,21 @@ namespace oat\taoEventLog\model\DataPolicyOrchestrator\Handler;
 
 use oat\tao\model\DataPolicyOrchestrator\Exception\DataPolicyException;
 use oat\tao\model\DataPolicyOrchestrator\Handler\DataPolicyHandlerInterface;
-use oat\tao\model\DataPolicyOrchestrator\Model\DataPolicyMessage;
-use oat\taoEventLog\model\DataPolicyOrchestrator\Repository\EventLogRepository;
+use oat\tao\model\DataPolicyOrchestrator\Model\DataPolicyMessageInterface;
+use oat\taoEventLog\model\Config\EventLogField;
+use oat\taoEventLog\model\Repository\EventLogRepository;
 
-class FullDataRemovalHandler implements DataPolicyHandlerInterface
+class UserFullDataRemovalCheckHandler implements DataPolicyHandlerInterface
 {
-    public function __construct(
-        private readonly EventLogRepository $eventLogRepository,
-    ) {
+    public function __construct(private readonly EventLogRepository $eventLogRepository)
+    {
     }
 
-    public function handle(DataPolicyMessage $message): void
+    public function handle(DataPolicyMessageInterface $message): void
     {
         $login = $message->dataSubjectRawId;
 
-        if ($this->eventLogRepository->existsByLogin($login)) {
+        if ($this->eventLogRepository->existsBy([EventLogField::UserLogin->value => $login])) {
             throw new DataPolicyException(
                 sprintf('[Data policy - full data removal] Event logs for user "%s" still exists', $login)
             );

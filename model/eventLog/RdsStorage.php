@@ -25,6 +25,7 @@ namespace oat\taoEventLog\model\eventLog;
 use oat\generis\model\user\UserRdf;
 use oat\oatbox\user\User;
 use oat\oatbox\user\UserService;
+use oat\taoEventLog\model\Config\EventLogField;
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
@@ -43,13 +44,13 @@ class RdsStorage extends AbstractRdsStorage
     public const OPTION_INSERT_CHUNK_SIZE = 'insertChunkSize';
 
     public const EVENT_LOG_ID = self::ID;
-    public const EVENT_LOG_EVENT_NAME = 'event_name';
-    public const EVENT_LOG_ACTION = 'action';
-    public const EVENT_LOG_USER_ID = 'user_id';
-    public const EVENT_LOG_USER_LOGIN = 'user_login';
-    public const EVENT_LOG_USER_ROLES = 'user_roles';
-    public const EVENT_LOG_OCCURRED = 'occurred';
-    public const EVENT_LOG_PROPERTIES = 'properties';
+    public const EVENT_LOG_EVENT_NAME = EventLogField::EventName->value;
+    public const EVENT_LOG_ACTION = EventLogField::Action->value;
+    public const EVENT_LOG_USER_ID = EventLogField::UserId->value;
+    public const EVENT_LOG_USER_LOGIN = EventLogField::UserLogin->value;
+    public const EVENT_LOG_USER_ROLES = EventLogField::UserRoles->value;
+    public const EVENT_LOG_OCCURRED = EventLogField::Occurred->value;
+    public const EVENT_LOG_PROPERTIES = EventLogField::Properties->value;
 
     private const DEFAULT_INSERT_CHUNK_SIZE = 100;
 

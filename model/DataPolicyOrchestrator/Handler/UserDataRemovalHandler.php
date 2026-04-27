@@ -23,11 +23,12 @@ declare(strict_types=1);
 namespace oat\taoEventLog\model\DataPolicyOrchestrator\Handler;
 
 use oat\tao\model\DataPolicyOrchestrator\Handler\DataPolicyHandlerInterface;
-use oat\tao\model\DataPolicyOrchestrator\Model\DataPolicyMessage;
-use oat\taoEventLog\model\DataPolicyOrchestrator\Repository\EventLogRepository;
+use oat\tao\model\DataPolicyOrchestrator\Model\DataPolicyMessageInterface;
+use oat\taoEventLog\model\Config\EventLogField;
+use oat\taoEventLog\model\Repository\EventLogRepository;
 use Psr\Log\LoggerInterface;
 
-class DataRemovalHandler implements DataPolicyHandlerInterface
+class UserDataRemovalHandler implements DataPolicyHandlerInterface
 {
     public function __construct(
         private readonly EventLogRepository $eventLogRepository,
@@ -35,11 +36,11 @@ class DataRemovalHandler implements DataPolicyHandlerInterface
     ) {
     }
 
-    public function handle(DataPolicyMessage $message): void
+    public function handle(DataPolicyMessageInterface $message): void
     {
         $login = $message->dataSubjectRawId;
 
-        $removedRows = $this->eventLogRepository->deleteByLogin($login);
+        $removedRows = $this->eventLogRepository->deleteBy([EventLogField::UserLogin->value => $login]);
         $this->logger->info(
             sprintf(
                 'User data removal completed for login "%s", removed rows: %d.',

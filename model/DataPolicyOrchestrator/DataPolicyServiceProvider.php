@@ -25,10 +25,10 @@ namespace oat\taoEventLog\model\DataPolicyOrchestrator;
 use oat\generis\model\DependencyInjection\ContainerServiceProviderInterface;
 use oat\oatbox\log\LoggerService;
 use oat\tao\model\DataPolicyOrchestrator\Handler\DataRemovalHandlerProxy;
-use oat\tao\model\DataPolicyOrchestrator\Handler\FullDataRemovalHandlerProxy;
-use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\DataRemovalHandler;
-use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\FullDataRemovalHandler;
-use oat\taoEventLog\model\DataPolicyOrchestrator\Repository\EventLogRepository;
+use oat\tao\model\DataPolicyOrchestrator\Handler\FullDataRemovalCheckHandlerProxy;
+use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\UserDataRemovalHandler;
+use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\UserFullDataRemovalCheckHandler;
+use oat\taoEventLog\model\Repository\EventLogRepository;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
@@ -49,7 +49,7 @@ class DataPolicyServiceProvider implements ContainerServiceProviderInterface
             );
 
         $services
-            ->set(DataRemovalHandler::class, DataRemovalHandler::class)
+            ->set(UserDataRemovalHandler::class, UserDataRemovalHandler::class)
             ->args(
                 [
                     service(EventLogRepository::class),
@@ -58,7 +58,7 @@ class DataPolicyServiceProvider implements ContainerServiceProviderInterface
             );
 
         $services
-            ->set(FullDataRemovalHandler::class, FullDataRemovalHandler::class)
+            ->set(UserFullDataRemovalCheckHandler::class, UserFullDataRemovalCheckHandler::class)
             ->args(
                 [
                     service(EventLogRepository::class),
@@ -69,16 +69,16 @@ class DataPolicyServiceProvider implements ContainerServiceProviderInterface
             ->get(DataRemovalHandlerProxy::class)
             ->call(
                 'addHandler',
-                ['remove-deactivated-administrative-user-peripheral-data', service(DataRemovalHandler::class)]
+                ['remove-deactivated-administrative-user-peripheral-data', service(UserDataRemovalHandler::class)]
             );
 
         $services
-            ->get(FullDataRemovalHandlerProxy::class)
+            ->get(FullDataRemovalCheckHandlerProxy::class)
             ->call(
                 'addHandler',
                 [
                     'remove-deactivated-administrative-user-peripheral-data',
-                    service(FullDataRemovalHandler::class)
+                    service(UserFullDataRemovalCheckHandler::class)
                 ]
             );
     }
