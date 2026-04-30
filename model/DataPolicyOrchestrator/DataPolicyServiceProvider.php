@@ -29,7 +29,6 @@ use oat\tao\model\DataPolicyOrchestrator\Handler\FullDataRemovalCheckHandlerProx
 use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\UserDataRemovalHandler;
 use oat\taoEventLog\model\DataPolicyOrchestrator\Handler\UserFullDataRemovalCheckHandler;
 use oat\taoEventLog\model\Repository\EventLogRepository;
-use oat\taoEventLog\model\eventLog\RdsStorage;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -39,14 +38,6 @@ class DataPolicyServiceProvider implements ContainerServiceProviderInterface
     public function __invoke(ContainerConfigurator $configurator): void
     {
         $services = $configurator->services();
-
-        $services
-            ->set(EventLogRepository::class, EventLogRepository::class)
-            ->args(
-                [
-                    service(RdsStorage::SERVICE_ID),
-                ]
-            );
 
         $services
             ->set(UserDataRemovalHandler::class, UserDataRemovalHandler::class)

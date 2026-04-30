@@ -19,6 +19,7 @@
  */
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
+use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
 
 return array(
     'name' => 'taoEventLog',
@@ -59,6 +60,7 @@ return array(
         'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
     ),
     'containerServiceProviders' => [
+        EventLogRepositoryServiceProvider::class,
         DataPolicyServiceProvider::class,
     ],
 );
