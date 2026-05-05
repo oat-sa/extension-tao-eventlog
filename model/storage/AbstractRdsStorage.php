@@ -25,7 +25,6 @@ use common_persistence_Manager;
 use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
 use oat\oatbox\service\ConfigurableService;
-use oat\taoEventLog\model\Config\EventLogField;
 use oat\taoEventLog\model\RdsStorageInterface;
 use oat\taoEventLog\model\StorageInterface;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -39,7 +38,9 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
 {
     public const OPTION_PERSISTENCE = 'persistence';
     public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
-    public const ID = EventLogField::Id->value;
+
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Id->value instead. */
+    public const ID = 'id';
 
     /**
      * Persistence for DB

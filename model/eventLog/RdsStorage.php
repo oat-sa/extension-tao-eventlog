@@ -25,7 +25,6 @@ namespace oat\taoEventLog\model\eventLog;
 use oat\generis\model\user\UserRdf;
 use oat\oatbox\user\User;
 use oat\oatbox\user\UserService;
-use oat\taoEventLog\model\Config\EventLogField;
 use oat\taoEventLog\model\LogEntity;
 use Doctrine\DBAL\Schema\SchemaException;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
@@ -43,14 +42,22 @@ class RdsStorage extends AbstractRdsStorage
 
     public const OPTION_INSERT_CHUNK_SIZE = 'insertChunkSize';
 
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Id->value instead. */
     public const EVENT_LOG_ID = self::ID;
-    public const EVENT_LOG_EVENT_NAME = EventLogField::EventName->value;
-    public const EVENT_LOG_ACTION = EventLogField::Action->value;
-    public const EVENT_LOG_USER_ID = EventLogField::UserId->value;
-    public const EVENT_LOG_USER_LOGIN = EventLogField::UserLogin->value;
-    public const EVENT_LOG_USER_ROLES = EventLogField::UserRoles->value;
-    public const EVENT_LOG_OCCURRED = EventLogField::Occurred->value;
-    public const EVENT_LOG_PROPERTIES = EventLogField::Properties->value;
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::EventName->value instead. */
+    public const EVENT_LOG_EVENT_NAME = 'event_name';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Action->value instead. */
+    public const EVENT_LOG_ACTION = 'action';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserId->value instead. */
+    public const EVENT_LOG_USER_ID = 'user_id';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserLogin->value instead. */
+    public const EVENT_LOG_USER_LOGIN = 'user_login';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserRoles->value instead. */
+    public const EVENT_LOG_USER_ROLES = 'user_roles';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Occurred->value instead. */
+    public const EVENT_LOG_OCCURRED = 'occurred';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Properties->value instead. */
+    public const EVENT_LOG_PROPERTIES = 'properties';
 
     private const DEFAULT_INSERT_CHUNK_SIZE = 100;
 
