@@ -42,13 +42,21 @@ class RdsStorage extends AbstractRdsStorage
 
     public const OPTION_INSERT_CHUNK_SIZE = 'insertChunkSize';
 
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Id->value instead. */
     public const EVENT_LOG_ID = self::ID;
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::EventName->value instead. */
     public const EVENT_LOG_EVENT_NAME = 'event_name';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Action->value instead. */
     public const EVENT_LOG_ACTION = 'action';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserId->value instead. */
     public const EVENT_LOG_USER_ID = 'user_id';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserLogin->value instead. */
     public const EVENT_LOG_USER_LOGIN = 'user_login';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::UserRoles->value instead. */
     public const EVENT_LOG_USER_ROLES = 'user_roles';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Occurred->value instead. */
     public const EVENT_LOG_OCCURRED = 'occurred';
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Properties->value instead. */
     public const EVENT_LOG_PROPERTIES = 'properties';
 
     private const DEFAULT_INSERT_CHUNK_SIZE = 100;
