@@ -18,6 +18,9 @@
  * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
  */
 
+use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
+use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
+
 return array(
     'name' => 'taoEventLog',
     'label' => 'Test-taker Event Logging',
@@ -55,5 +58,9 @@ return array(
     ),
     'extra' => array(
         'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
-    )
+    ),
+    'containerServiceProviders' => [
+        EventLogRepositoryServiceProvider::class,
+        DataPolicyServiceProvider::class,
+    ],
 );

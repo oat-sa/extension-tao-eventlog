@@ -38,6 +38,8 @@ abstract class AbstractRdsStorage extends ConfigurableService implements Storage
 {
     public const OPTION_PERSISTENCE = 'persistence';
     public const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+
+    /** @deprecated Use \oat\taoEventLog\model\Config\EventLogField::Id->value instead. */
     public const ID = 'id';
 
     /**
