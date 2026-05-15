@@ -20,6 +20,7 @@
 
 namespace oat\taoEventLog\test\model\userLastActivityLog\rds;
 
+use oat\generis\model\GenerisRdf;
 use oat\generis\test\SqlMockTrait;
 use oat\tao\test\TaoPhpUnitTestRunner;
 use oat\taoEventLog\model\userLastActivityLog\rds\UserLastActivityLogStorage as Storage;
@@ -39,9 +40,19 @@ class UserActivityLogStorageTest extends TestCase
 
     public function testLog()
     {
-        $user = new TestUser([
-            'admin', 'proctor',
-        ], 'http://sample/first.rdf#i00000000000000001_test_record');
+        $leafRoles = ['proctor', 'admin', 'admin'];
+        $expandedRoles = [
+            'admin',
+            'proctor',
+            'http://www.tao.lu/Ontologies/generis.rdf#BaseRole',
+            'http://www.tao.lu/Ontologies/TAO.rdf#TaoManagerRole',
+            'http://www.tao.lu/Ontologies/TAOItem.rdf#ItemAuthor',
+        ];
+        $user = new TestUser(
+            $leafRoles,
+            $expandedRoles,
+            'http://sample/first.rdf#i00000000000000001_test_record'
+        );
         $details = ['testKey' => 'testVal'];
         $service = $this->getService();
         $service->log($user, 'testAction', $details);
@@ -51,7 +62,7 @@ class UserActivityLogStorageTest extends TestCase
         );
         $data = $stmt->fetchAssociative();
         $this->assertEquals($user->getIdentifier(), $data[Storage::COLUMN_USER_ID]);
-        $this->assertEquals(',' . implode(',', $user->getRoles()) . ',', $data[Storage::COLUMN_USER_ROLES]);
+        $this->assertEquals(',admin,proctor,', $data[Storage::COLUMN_USER_ROLES]);
         $this->assertEquals('testAction', $data[Storage::COLUMN_ACTION]);
         $this->assertEquals(json_encode($details), $data[Storage::COLUMN_DETAILS]);
 
@@ -64,6 +75,43 @@ class UserActivityLogStorageTest extends TestCase
         );
         $data = $stmt->fetchAllAssociative();
         $this->assertEquals(1, count($data));
+    }
+
+    public function testLogPersistsRowForUserIdContainingQuote()
+    {
+        $userId = "http://sample/first.rdf#O'Brien_test_record";
+        $user = new TestUser(['admin'], ['admin'], $userId);
+
+        $service = $this->getService();
+        $service->log($user, 'testAction', ['k' => 'v']);
+
+        $count = $service->count([
+            [Storage::COLUMN_USER_ID, '=', $userId],
+        ]);
+        $this->assertEquals(1, $count);
+    }
+
+    public function testLogSwallowsPersistenceFailure()
+    {
+        $throwingPersistence = new ThrowingPersistence();
+        $persistenceManager = new ThrowingPersistenceManager($throwingPersistence);
+
+        $config = new \common_persistence_KeyValuePersistence(new \common_persistence_InMemoryKvDriver(), []);
+        $config->set(\common_persistence_Manager::SERVICE_ID, $persistenceManager);
+        $serviceManager = new ServiceManager($config);
+
+        $service = new Storage([Storage::OPTION_PERSISTENCE => 'throwing']);
+        $service->setServiceManager($serviceManager);
+        $service->setLogger(new \Psr\Log\NullLogger());
+
+        $user = new TestUser(
+            ['admin'],
+            ['admin'],
+            'http://sample/first.rdf#i00000000000000099_test_record'
+        );
+
+        $service->log($user, 'testAction', ['k' => 'v']);
+        $this->addToAssertionCount(1);
     }
 
     public function testFind()
@@ -230,6 +278,7 @@ class UserActivityLogStorageTest extends TestCase
             $config->set(\common_persistence_Manager::SERVICE_ID, $persistenceManager);
             $serviceManager = new ServiceManager($config);
             $this->service->setServiceManager($serviceManager);
+            $this->service->setLogger(new \Psr\Log\NullLogger());
             $this->loadFixtures($this->persistence);
         }
         return $this->service;
@@ -238,13 +287,14 @@ class UserActivityLogStorageTest extends TestCase
 
 class TestUser extends \common_test_TestUser
 {
-    protected $roles;
+    protected $expandedRoles;
     protected $id;
 
-    public function __construct(array $roles, $id)
+    public function __construct(array $leafRoles, array $expandedRoles, $id)
     {
-        $this->roles = $roles;
+        $this->expandedRoles = $expandedRoles;
         $this->id = $id;
+        $this->setPropertyValues(GenerisRdf::PROPERTY_USER_ROLES, $leafRoles);
     }
 
     public function getIdentifier()
@@ -254,6 +304,34 @@ class TestUser extends \common_test_TestUser
 
     public function getRoles()
     {
-        return $this->roles;
+        return $this->expandedRoles;
+    }
+}
+
+class ThrowingPersistence
+{
+    public function exec($sql, $params = [])
+    {
+        throw new \RuntimeException('delete failed');
+    }
+
+    public function insert($table, $data)
+    {
+        throw new \RuntimeException('insert failed');
+    }
+}
+
+class ThrowingPersistenceManager
+{
+    private $persistence;
+
+    public function __construct($persistence)
+    {
+        $this->persistence = $persistence;
+    }
+
+    public function getPersistenceById($id)
+    {
+        return $this->persistence;
     }
 }
