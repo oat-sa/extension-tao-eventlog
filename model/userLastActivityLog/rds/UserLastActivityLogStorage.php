@@ -25,6 +25,8 @@ use common_persistence_Persistence;
 use common_persistence_SqlPersistence;
 use common_report_Report;
 use common_session_SessionManager;
+use oat\generis\model\GenerisRdf;
+use oat\oatbox\log\LoggerAwareTrait;
 use oat\oatbox\user\User;
 use oat\taoEventLog\model\RdsLogIterator;
 use oat\taoEventLog\model\userLastActivityLog\UserLastActivityLog;
@@ -41,6 +43,8 @@ use GuzzleHttp\Psr7\ServerRequest;
  */
 class UserLastActivityLogStorage extends ConfigurableService implements UserLastActivityLog
 {
+    use LoggerAwareTrait;
+
     public const OPTION_PERSISTENCE = 'persistence_id';
     public const TABLE_NAME = 'user_last_activity_log';
 
@@ -65,17 +69,30 @@ class UserLastActivityLogStorage extends ConfigurableService implements UserLast
             $userId = get_class($user);
         }
 
+        $roles = array_unique($user->getPropertyValues(GenerisRdf::PROPERTY_USER_ROLES));
+        sort($roles);
+
         $data = [
             self::USER_ID => $userId,
-            self::USER_ROLES => ',' . implode(',', $user->getRoles()) . ',',
+            self::USER_ROLES => ',' . implode(',', $roles) . ',',
             self::COLUMN_ACTION => strval($action),
             self::COLUMN_EVENT_TIME => microtime(true),
             self::COLUMN_DETAILS => json_encode($details),
         ];
-        $this->getPersistence()->exec(
-            'DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = \'' . $userId . '\''
-        );
-        $this->getPersistence()->insert(self::TABLE_NAME, $data);
+
+        try {
+            $this->getPersistence()->exec(
+                'DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . self::USER_ID . ' = ?',
+                [$userId]
+            );
+            $this->getPersistence()->insert(self::TABLE_NAME, $data);
+        } catch (\Throwable $e) {
+            $this->logWarning(sprintf(
+                '[taoEventLog] Failed to log user activity for %s: %s',
+                $userId,
+                $e->getMessage()
+            ));
+        }
     }
 
     /**
