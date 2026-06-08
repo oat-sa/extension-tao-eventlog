@@ -1,5 +1,5 @@
 msgid ""
-msgstr ""
+msgstr " {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 "Project-Id-Version: TAO 3.4.0-sprint117\n"
 "PO-Revision-Date: 2020-09-22T16:02:16\n"
 "Last-Translator: TAO Translation Team <translation@tao.lu>\n"
@@ -14,78 +14,78 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 
 msgid "%s and %s roles"
-msgstr "%s と %s のロール"
+msgstr "%s と %s のロール {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "%s roles"
-msgstr "%s ロール"
+msgstr "%s ロール {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Action"
-msgstr "操作"
+msgstr "操作 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "CSV Options"
-msgstr "CSVオプション"
+msgstr "CSVオプション {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Event"
-msgstr "イベント"
+msgstr "イベント {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 #, tao-public
 msgid "Event Log"
-msgstr "イベントログ"
+msgstr "イベントログ {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Event Name"
-msgstr "イベント名"
+msgstr "イベント名 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Export"
-msgstr "エクスポート"
+msgstr "エクスポート {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Export log entries"
-msgstr "ログエントリーのエクスポート"
+msgstr "ログエントリーのエクスポート {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Export Log Entries"
-msgstr "ログエントリーのエクスポート"
+msgstr "ログエントリーのエクスポート {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Field delimiter"
-msgstr "フィールド区切記号"
+msgstr "フィールド区切記号 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Field encloser"
-msgstr "フィールド囲み記号"
+msgstr "フィールド囲み記号 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "First row column names"
-msgstr "先頭行は項目名"
+msgstr "先頭行は項目名 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "ID"
-msgstr "ID"
+msgstr "ID {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Log watcher"
-msgstr "ログウォッチャー"
+msgstr "ログウォッチャー {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Multiple values delimiter"
-msgstr "複数の値の区切り文字"
+msgstr "複数の値の区切り文字 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Occurred"
-msgstr "発生"
+msgstr "発生 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Properties"
-msgstr "プロパティ"
+msgstr "プロパティ {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Registered and created EventLog Rds Storage"
-msgstr "EventLog Rds Storage　の登録・作成"
+msgstr "EventLog Rds Storage　の登録・作成 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Registered EventLog Logger Service"
-msgstr "EventLog Logger Service　の登録"
+msgstr "EventLog Logger Service　の登録 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "Request log storage successfully created"
-msgstr "Request log storage　が作成されました"
+msgstr "Request log storage　が作成されました {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "User activity log storage successfully created"
-msgstr "User activity log storage が作成されました"
+msgstr "User activity log storage が作成されました {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "User activity log successfully registered."
-msgstr "ユーザ・アクティビティ・ログが正常に登録されました。"
+msgstr "ユーザ・アクティビティ・ログが正常に登録されました。 {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "User ID"
-msgstr "ユーザID"
+msgstr "ユーザID {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
 msgid "User Roles"
-msgstr "ユーザロール"
+msgstr "ユーザロール {ruby}{rb}6{/rb}{rt}7{/rt}{/ruby}"
 
