@@ -41,6 +41,7 @@ use oat\tao\model\event\UserUpdatedEvent;
 use oat\tao\model\Translation\Event\TranslationActionEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\eventLog\RdsStorage;
+use oat\taoItems\model\event\ItemContentViewEvent;
 use oat\generis\model\data\event\ResourceDeleted;
 use oat\taoQtiItem\model\event\QtiItemExportEvent;
 use oat\taoQtiItem\model\event\QtiItemImportEvent;
@@ -193,6 +194,10 @@ class RegisterLoggerService extends InstallAction
             );
             $this->registerEvent(
                 'oat\\taoItems\\model\\event\\ItemDuplicatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                ItemContentViewEvent::class,
                 [LoggerService::class, 'logEvent']
             );
         }
