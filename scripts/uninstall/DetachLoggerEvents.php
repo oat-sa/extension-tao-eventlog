@@ -43,6 +43,7 @@ use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
 use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
 use oat\taoItems\model\event\ItemContentViewEvent;
+use oat\taoTests\models\event\TestContentViewEvent;
 
 if (!ServiceManager::getServiceManager()->has(EventManager::SERVICE_ID)) {
     return;
@@ -107,6 +108,10 @@ if ($extensionManager->isEnabled('taoTests')) {
     );
     $eventManager->detach(
         'oat\\taoTests\\models\\event\\TestDuplicatedEvent',
+        [LoggerService::class, 'logEvent']
+    );
+    $eventManager->detach(
+        TestContentViewEvent::class,
         [LoggerService::class, 'logEvent']
     );
 }

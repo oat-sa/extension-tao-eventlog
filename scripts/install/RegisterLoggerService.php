@@ -50,6 +50,7 @@ use oat\taoQtiItem\model\event\QtiItemMetadataExportEvent;
 use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
 use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
+use oat\taoTests\models\event\TestContentViewEvent;
 
 /**
  * Class RegisterLoggerService
@@ -137,6 +138,10 @@ class RegisterLoggerService extends InstallAction
             );
             $this->registerEvent(
                 'oat\\taoTests\\models\\event\\TestDuplicatedEvent',
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                TestContentViewEvent::class,
                 [LoggerService::class, 'logEvent']
             );
         }
