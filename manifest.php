@@ -19,6 +19,7 @@
  */
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
+use oat\taoEventLog\model\frontendAction\FrontendActionEventLoggerServiceProvider;
 use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
 
 return array(
@@ -30,6 +31,9 @@ return array(
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => array(
         array('grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', array('ext' => 'taoEventLog')),
+        array('grant', 'http://www.tao.lu/Ontologies/TAOItem.rdf#ItemAuthor', ['ext' => 'taoEventLog', 'mod' => 'TaoEventLog', 'act' => 'logFrontendAction']),
+        array('grant', 'http://www.tao.lu/Ontologies/TAOItem.rdf#ItemPreviewerRole', ['ext' => 'taoEventLog', 'mod' => 'TaoEventLog', 'act' => 'logFrontendAction']),
+        array('grant', 'http://www.tao.lu/Ontologies/TAOItem.rdf#TestAuthor', ['ext' => 'taoEventLog', 'mod' => 'TaoEventLog', 'act' => 'logFrontendAction']),
     ),
     'update' => 'oat\\taoEventLog\\scripts\\update\\Updater',
     'install' => [
@@ -61,6 +65,7 @@ return array(
     ),
     'containerServiceProviders' => [
         EventLogRepositoryServiceProvider::class,
+        FrontendActionEventLoggerServiceProvider::class,
         DataPolicyServiceProvider::class,
     ],
 );

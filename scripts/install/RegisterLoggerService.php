@@ -42,6 +42,7 @@ use oat\tao\model\Translation\Event\TranslationActionEvent;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\taoItems\model\event\ItemContentViewEvent;
+use oat\taoItems\model\event\ItemPrintAttemptEvent;
 use oat\generis\model\data\event\ResourceDeleted;
 use oat\taoQtiItem\model\event\QtiItemExportEvent;
 use oat\taoQtiItem\model\event\QtiItemImportEvent;
@@ -203,6 +204,10 @@ class RegisterLoggerService extends InstallAction
             );
             $this->registerEvent(
                 ItemContentViewEvent::class,
+                [LoggerService::class, 'logEvent']
+            );
+            $this->registerEvent(
+                ItemPrintAttemptEvent::class,
                 [LoggerService::class, 'logEvent']
             );
         }

@@ -22,9 +22,13 @@
 
 namespace oat\taoEventLog\controller;
 
+use core_kernel_classes_Resource;
+use Exception;
+use oat\tao\model\http\HttpJsonResponseTrait;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvStdOutExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryRepository;
+use oat\taoEventLog\model\frontendAction\FrontendActionEventLogger;
 use tao_actions_CommonModule;
 
 /**
@@ -37,6 +41,8 @@ use tao_actions_CommonModule;
  */
 class TaoEventLog extends tao_actions_CommonModule
 {
+    use HttpJsonResponseTrait;
+
     /**
      * A possible entry point to tao
      */
@@ -87,6 +93,26 @@ class TaoEventLog extends tao_actions_CommonModule
         $csvExporter->export();
     }
 
+    public function logFrontendAction(): void
+    {
+        try {
+            $requestParams = $this->getPsrRequest()->getQueryParams();
+            $action = (string) ($requestParams['action'] ?? '');
+            $resourceUri = (string) ($requestParams['resourceUri'] ?? '');
+
+            if ($action !== '' && $resourceUri !== '') {
+                $this->getFrontendActionEventLogger()->logAction($action, new core_kernel_classes_Resource($resourceUri));
+            }
+
+            $this->setSuccessJsonResponse(['success' => true]);
+        } catch (Exception $exception) {
+            $this->setErrorJsonResponse(
+                $exception->getMessage(),
+                $exception->getCode()
+            );
+        }
+    }
+
     /**
      * @param string $name
      * @param mixed  $defaultValue
@@ -98,5 +124,10 @@ class TaoEventLog extends tao_actions_CommonModule
         return $this->hasRequestParameter($name)
             ? html_entity_decode($this->getRequestParameter($name))
             : $defaultValue;
+    }
+
+    private function getFrontendActionEventLogger(): FrontendActionEventLogger
+    {
+        return $this->getPsrContainer()->get(FrontendActionEventLogger::class);
     }
 }
