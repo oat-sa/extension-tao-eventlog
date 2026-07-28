@@ -101,15 +101,15 @@ class TaoEventLog extends tao_actions_CommonModule
             $resourceUri = (string) ($requestParams['resourceUri'] ?? '');
 
             if ($action !== '' && $resourceUri !== '') {
-                $this->getFrontendActionEventLogger()->logAction($action, new core_kernel_classes_Resource($resourceUri));
+                $this->getFrontendActionEventLogger()->logAction(
+                    $action,
+                    new core_kernel_classes_Resource($resourceUri)
+                );
             }
 
             $this->setSuccessJsonResponse(['success' => true]);
         } catch (Exception $exception) {
-            $this->setErrorJsonResponse(
-                $exception->getMessage(),
-                $exception->getCode()
-            );
+            $this->setErrorJsonResponse($exception->getMessage(), $exception->getCode());
         }
     }
 
