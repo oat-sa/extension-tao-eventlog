@@ -20,7 +20,7 @@
 
 use oat\tao\model\accessControl\func\AccessRule;
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
-use oat\taoEventLog\model\frontendAction\FrontendActionEventLoggerServiceProvider;
+use oat\taoEventLog\model\FrontendAction\FrontendActionServiceProvider;
 use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
 use oat\taoEventLog\scripts\install\RegisterLoggerService;
 use oat\taoEventLog\scripts\install\RegisterRdsStorage;
@@ -82,7 +82,7 @@ return [
     ],
     'containerServiceProviders' => [
         EventLogRepositoryServiceProvider::class,
-        FrontendActionEventLoggerServiceProvider::class,
+        FrontendActionServiceProvider::class,
         DataPolicyServiceProvider::class,
     ],
 ];

@@ -28,7 +28,7 @@ use oat\tao\model\http\HttpJsonResponseTrait;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvStdOutExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryRepository;
-use oat\taoEventLog\model\frontendAction\FrontendActionEventLogger;
+use oat\taoEventLog\model\FrontendAction\Service\FrontendActionEventLogger;
 use tao_actions_CommonModule;
 
 /**
@@ -96,7 +96,19 @@ class TaoEventLog extends tao_actions_CommonModule
     public function logFrontendAction(): void
     {
         try {
-            $requestParams = $this->getPsrRequest()->getQueryParams();
+            $request = $this->getPsrRequest();
+            if ($request->getMethod() !== 'POST') {
+                $this->setErrorJsonResponse('Method not allowed', 0, [], 405);
+                return;
+            }
+
+            $this->validateCsrf();
+
+            $requestParams = $request->getParsedBody();
+            if (!is_array($requestParams)) {
+                $requestParams = [];
+            }
+
             $action = (string) ($requestParams['action'] ?? '');
             $resourceUri = (string) ($requestParams['resourceUri'] ?? '');
 

@@ -15,31 +15,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2026 (original work) Open Assessment Technologies SA.
+ * Copyright (c) 2026 (original work) Open Assessment Technologies SA
  */
 
 declare(strict_types=1);
 
-namespace oat\taoEventLog\model\frontendAction;
+namespace oat\taoEventLog\model\FrontendAction\Service;
 
-use oat\generis\model\DependencyInjection\ContainerServiceProviderInterface;
+use core_kernel_classes_Resource;
+use oat\tao\model\TaoOntology;
 use oat\taoEventLog\model\eventLog\LoggerService;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use oat\taoItems\model\event\ItemPrintAttemptEvent;
 
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
-
-class FrontendActionEventLoggerServiceProvider implements ContainerServiceProviderInterface
+class FrontendActionEventLogger
 {
-    public function __invoke(ContainerConfigurator $configurator): void
+    public function __construct(private readonly LoggerService $loggerService)
     {
-        $services = $configurator->services();
+    }
 
-        $services
-            ->set(FrontendActionEventLogger::class, FrontendActionEventLogger::class)
-            ->args(
-                [
-                    service(LoggerService::SERVICE_ID),
-                ]
-            );
+    public function logAction(string $action, core_kernel_classes_Resource $resource): void
+    {
+        if ($action !== 'itemPrintAttempt') {
+            return;
+        }
+
+        if ($resource->isInstanceOf($resource->getClass(TaoOntology::CLASS_URI_ITEM))) {
+            $this->loggerService->log(new ItemPrintAttemptEvent($resource->getUri()));
+        }
     }
 }
