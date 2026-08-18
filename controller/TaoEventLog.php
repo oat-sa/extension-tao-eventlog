@@ -15,13 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016-2026 (original work) Open Assessment Technologies SA;
  *
  *
  */
 
 namespace oat\taoEventLog\controller;
 
+use common_session_SessionManager;
+use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvStdOutExporter;
 use oat\taoEventLog\model\export\implementation\LogEntryRepository;
@@ -42,6 +44,7 @@ class TaoEventLog extends tao_actions_CommonModule
      */
     public function index()
     {
+        $this->setData('isFromPortal', $this->isFromPortal());
         $this->setView('TaoEventLog/log.tpl');
     }
 
@@ -98,5 +101,18 @@ class TaoEventLog extends tao_actions_CommonModule
         return $this->hasRequestParameter($name)
             ? html_entity_decode($this->getRequestParameter($name))
             : $defaultValue;
+    }
+
+    private function isFromPortal(): bool
+    {
+        return $this->getSessionSourceMatcher()->matchesSource(
+            SessionSourceMatcher::SOURCE_PORTAL,
+            common_session_SessionManager::getSession()
+        );
+    }
+
+    private function getSessionSourceMatcher(): SessionSourceMatcher
+    {
+        return $this->getPsrContainer()->get(SessionSourceMatcher::class);
     }
 }

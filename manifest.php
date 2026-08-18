@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016-2026 (original work) Open Assessment Technologies SA;
  */
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
@@ -30,6 +30,8 @@ return array(
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => array(
         array('grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', array('ext' => 'taoEventLog')),
+        array('grant', 'http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#Developer', array('ext' => 'taoEventLog')),
+        array('grant', 'http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator', array('ext' => 'taoEventLog')),
     ),
     'update' => 'oat\\taoEventLog\\scripts\\update\\Updater',
     'install' => [

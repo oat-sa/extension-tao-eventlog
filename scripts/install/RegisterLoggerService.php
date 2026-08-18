@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016  (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016-2026  (original work) Open Assessment Technologies SA;
  *
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
@@ -52,6 +52,7 @@ use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
 use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
 use oat\taoTests\models\event\TestContentViewEvent;
+use oat\taoLti\models\classes\event\ContentBankAccessedFromPortalEvent;
 
 /**
  * Class RegisterLoggerService
@@ -222,6 +223,10 @@ class RegisterLoggerService extends InstallAction
             $this->registerEvent(QtiTestImportEvent::class, [LoggerService::class, 'logEvent']);
             $this->registerEvent(QtiTestMetadataExportEvent::class, [LoggerService::class, 'logEvent']);
             $this->registerEvent(QtiTestExportEvent::class, [LoggerService::class, 'logEvent']);
+        }
+
+        if ($extensionManager->isEnabled('taoLti')) {
+            $this->registerEvent(ContentBankAccessedFromPortalEvent::class, [LoggerService::class, 'logEvent']);
         }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));
