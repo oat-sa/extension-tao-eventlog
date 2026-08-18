@@ -25,6 +25,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
+use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
 
@@ -98,7 +99,11 @@ class LogEntryRepository implements LogEntryRepositoryInterface
                 $fetched += $count;
                 $lastId = $logs[$count - 1]['id'];
 
+                $isPortalSession = $this->isPortalSession();
                 foreach ($logs as $log) {
+                    if ($isPortalSession) {
+                        unset($log['user_roles']);
+                    }
                     yield $log;
                 }
             }
@@ -140,5 +145,16 @@ class LogEntryRepository implements LogEntryRepositoryInterface
         }
 
         return $result;
+    }
+
+    private function isPortalSession(): bool
+    {
+        /** @var SessionSourceMatcher $sessionSourceMatcher */
+        $sessionSourceMatcher = ServiceManager::getServiceManager()->get(SessionSourceMatcher::class);
+
+        return $sessionSourceMatcher->matchesSource(
+            SessionSourceMatcher::SOURCE_PORTAL,
+            common_session_SessionManager::getSession()
+        );
     }
 }

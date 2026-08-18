@@ -21,10 +21,12 @@
 
 namespace oat\taoEventLog\model\datatable;
 
+use common_session_SessionManager;
 use DateTimeInterface;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\tao\model\datatable\implementation\DatatableRequest;
 use oat\tao\model\datatable\DatatablePayload;
+use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\oatbox\service\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorAwareTrait;
@@ -84,8 +86,10 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
      */
     protected function doPostProcessing(array $results)
     {
+        $isPortalSession = $this->isPortalSession();
+
         // prettify data
-        array_walk($results['data'], function (&$row) {
+        array_walk($results['data'], function (&$row) use ($isPortalSession) {
 
             $date = new DateTime($row['occurred'], new DateTimeZone('UTC'));
             $row['occurred'] = \tao_helpers_Date::displayeDate($date->getTimestamp());
@@ -97,6 +101,11 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
             $eventNameChunks = explode('\\', $row['event_name']);
             $row['event_name'] = array_pop($eventNameChunks);
             $row['user_id'] = \tao_helpers_Uri::getUniqueId($row['user_id']) ?: $row['user_id'];
+
+            if ($isPortalSession) {
+                unset($row['user_roles'], $row['raw']['user_roles']);
+                return;
+            }
 
             $roles = explode(',', $row['user_roles']);
             foreach ($roles as &$role) {
@@ -112,6 +121,17 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
             'total' => ceil($results['records'] / $this->request->getRows()),
         ];
         return $payload;
+    }
+
+    private function isPortalSession(): bool
+    {
+        /** @var SessionSourceMatcher $sessionSourceMatcher */
+        $sessionSourceMatcher = $this->getServiceLocator()->get(SessionSourceMatcher::class);
+
+        return $sessionSourceMatcher->matchesSource(
+            SessionSourceMatcher::SOURCE_PORTAL,
+            common_session_SessionManager::getSession()
+        );
     }
 
     /**

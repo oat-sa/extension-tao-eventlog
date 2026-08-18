@@ -20,49 +20,62 @@
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
 use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
+use oat\taoEventLog\scripts\install\RegisterLoggerService;
+use oat\taoEventLog\scripts\install\RegisterRdsStorage;
+use oat\taoEventLog\scripts\install\RegisterRequestLog;
+use oat\taoEventLog\scripts\install\RegisterUserLastActivityLog;
+use oat\taoEventLog\scripts\update\Updater;
 
-return array(
+return [
     'name' => 'taoEventLog',
     'label' => 'Test-taker Event Logging',
     'description' => 'The event logging system that catches and logs all actions of test-takers',
     'license' => 'GPL-2.0',
     'author' => 'Open Assessment Technologies SA',
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
-    'acl' => array(
-        array('grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', array('ext' => 'taoEventLog')),
-        array('grant', 'http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#Developer', array('ext' => 'taoEventLog')),
-        array('grant', 'http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator', array('ext' => 'taoEventLog')),
-    ),
-    'update' => 'oat\\taoEventLog\\scripts\\update\\Updater',
+    'acl' => [
+        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', ['ext' => 'taoEventLog']],
+        [
+            'grant',
+            'http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator',
+            ['ext' => 'taoEventLog']
+        ],
+        [
+            'grant',
+            'http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#Developer',
+            ['ext' => 'taoEventLog']
+        ],
+    ],
+    'update' => Updater::class,
     'install' => [
         'php' => [
-            \oat\taoEventLog\scripts\install\RegisterRdsStorage::class,
-            \oat\taoEventLog\scripts\install\RegisterLoggerService::class,
-            \oat\taoEventLog\scripts\install\RegisterRequestLog::class,
-            \oat\taoEventLog\scripts\install\RegisterUserLastActivityLog::class,
-        ]
+            RegisterRdsStorage::class,
+            RegisterLoggerService::class,
+            RegisterRequestLog::class,
+            RegisterUserLastActivityLog::class,
+        ],
     ],
     'uninstall' => [
         'php' => [
             join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'DetachLoggerEvents.php']),
-            join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'UnregisterRdsStorage.php'])
-        ]
+            join(DIRECTORY_SEPARATOR, [__DIR__, 'scripts', 'uninstall', 'UnregisterRdsStorage.php']),
+        ],
     ],
-    'routes' => array(
-        '/taoEventLog' => 'oat\\taoEventLog\\controller'
-    ),
-    'constants' => array(
+    'routes' => [
+        '/taoEventLog' => 'oat\\taoEventLog\\controller',
+    ],
+    'constants' => [
         # views directory
-        "DIR_VIEWS" => dirname(__FILE__) . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR,
+        'DIR_VIEWS' => __DIR__ . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR,
 
         #BASE URL (usually the domain root)
         'BASE_URL' => ROOT_URL . 'taoEventLog/',
-    ),
-    'extra' => array(
-        'structures' => dirname(__FILE__) . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
-    ),
+    ],
+    'extra' => [
+        'structures' => __DIR__ . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'structures.xml',
+    ],
     'containerServiceProviders' => [
         EventLogRepositoryServiceProvider::class,
         DataPolicyServiceProvider::class,
     ],
-);
+];
