@@ -42,7 +42,6 @@ use oat\taoQtiItem\model\event\QtiItemMetadataExportEvent;
 use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
 use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
-use oat\taoLti\models\classes\event\ContentBankAccessedFromPortalEvent;
 use oat\taoItems\model\event\ItemContentViewEvent;
 use oat\taoItems\model\event\ItemPrintAttemptEvent;
 use oat\taoTests\models\event\TestContentViewEvent;
@@ -189,10 +188,6 @@ if ($extensionManager->isEnabled('taoQtiTest')) {
     $eventManager->detach(QtiTestImportEvent::class, [LoggerService::class, 'logEvent']);
     $eventManager->detach(QtiTestMetadataExportEvent::class, [LoggerService::class, 'logEvent']);
     $eventManager->detach(QtiTestExportEvent::class, [LoggerService::class, 'logEvent']);
-}
-
-if ($extensionManager->isEnabled('taoLti')) {
-    $eventManager->detach(ContentBankAccessedFromPortalEvent::class, [LoggerService::class, 'logEvent']);
 }
 
 ServiceManager::getServiceManager()->register(EventManager::SERVICE_ID, $eventManager);

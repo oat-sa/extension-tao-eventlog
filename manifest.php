@@ -35,16 +35,6 @@ return [
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => [
         ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', ['ext' => 'taoEventLog']],
-        [
-            'grant',
-            'http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator',
-            ['ext' => 'taoEventLog']
-        ],
-        [
-            'grant',
-            'http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#Developer',
-            ['ext' => 'taoEventLog']
-        ],
     ],
     'update' => Updater::class,
     'install' => [

@@ -23,6 +23,7 @@ namespace oat\taoEventLog\model\datatable;
 
 use common_session_SessionManager;
 use DateTimeInterface;
+use oat\tao\model\session\source\SessionSource;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\tao\model\datatable\implementation\DatatableRequest;
 use oat\tao\model\datatable\DatatablePayload;
@@ -129,7 +130,7 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
         $sessionSourceMatcher = $this->getServiceLocator()->getContainer()->get(SessionSourceMatcher::class);
 
         return $sessionSourceMatcher->matchesSource(
-            SessionSourceMatcher::SOURCE_PORTAL,
+            SessionSource::EXTERNAL_PORTAL->value,
             common_session_SessionManager::getSession()
         );
     }

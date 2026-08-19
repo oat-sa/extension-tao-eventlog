@@ -21,6 +21,7 @@
 namespace oat\taoEventLog\controller;
 
 use common_session_SessionManager;
+use oat\tao\model\session\source\SessionSource;
 use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\taoEventLog\model\datatable\EventLogDatatable;
 use oat\taoEventLog\model\export\implementation\LogEntryCsvStdOutExporter;
@@ -104,7 +105,7 @@ class TaoEventLog extends tao_actions_CommonModule
     private function isFromPortal(): bool
     {
         return $this->getSessionSourceMatcher()->matchesSource(
-            SessionSourceMatcher::SOURCE_PORTAL,
+            SessionSource::EXTERNAL_PORTAL->value,
             common_session_SessionManager::getSession()
         );
     }

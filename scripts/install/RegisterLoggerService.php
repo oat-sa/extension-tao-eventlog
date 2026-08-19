@@ -52,7 +52,6 @@ use oat\taoQtiTest\models\event\QtiTestExportEvent;
 use oat\taoQtiTest\models\event\QtiTestImportEvent;
 use oat\taoQtiTest\models\event\QtiTestMetadataExportEvent;
 use oat\taoTests\models\event\TestContentViewEvent;
-use oat\taoLti\models\classes\event\ContentBankAccessedFromPortalEvent;
 
 /**
  * Class RegisterLoggerService
@@ -223,10 +222,6 @@ class RegisterLoggerService extends InstallAction
             $this->registerEvent(QtiTestImportEvent::class, [LoggerService::class, 'logEvent']);
             $this->registerEvent(QtiTestMetadataExportEvent::class, [LoggerService::class, 'logEvent']);
             $this->registerEvent(QtiTestExportEvent::class, [LoggerService::class, 'logEvent']);
-        }
-
-        if ($extensionManager->isEnabled('taoLti')) {
-            $this->registerEvent(ContentBankAccessedFromPortalEvent::class, [LoggerService::class, 'logEvent']);
         }
 
         return new common_report_Report(common_report_Report::TYPE_SUCCESS, __('Registered EventLog Logger Service'));

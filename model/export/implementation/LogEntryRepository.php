@@ -25,6 +25,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
+use oat\tao\model\session\source\SessionSource;
 use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
@@ -153,7 +154,7 @@ class LogEntryRepository implements LogEntryRepositoryInterface
         $sessionSourceMatcher = ServiceManager::getServiceManager()->getContainer()->get(SessionSourceMatcher::class);
 
         return $sessionSourceMatcher->matchesSource(
-            SessionSourceMatcher::SOURCE_PORTAL,
+            SessionSource::EXTERNAL_PORTAL->value,
             common_session_SessionManager::getSession()
         );
     }
