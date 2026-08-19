@@ -150,7 +150,7 @@ class LogEntryRepository implements LogEntryRepositoryInterface
     private function isPortalSession(): bool
     {
         /** @var SessionSourceMatcher $sessionSourceMatcher */
-        $sessionSourceMatcher = ServiceManager::getServiceManager()->get(SessionSourceMatcher::class);
+        $sessionSourceMatcher = ServiceManager::getServiceManager()->getContainer()->get(SessionSourceMatcher::class);
 
         return $sessionSourceMatcher->matchesSource(
             SessionSourceMatcher::SOURCE_PORTAL,

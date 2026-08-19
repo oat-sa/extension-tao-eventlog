@@ -126,7 +126,7 @@ class EventLogDatatable implements DatatablePayload, ServiceLocatorAwareInterfac
     private function isPortalSession(): bool
     {
         /** @var SessionSourceMatcher $sessionSourceMatcher */
-        $sessionSourceMatcher = $this->getServiceLocator()->get(SessionSourceMatcher::class);
+        $sessionSourceMatcher = $this->getServiceLocator()->getContainer()->get(SessionSourceMatcher::class);
 
         return $sessionSourceMatcher->matchesSource(
             SessionSourceMatcher::SOURCE_PORTAL,
