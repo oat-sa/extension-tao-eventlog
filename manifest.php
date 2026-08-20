@@ -20,6 +20,7 @@
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
 use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
+use oat\tao\model\accessControl\func\AccessRule;
 use oat\taoEventLog\scripts\install\RegisterLoggerService;
 use oat\taoEventLog\scripts\install\RegisterRdsStorage;
 use oat\taoEventLog\scripts\install\RegisterRequestLog;
@@ -34,7 +35,7 @@ return [
     'author' => 'Open Assessment Technologies SA',
     'managementRole' => 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager',
     'acl' => [
-        ['grant', 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', ['ext' => 'taoEventLog']],
+        [AccessRule::GRANT, 'http://www.tao.lu/Ontologies/generis.rdf#taoEventLogManager', ['ext' => 'taoEventLog']],
     ],
     'update' => Updater::class,
     'install' => [
