@@ -149,5 +149,4 @@ class LogEntryRepository implements LogEntryRepositoryInterface
 
         return $result;
     }
-
 }
