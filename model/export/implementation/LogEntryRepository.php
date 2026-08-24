@@ -25,6 +25,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use oat\oatbox\service\ServiceManager;
+use oat\tao\model\session\source\SessionSourceMatcher;
 use oat\taoEventLog\model\eventLog\LoggerService;
 use oat\taoEventLog\model\export\LogEntryRepositoryInterface;
 
@@ -32,6 +33,7 @@ class LogEntryRepository implements LogEntryRepositoryInterface
 {
     /** @var LoggerService $loggerService */
     private $loggerService;
+    private readonly SessionSourceMatcher $sessionSourceMatcher;
     /**
      * @var array
      */
@@ -52,7 +54,9 @@ class LogEntryRepository implements LogEntryRepositoryInterface
      */
     public function __construct(array $filters = [], $sortColumn = null, $sortOrder = null)
     {
-        $this->loggerService = ServiceManager::getServiceManager()->get(LoggerService::SERVICE_ID);
+        $serviceManager = ServiceManager::getServiceManager();
+        $this->loggerService = $serviceManager->get(LoggerService::SERVICE_ID);
+        $this->sessionSourceMatcher = $serviceManager->getContainer()->get(SessionSourceMatcher::class);
         $this->filters = $filters;
         $this->sortColumn = $sortColumn;
         $this->sortOrder = $sortOrder;
@@ -81,6 +85,7 @@ class LogEntryRepository implements LogEntryRepositoryInterface
         $lastId = null;
 
         $fetched = 0;
+        $isPortalSession = $this->sessionSourceMatcher->isPortalSession(common_session_SessionManager::getSession());
 
         do {
             $extendedPreparedFilters = (null !== $lastId)
@@ -99,6 +104,9 @@ class LogEntryRepository implements LogEntryRepositoryInterface
                 $lastId = $logs[$count - 1]['id'];
 
                 foreach ($logs as $log) {
+                    if ($isPortalSession) {
+                        unset($log['user_roles']);
+                    }
                     yield $log;
                 }
             }
