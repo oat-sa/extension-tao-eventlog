@@ -13,7 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2016-2019  (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2016-2026  (original work) Open Assessment Technologies SA;
  *
  * @author Alexander Zagovorichev <zagovorichev@1pt.com>
  */
@@ -31,7 +31,7 @@ define([
     'use strict';
 
     //the endpoints
-    var listUrl = url.route('search', 'TaoEventLog', 'taoEventLog');
+    const listUrl = url.route('search', 'TaoEventLog', 'taoEventLog');
 
     return {
 
@@ -39,32 +39,105 @@ define([
          * Controller entry point
          */
         start: function start() {
+            const isFromPortal = $('.content').attr('data-is-from-portal') === '1';
+            const dataTypes = [
+                {key: 'event_name', title: __('Event Name')},
+                {key: 'action', title: __('Action')},
+                {key: 'user_id', title: __('User ID')},
+                {key: 'user_login', title: __('User Login')}
+            ];
+            const datatableModel = [{
+                id: 'identifier',
+                label: __('ID'),
+                transform: function (id, row) {
+                    return row.raw.id;
+                }
+            }, {
+                id: 'event_name',
+                label: __('Event Name'),
+                sortable: true,
+                filterable: true
+            }, {
+                id: 'action',
+                label: __('Action'),
+                sortable: true,
+                filterable: true
+            }, {
+                id: 'user_id',
+                label: __('User ID'),
+                sortable: true,
+                filterable: true
+            }, {
+                id: 'user_login',
+                label: __('User Login'),
+                sortable: true,
+                filterable: true
+            }];
 
-            var data = {
-                dataTypes: [
-                    {key: 'event_name', title: __('Event Name')},
-                    {key: 'action', title: __('Action')},
-                    {key: 'user_id', title: __('User ID')},
-                    {key: 'user_login', title: __('User Login')},
-                    {key: 'user_roles', title: __('User Roles')},
-                    {key: 'occurred', title: __('Occurred')},
-                    {key: 'properties', title: __('Properties')}
-                ]
+            if (!isFromPortal) {
+                dataTypes.push({key: 'user_roles', title: __('User Roles')});
+                datatableModel.push({
+                    id: 'user_roles',
+                    label: __('User Roles'),
+                    sortable: true,
+                    filterable: true,
+                    transform: function (roles) {
+                        const rolesArray = roles.split(', ');
+                        const rolesCount = rolesArray.length;
+                        let roleFiltered;
+                        let result;
+
+                        if(rolesCount > 1) {
+                            if(currentFilter.filtercolumns.user_roles) {
+                                roleFiltered = _.find(rolesArray, function (item) {
+                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
+                                });
+                                if(roleFiltered) {
+                                    result = __('%s and %s roles', roleFiltered, (rolesCount - 1));
+                                } else {
+                                    result = __('%s roles', rolesCount);
+                                }
+                            } else {
+                                result = __('%s roles', rolesCount);
+                            }
+                        } else if(rolesCount === 1){
+                            result = roles;
+                        }
+
+                        return result;
+                    }
+                });
+            }
+
+            dataTypes.push(
+                {key: 'occurred', title: __('Occurred')},
+                {key: 'properties', title: __('Properties')}
+            );
+            datatableModel.push({
+                id: 'occurred',
+                label: __('Occurred'),
+                sortable: true
+            });
+
+            const data = {
+                dataTypes: dataTypes
             };
 
-            var $layout = $(layoutTpl(data));
-            var $eventFilter = $('.log-browser .log-table-filters', $layout);
-            var $eventList = $('.log-browser .log-table', $layout);
-            var $eventViewer = $('.event-viewer', $layout);
-            var $exportLink = $('.js-export', $layout);
+            const $layout = $(layoutTpl(data));
+            const $eventFilter = $('.log-browser .log-table-filters', $layout);
+            const $eventList = $('.log-browser .log-table', $layout);
+            const $eventViewer = $('.event-viewer', $layout);
+            const $exportLink = $('.js-export', $layout);
 
-            var filterRange = dateRangeFactory($eventFilter);
-            var currentFilter = {
+            const filterRange = dateRangeFactory($eventFilter);
+            let currentFilter = {
                 filtercolumns: {}
             };
 
-            var updateEventDetails = function updateEventDetails(event) {
-                var key, json, str;
+            const updateEventDetails = function updateEventDetails(event) {
+                let key;
+                let json;
+                let str;
                 for (key in event) {
                     if (event.hasOwnProperty(key)) {
                         if (key === 'properties') {
@@ -119,67 +192,7 @@ define([
                 filter: true,
                 rowSelection: true,
                 filterStrategy: 'multiple',
-                model: [{
-                    id: 'identifier',
-                    label: __('ID'),
-                    transform: function (id, row) {
-                        return row.raw.id;
-                    }
-                }, {
-                    id: 'event_name',
-                    label: __('Event Name'),
-                    sortable: true,
-                    filterable: true
-                }, {
-                    id: 'action',
-                    label: __('Action'),
-                    sortable: true,
-                    filterable: true
-                }, {
-                    id: 'user_id',
-                    label: __('User ID'),
-                    sortable: true,
-                    filterable: true
-                }, {
-                    id: 'user_login',
-                    label: __('User Login'),
-                    sortable: true,
-                    filterable: true
-                }, {
-                    id: 'user_roles',
-                    label: __('User Roles'),
-                    sortable: true,
-                    filterable: true,
-                    transform: function (roles) {
-                        var rolesArray = roles.split(', ');
-                        var rolesCount = rolesArray.length;
-                        var roleFiltered;
-                        var result;
-
-                        if(rolesCount > 1) {
-                            if(currentFilter.filtercolumns.user_roles) {
-                                roleFiltered = _.find(rolesArray, function (item) {
-                                    return item.toLowerCase().indexOf(currentFilter.filtercolumns.user_roles.toLowerCase()) > -1;
-                                });
-                                if(roleFiltered) {
-                                    result = __('%s and %s roles', roleFiltered, (rolesCount - 1));
-                                } else {
-                                    result = __('%s roles', rolesCount);
-                                }
-                            } else {
-                                result = __('%s roles', rolesCount);
-                            }
-                        } else if(rolesCount === 1){
-                            result = roles;
-                        }
-
-                        return result;
-                    }
-                }, {
-                    id: 'occurred',
-                    label: __('Occurred'),
-                    sortable: true
-                }],
+                model: datatableModel,
 
                 listeners: {
                     /**
