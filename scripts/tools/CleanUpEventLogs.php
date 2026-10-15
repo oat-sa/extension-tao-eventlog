@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
- * Copyright (c) 2018 (original work) Open Assessment Technologies SA;
+ * Copyright (c) 2018-2026 (original work) Open Assessment Technologies SA.
  */
 
 namespace oat\taoEventLog\scripts\tools;
@@ -24,24 +24,19 @@ use DateInterval;
 use DateTimeImmutable;
 use oat\generis\model\OntologyAwareTrait;
 use oat\oatbox\extension\script\ScriptAction;
-use common_report_Report as Report;
+use oat\oatbox\reporting\Report;
+use oat\taoEventLog\model\Config\EventLogField;
 use oat\taoEventLog\model\eventLog\LoggerService;
-use oat\taoEventLog\model\eventLog\RdsStorage;
 use oat\taoEventLog\model\storage\AbstractRdsStorage;
 
 /**
- * Class CleanUpEventLogs
- * Usage: sudo -u www-data php index.php 'oat\taoEventLog\scripts\tools\CleanUpEventLogs'
- * @package oat\taoEventLog\scripts\tools
+ * @example sudo -u www-data php index.php 'oat\taoEventLog\scripts\tools\CleanUpEventLogs'
  */
 class CleanUpEventLogs extends ScriptAction
 {
     use OntologyAwareTrait;
 
-    /**
-     * @return array
-     */
-    protected function provideOptions()
+    protected function provideOptions(): array
     {
         return [
             'wetRun' => [
@@ -50,30 +45,32 @@ class CleanUpEventLogs extends ScriptAction
                 'flag' => true,
                 'description' => 'Will perform real database operations if it will be required, including data removal',
                 'required' => false,
-                'defaultValue' => false
+                'defaultValue' => false,
             ],
             'period' => [
                 'prefix' => 'p',
                 'longPrefix' => 'period',
                 'description' => 'Specify period that should be KEPT, all records older will be removed.',
-                'required' => true
+                'required' => false,
+                'defaultValue' => 'P365D',
             ],
             'events' => [
                 'prefix' => 'e',
                 'longPrefix' => 'events',
-                'defaultValue' => [],
+                'cast' => 'string',
                 'description' => 'Specify exact events that should be REMOVED, coma separated',
-                'required' => true
+                'required' => false,
+                'defaultValue' => '',
             ],
         ];
     }
 
-    protected function provideDescription()
+    protected function provideDescription(): string
     {
         return 'Scripts removes logged request/response related data from event log, older than given time';
     }
 
-    protected function provideUsage()
+    protected function provideUsage(): array
     {
         return [
             'prefix' => 'h',
@@ -82,40 +79,57 @@ class CleanUpEventLogs extends ScriptAction
         ];
     }
 
-    /**
-     * @return Report
-     * @throws \common_exception_Error
-     * @throws \oat\oatbox\service\exception\InvalidServiceManagerException
-     */
-    protected function run()
+    protected function run(): Report
     {
-        $report = new Report(Report::TYPE_INFO, 'Script execution started');
+        $report = Report::createInfo('Script execution started');
 
-        $isWetRun = $this->getOption('wetRun');
-        $period = new DateInterval($this->getOption('period'));
-        $events = explode(',', $this->getOption('events'));
-        $beforeDate = (new DateTimeImmutable())->sub($period);
-
-        /** @var LoggerService $service */
-        $service = $this->getServiceLocator()->get(LoggerService::SERVICE_ID);
         $filters = [];
-        $filters[] = [RdsStorage::EVENT_LOG_OCCURRED, '<=', $beforeDate->format(AbstractRdsStorage::DATE_TIME_FORMAT)];
-        $filters[] = [RdsStorage::EVENT_LOG_EVENT_NAME, 'in', $events];
+        $filters[] = [EventLogField::Occurred->value, '<=', $this->getBeforeDate()];
 
-        $count = $service->count($filters);
-        $report->add(new Report(Report::TYPE_INFO, sprintf('%s to be removed ', $count)));
+        $events = $this->getEvents();
 
-
-        if ($isWetRun) {
-            $report->add(new Report(Report::TYPE_INFO, 'Script is running in wet-run mode'));
-            $x = $service->delete($filters);
-            $report->add(new Report(Report::TYPE_INFO, sprintf('%s to be removed ', $x)));
-        } else {
-            $report->add(new Report(Report::TYPE_INFO, 'Script is running in dry-run mode'));
+        if (!empty($events)) {
+            $filters[] = [EventLogField::EventName->value, 'in', $events];
         }
 
-        $report->add(new Report(Report::TYPE_SUCCESS, 'Script finished execution'));
+        $loggerService = $this->getLoggerService();
+        $count = $loggerService->count($filters);
+        $report->add(Report::createInfo(sprintf('%s to be removed ', $count)));
+
+        if ($this->getOption('wetRun')) {
+            $report->add(Report::createInfo('Script is running in wet-run mode'));
+            $x = $loggerService->delete($filters);
+            $report->add(Report::createInfo(sprintf('%s to be removed ', $x)));
+        } else {
+            $report->add(Report::createInfo('Script is running in dry-run mode'));
+        }
+
+        $report->add(Report::createSuccess('Script finished execution'));
 
         return $report;
+    }
+
+    private function getBeforeDate(): string
+    {
+        $period = new DateInterval($this->getOption('period'));
+
+        return (new DateTimeImmutable())
+            ->sub($period)
+            ->format(AbstractRdsStorage::DATE_TIME_FORMAT);
+    }
+
+    private function getEvents(): array
+    {
+        $events = explode(',', $this->getOption('events'));
+
+        return array_values(array_filter(
+            array_map('trim', $events),
+            static fn (string $event): bool => $event !== ''
+        ));
+    }
+
+    private function getLoggerService(): LoggerService
+    {
+        return $this->getServiceLocator()->get(LoggerService::SERVICE_ID);
     }
 }
