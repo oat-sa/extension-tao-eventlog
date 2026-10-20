@@ -51,16 +51,14 @@ class CleanUpEventLogs extends ScriptAction
                 'prefix' => 'p',
                 'longPrefix' => 'period',
                 'description' => 'Specify period that should be KEPT, all records older will be removed.',
-                'required' => false,
-                'defaultValue' => 'P365D',
+                'required' => true,
             ],
             'events' => [
                 'prefix' => 'e',
                 'longPrefix' => 'events',
                 'cast' => 'string',
                 'description' => 'Specify exact events that should be REMOVED, coma separated',
-                'required' => false,
-                'defaultValue' => '',
+                'required' => true,
             ],
         ];
     }
@@ -83,9 +81,7 @@ class CleanUpEventLogs extends ScriptAction
     {
         $report = Report::createInfo('Script execution started');
 
-        $filters = [];
-        $filters[] = [EventLogField::Occurred->value, '<=', $this->getBeforeDate()];
-
+        $filters = [[EventLogField::Occurred->value, '<=', $this->getBeforeDate()]];
         $events = $this->getEvents();
 
         if (!empty($events)) {
@@ -130,6 +126,6 @@ class CleanUpEventLogs extends ScriptAction
 
     private function getLoggerService(): LoggerService
     {
-        return $this->getServiceLocator()->get(LoggerService::SERVICE_ID);
+        return $this->getServiceManager()->getContainer()->get(LoggerService::SERVICE_ID);
     }
 }
