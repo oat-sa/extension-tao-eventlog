@@ -22,16 +22,31 @@ define([
     'jquery',
     'lodash',
     'i18n',
+    'module',
     'util/url',
     'ui/datatable',
     'tpl!taoEventLog/controller/TaoEventLog/show/layout',
     'taoEventLog/components/export/modalExporter',
     'ui/dateRange/dateRange'
-], function ($, _, __, url, datatable, layoutTpl, exporter, dateRangeFactory) {
+], function ($, _, __, module, url, datatable, layoutTpl, exporter, dateRangeFactory) {
     'use strict';
 
     //the endpoints
     const listUrl = url.route('search', 'TaoEventLog', 'taoEventLog');
+
+    const addCleanupNotice = (data) => {
+        const { enabled, period, events } = _.get(module.config(), 'cleanup', {});
+
+        if (!enabled || !period) {
+            return;
+        }
+
+        data.cleanupNotice = {
+            title: __('Event logs are retained for %s.', period),
+            description: __('Logs older than this period are automatically purged.'),
+            events: events.length ? __('Applied events: %s.', events.join(', ')) : null
+        };
+    };
 
     return {
 
@@ -122,6 +137,8 @@ define([
             const data = {
                 dataTypes: dataTypes
             };
+
+            addCleanupNotice(data);
 
             const $layout = $(layoutTpl(data));
             const $eventFilter = $('.log-browser .log-table-filters', $layout);

@@ -8,6 +8,16 @@
                         <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
                     </div>
                 </header>
+                {{#if cleanupNotice}}
+                    <div class="feedback-info small eventlog-cleanup-notice">
+                        <span class="icon-info"></span>
+                        <strong>{{cleanupNotice.title}}</strong>
+                        <div>{{cleanupNotice.description}}</div>
+                        {{#if cleanupNotice.events}}
+                            <div>{{cleanupNotice.events}}</div>
+                        {{/if}}
+                    </div>
+                {{/if}}
                 <div class="log-table-filters"></div>
                 <div class="log-table"></div>
             </section>
