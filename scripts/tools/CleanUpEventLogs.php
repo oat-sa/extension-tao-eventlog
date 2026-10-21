@@ -58,7 +58,8 @@ class CleanUpEventLogs extends ScriptAction
                 'longPrefix' => 'events',
                 'cast' => 'string',
                 'description' => 'Specify exact events that should be REMOVED, coma separated',
-                'required' => true,
+                'required' => false,
+                'defaultValue' => '',
             ],
         ];
     }

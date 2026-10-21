@@ -44,7 +44,7 @@ class CleanupConfigHandler implements FeatureFlagConfigHandlerInterface
         $moduleConfig['cleanup'] = [
             'enabled' => $this->cleanupEnabled,
             'period' => $this->extractPeriodLabel(),
-            'events' => array_filter(array_map('trim', explode(',', $this->cleanupEvents))),
+            'events' => array_values(array_filter(array_map('trim', explode(',', $this->cleanupEvents)))),
         ];
 
         $configs[self::MODULE_CONFIG_ID] = $moduleConfig;
