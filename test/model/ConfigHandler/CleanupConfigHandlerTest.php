@@ -58,12 +58,19 @@ class CleanupConfigHandlerTest extends TestCase
     public function cleanupConfigDataProvider(): array
     {
         return [
-            'valid period with events' => [
+            'valid period with short event names' => [
                 'cleanupEnabled' => true,
                 'cleanupPeriod' => 'P365D',
                 'cleanupEvents' => 'eventA, eventB, ,eventC',
                 'expectedPeriod' => (string) tao_helpers_Date::displayInterval(new DateInterval('P365D')),
                 'expectedEvents' => ['eventA', 'eventB', 'eventC'],
+            ],
+            'fqcn events are converted to short unique names' => [
+                'cleanupEnabled' => true,
+                'cleanupPeriod' => 'P365D',
+                'cleanupEvents' => 'oat\\tao\\model\\event\\LoginSucceedEvent,oat\\taoItems\\model\\event\\ItemContentViewEvent,oat\\tao\\model\\event\\LoginSucceedEvent',
+                'expectedPeriod' => (string) tao_helpers_Date::displayInterval(new DateInterval('P365D')),
+                'expectedEvents' => ['LoginSucceedEvent', 'ItemContentViewEvent'],
             ],
             'invalid period and empty events' => [
                 'cleanupEnabled' => true,

@@ -44,7 +44,7 @@ class CleanupConfigHandler implements FeatureFlagConfigHandlerInterface
         $moduleConfig['cleanup'] = [
             'enabled' => $this->cleanupEnabled,
             'period' => $this->extractPeriodLabel(),
-            'events' => array_values(array_filter(array_map('trim', explode(',', $this->cleanupEvents)))),
+            'events' => $this->getCleanupEvents(),
         ];
 
         $configs[self::MODULE_CONFIG_ID] = $moduleConfig;
@@ -65,5 +65,27 @@ class CleanupConfigHandler implements FeatureFlagConfigHandlerInterface
         } catch (Exception $exception) {
             return '';
         }
+    }
+
+    private function getCleanupEvents(): array
+    {
+        $cleanupEvents = [];
+
+        foreach (explode(',', $this->cleanupEvents) as $cleanupEvent) {
+            $cleanupEvent = trim($cleanupEvent);
+
+            if ($cleanupEvent === '') {
+                continue;
+            }
+
+            $cleanupEventParts = explode('\\', $cleanupEvent);
+            $cleanupEventShortName = array_pop($cleanupEventParts);
+
+            if (!in_array($cleanupEventShortName, $cleanupEvents, true)) {
+                $cleanupEvents[] = $cleanupEventShortName;
+            }
+        }
+
+        return $cleanupEvents;
     }
 }
