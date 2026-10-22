@@ -26,11 +26,11 @@ use DateInterval;
 use oat\taoEventLog\model\ConfigHandler\CleanupConfigHandler;
 use PHPUnit\Framework\TestCase;
 use tao_helpers_Date;
+use oat\tao\model\event\LoginSucceedEvent;
+use oat\taoItems\model\event\ItemContentViewEvent;
 
 class CleanupConfigHandlerTest extends TestCase
 {
-    private const MODULE_CONFIG_ID = 'taoEventLog/controller/TaoEventLog/show';
-
     /**
      * @dataProvider cleanupConfigDataProvider
      */
@@ -51,7 +51,7 @@ class CleanupConfigHandlerTest extends TestCase
                 'period' => $expectedPeriod,
                 'events' => $expectedEvents,
             ],
-            $result[self::MODULE_CONFIG_ID]['cleanup']
+            $result['taoEventLog/controller/TaoEventLog/show']['cleanup']
         );
     }
 
@@ -68,7 +68,10 @@ class CleanupConfigHandlerTest extends TestCase
             'fqcn events are converted to short unique names' => [
                 'cleanupEnabled' => true,
                 'cleanupPeriod' => 'P365D',
-                'cleanupEvents' => 'oat\\tao\\model\\event\\LoginSucceedEvent,oat\\taoItems\\model\\event\\ItemContentViewEvent,oat\\tao\\model\\event\\LoginSucceedEvent',
+                'cleanupEvents' => implode(
+                    ',',
+                    [LoginSucceedEvent::class, ItemContentViewEvent::class, LoginSucceedEvent::class]
+                ),
                 'expectedPeriod' => (string) tao_helpers_Date::displayInterval(new DateInterval('P365D')),
                 'expectedEvents' => ['LoginSucceedEvent', 'ItemContentViewEvent'],
             ],
