@@ -4,11 +4,27 @@
             <section class="log-browser">
                 <header>
                     <h2>{{__ 'Log watcher'}}</h2>
-                    <div class="header-buttons">
-                        <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
-                    </div>
                 </header>
-                <div class="log-table-filters"></div>
+                {{#if cleanupNotice}}
+                    <div class="feedback-info small eventlog-cleanup-notice">
+                        <span class="icon-info"></span>
+                        <strong>{{cleanupNotice.title}}</strong>
+                        <div>{{cleanupNotice.description}}</div>
+                        {{#if cleanupNotice.events}}
+                            <div>{{cleanupNotice.events}}</div>
+                        {{/if}}
+                    </div>
+                {{/if}}
+                <div class="grid-row log-table-controls">
+                    <div class="col-8">
+                        <div class="log-table-filters"></div>
+                    </div>
+                    <div class="col-4">
+                        <div class="log-table-actions">
+                            <button class="btn-info export js-export"><span class="icon-export"></span>{{__ 'Export log entries'}}</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="log-table"></div>
             </section>
         </div>

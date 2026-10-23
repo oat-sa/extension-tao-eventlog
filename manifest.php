@@ -19,6 +19,7 @@
  */
 
 use oat\taoEventLog\model\DataPolicyOrchestrator\DataPolicyServiceProvider;
+use oat\taoEventLog\model\ConfigHandler\ConfigHandlerServiceProvider;
 use oat\taoEventLog\model\Repository\EventLogRepositoryServiceProvider;
 use oat\tao\model\accessControl\func\AccessRule;
 use oat\taoEventLog\scripts\install\RegisterLoggerService;
@@ -68,5 +69,6 @@ return [
     'containerServiceProviders' => [
         EventLogRepositoryServiceProvider::class,
         DataPolicyServiceProvider::class,
+        ConfigHandlerServiceProvider::class,
     ],
 ];
